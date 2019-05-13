@@ -1,4 +1,4 @@
-package com.harlan.javagrpc;
+package com.harlan.javagrpc.main;
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;

@@ -1,7 +1,8 @@
 #################
 # Project related
 #################
-src/main/proto
+!src/main/proto/hellowworld.proto
+src/main/proto/*
 
 ###############
 # Intellij IDEA

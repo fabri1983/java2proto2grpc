@@ -8,6 +8,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 
 	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<io.grpc.version>1.20.0</io.grpc.version>
 		<google.protobuf.version>3.7.1</google.protobuf.version> <!-- version 3.7.1 is last version without build error -->
 	</properties>
@@ -30,7 +31,7 @@
 		<!-- gRPC Client and Server -->
 		<dependency>
 			<groupId>io.grpc</groupId>
-			<artifactId>grpc-netty</artifactId>
+			<artifactId>grpc-netty-shaded</artifactId>
 			<version>${io.grpc.version}</version>
 		</dependency>
 		<dependency>

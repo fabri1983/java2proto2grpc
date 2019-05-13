@@ -1,6 +1,5 @@
-package com.harlan.javagrpc;
+package com.harlan.javagrpc.main;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -17,11 +16,10 @@ public class PackageUtil {
 		String packageName = "com.harlan.javagrpc.service";
 		String protoDir = "src/main/proto/";
 
-		List<String> classNames = getClassName(packageName);
-		for (String className : classNames) {
+		List<Class<?>> classes = ClassUtil.getClasses(packageName);
+		for (Class<?> clazz : classes) {
 
 			try {
-				Class<?> clazz = Class.forName(className);
 				String name = clazz.getSimpleName();
 				StringBuffer sb = new StringBuffer(2048);
 				sb.append("syntax = \"proto3\";\r\n");
@@ -33,8 +31,8 @@ public class PackageUtil {
 				sb.append("package " + name + ";\r\n");
 				sb.append("service " + name + " {\r\n");
 				
-				Method[] methods = clazz.getMethods();
 				//服务
+				Method[] methods = clazz.getMethods();
 				for (Method method : methods) {
 					sb.append("\t" + "rpc ");
 					sb.append(method.getName() + " (" + method.getName() + "Request) returns " + "(" + method.getName()
@@ -87,8 +85,7 @@ public class PackageUtil {
 				FileWriter writer = new FileWriter(protoDir + name + ".proto");
 				writer.write(sb.toString());
 				writer.close();
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
+			
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -229,46 +226,5 @@ public class PackageUtil {
 		}
 		return returnName;
 	}
-
-	public static List<String> getClassName(String packageName) {
-
-		String filePath = ClassLoader.getSystemResource("").getPath() + packageName.replace(".", "\\");
-
-		List<String> fileNames = getClassName(filePath, null);
-
-		return fileNames;
-	}
-
-	private static List<String> getClassName(String filePath, List<String> className) {
-
-		List<String> myClassName = new ArrayList<String>();
-
-		File file = new File(filePath);
-
-		File[] childFiles = file.listFiles();
-
-		for (File childFile : childFiles) {
-
-			if (childFile.isDirectory()) {
-
-				myClassName.addAll(getClassName(childFile.getPath(), myClassName));
-
-			} else {
-
-				String childFilePath = childFile.getPath();
-
-				childFilePath = childFilePath.substring(childFilePath.indexOf("\\classes") + 9,
-						childFilePath.lastIndexOf("."));
-
-				childFilePath = childFilePath.replace("\\", ".");
-
-				myClassName.add(childFilePath);
-
-			}
-
-		}
-
-		return myClassName;
-	}
-
+	
 }
