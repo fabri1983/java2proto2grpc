@@ -29,6 +29,7 @@ public class PackageUtil {
 				sb.append("option java_outer_classname = \"" + name + "Proto\";\r\n");
 				sb.append("\r\n");
 				sb.append("package " + name + ";\r\n");
+				sb.append("}\r\n");
 				sb.append("service " + name + " {\r\n");
 				
 				//服务
@@ -38,8 +39,8 @@ public class PackageUtil {
 					sb.append(method.getName() + " (" + method.getName() + "Request) returns " + "(" + method.getName()
 							+ "Response) {};\r\n");
 				}
+				sb.append("}\r\n");
 				
-				sb.append(" } \r\n");
 				//message
 				for (Method method : methods) {
 					sb.append("message " + method.getName() + "Request {\r\n");
@@ -49,7 +50,7 @@ public class PackageUtil {
 							Field[] fields = cl.getDeclaredFields();
 							int i = 1;
 							for (Field field : fields) {
-								handleField(sb, field,i);
+								handleField(sb, field, i);
 								i++;
 							}
 						}
@@ -102,7 +103,7 @@ public class PackageUtil {
 		return clz != null && clz.getClassLoader() == null;
 	}
 	
-	private static void handleField(StringBuffer sb,Field field,Integer i) {
+	private static void handleField(StringBuffer sb, Field field, Integer i) {
 		if (field.getType() == Map.class) {
 			ParameterizedType pt = (ParameterizedType) field.getGenericType();
 			handleGeneric(sb, field, pt.getActualTypeArguments()[0].getTypeName(), i);

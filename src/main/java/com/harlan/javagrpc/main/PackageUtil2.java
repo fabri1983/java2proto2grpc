@@ -32,6 +32,7 @@ public class PackageUtil2 {
 				sb.append("option java_outer_classname = \"" + name + "Proto\";\r\n");
 				sb.append("\r\n");
 				sb.append("package " + name + ";\r\n");
+				sb.append("\r\n");
 				sb.append("service " + name + " {\r\n");
 				
 				//服务
@@ -41,7 +42,7 @@ public class PackageUtil2 {
 					sb.append(method.getName() + " (" + method.getName() + "Request) returns " + "(" + method.getName()
 							+ "Response) {};\r\n");
 				}
-				sb.append(" } \r\n");
+				sb.append("}\r\n");
 				
 				//message
 				for (Method method : methods) {
@@ -55,7 +56,7 @@ public class PackageUtil2 {
 							Field[] fields = cl.getDeclaredFields();
 							int i = 1;
 							for (Field field : fields) {
-								handleField(sb, field,i,tm);
+								handleField(sb, field, i, tm);
 								i++;
 							}
 						}
