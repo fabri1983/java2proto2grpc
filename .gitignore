@@ -1,0 +1,34 @@
+###############
+# Intellij IDEA
+###############
+*.iml
+.idea/
+
+#######
+# Maven
+#######
+target/
+.mvn/
+
+######
+# Java
+######
+*.class
+*.war
+*.ear
+# virtual machine crash logs
+hs_err_pid*
+
+#########
+# Eclipse
+#########
+.classpath
+.settings/
+.project
+
+#########
+# Others
+#########
+*.orig
+*.eclipse-pmd
+*.stackdump
