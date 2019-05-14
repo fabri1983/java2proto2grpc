@@ -44,7 +44,7 @@ public class PackageUtil2 {
 				}
 				sb.append("}\r\n");
 				
-				//message
+				//messages
 				for (Method method : methods) {
 					sb.append("message " + method.getName() + "Request {\r\n");
 					Class<?>[] reqParam = method.getParameterTypes();
@@ -125,7 +125,7 @@ public class PackageUtil2 {
 				}
 				sb.append("}\r\n");
 			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
+//				e.printStackTrace();
 			}
 		}
 		return sb;
@@ -172,7 +172,7 @@ public class PackageUtil2 {
 //				sb.append("\trepeated " + clazz.getSimpleName() + " " + field.getName() + " = " + i + ";\r\n");
 				tm.put(i, "\trepeated " + clazz.getSimpleName() + " " + field.getName() + " = " + i + ";\r\n");
 			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
+//				e.printStackTrace();
 			}
 		} else if(isJavaClass(field.getType())) {
 			//sb.append("\t" + handleFieldType(field.getType().getName()) + " " + field.getName() + " = " + i + ";\r\n");
@@ -212,12 +212,12 @@ public class PackageUtil2 {
 				return clazz.getSimpleName();
 			}
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 		return null;
 	}
 	
-	private static void handleGeneric(StringBuffer sb,Field field,String typeName,int i,TreeMap<Integer,String> tm) {
+	private static void handleGeneric(StringBuffer sb, Field field ,String typeName, int i, TreeMap<Integer,String> tm) {
 		try {
 			Class<?> clazz = Class.forName(typeName);
 			if(isJavaClass(clazz)) {
@@ -238,7 +238,7 @@ public class PackageUtil2 {
 			
 //			sb.append("\t}\r\n");
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 		} catch (SecurityException e) {
 			e.printStackTrace();
 		}

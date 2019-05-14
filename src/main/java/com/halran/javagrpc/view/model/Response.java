@@ -1,6 +1,7 @@
-package com.halran.javagrpc.mode;
+package com.halran.javagrpc.view.model;
 
 public class Response {
+
 	private int id;
 	private String name;
 
