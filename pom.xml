@@ -10,16 +10,23 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<io.grpc.version>1.20.0</io.grpc.version>
-		<google.protobuf.version>3.7.1</google.protobuf.version> <!-- version 3.7.1 is last version without build error -->
+		<!-- protobuf version 3.8.0-rc-1 needs protobuf-java dependency to avoid code generation error -->
+		<google.protobuf.version>3.8.0-rc-1</google.protobuf.version>
 	</properties>
 	
 	<dependencies>
-		<!-- Google Protobuffer compiler to be used by plugin protobuf-maven-plugin -->
+		<!-- Protocol Buffers compiler to be used by plugin protobuf-maven-plugin -->
 		<dependency>
 		    <groupId>com.google.protobuf</groupId>
 		    <artifactId>protoc</artifactId>
 		    <version>${google.protobuf.version}</version>
 		    <type>pom</type>
+		</dependency>
+		<!-- Core Protocol Buffers library. Protocol Buffers are a way of encoding structured data in an efficient yet extensible format. -->
+		<dependency>
+			<groupId>com.google.protobuf</groupId>
+			<artifactId>protobuf-java</artifactId>
+			<version>${google.protobuf.version}</version>
 		</dependency>
 		<!-- gRPC compiler to be used by plugin protobuf-maven-plugin -->
 		<dependency>
@@ -78,6 +85,10 @@
 					<protocArtifact>com.google.protobuf:protoc:${google.protobuf.version}:exe:${os.detected.classifier}</protocArtifact>
 					<pluginId>grpc-java</pluginId>
 					<pluginArtifact>io.grpc:protoc-gen-grpc-java:${io.grpc.version}:exe:${os.detected.classifier}</pluginArtifact>
+					<!-- Avoids invoking protoc compilation on every execution -->
+					<checkStaleness>true</checkStaleness>
+					<!-- Additional setting to checkStaleness if current file system is NFS -->
+					<staleMillis>10000</staleMillis>
 				</configuration>
 				<executions>
 					<execution>
