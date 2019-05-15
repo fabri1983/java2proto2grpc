@@ -1,7 +1,7 @@
 ## java 2 proto 2 grpc
 This project is a modification from original project https://github.com/jhrgitgit/java2proto.
 Credits belong to the creator of the above mentioned project.
-I just made it compatible with windows, renamed some packages, tried to fix minor bugs. 
+I just made it compatible with Windows, renamed some packages, tried to fix minor bugs. *Still work in progress*.
 
 This project generates *.proto* files out of java classes/interfaces, and then by building the project using maven you can generate your gRPC stubs.
 
@@ -26,7 +26,10 @@ so you can make some test running *com.harlan.javagrpc.main.HelloWorldClient* an
 
 
 #### TODO
+- Test Enum types with and without fields.
 - Add gRPC example using LoginService gRPC stubs. 
-- Fix circular field declarations. See *Request.java* and *Request2.java*. It seems the problem resides on equal field names in some protobuf message definitions. 
-- Add Java *Annotations* to classes or fields in order to collect reserved field tags and names for the .proto definition file.
+- Fix circular field declarations. See *Request.java* and *Request2.java*. It seems the problem resides on equal field names in some protobuf message definitions. Maybe using nested messages solves the problem. 
+- Add custom Java *Annotations* to classes or fields in order to collect reserved field tags and names for the .proto definition file.
+- Support *@java.lang.Deprecated* on classes. It translates to *option deprecated = true;* after message declaration on the .proto file.
+- Support *@java.lang.Deprecated* on java fields. It translates to *[deprecated = true];* after field declaration on the .proto file.
 - Test building for Java 9 and higher. I had some building errors on generated gRPC stubs due to Java internal relocation of some annotations.
