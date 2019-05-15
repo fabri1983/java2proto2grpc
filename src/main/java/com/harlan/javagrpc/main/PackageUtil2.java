@@ -16,8 +16,8 @@ public class PackageUtil2 {
 
 	public static void main(String[] args) {
 
-		String packageName = "com.harlan.javagrpc.service";
-		String protoDir = "src/main/proto/";
+		final String packageName = "com.harlan.javagrpc.service";
+		final String protoDir = "src/main/proto/";
 
 		List<Class<?>> classes = ClassUtil.getClasses(packageName);
 		for (Class<?> clazz : classes) {
@@ -30,6 +30,7 @@ public class PackageUtil2 {
 				sb.append("option java_multiple_files = true;\r\n");
 				sb.append("option java_package = \"" + clazz.getPackage().getName() + "\";\r\n");
 				sb.append("option java_outer_classname = \"" + name + "Proto\";\r\n");
+				sb.append("option optimize_for = SPEED;\r\n");
 				sb.append("\r\n");
 				sb.append("package " + name + ";\r\n");
 				sb.append("\r\n");
@@ -52,7 +53,7 @@ public class PackageUtil2 {
 						for (Class<?> cl : reqParam) {
 							sb.append("\t" + cl.getSimpleName() + " " + cl.getSimpleName() + " = 1;\r\n");
 							TreeMap<Integer,String> tm = new TreeMap<Integer,String>();
-							map.put(cl.getName() , tm);
+							map.put(cl.getName(), tm);
 							Field[] fields = cl.getDeclaredFields();
 							int i = 1;
 							for (Field field : fields) {
@@ -141,7 +142,7 @@ public class PackageUtil2 {
 	}
 	
 	private static void handleField(StringBuffer sb, Field field, Integer i, TreeMap<Integer,String> tm) {
-		if(field.getType() == Map.class) {
+		if (field.getType() == Map.class) {
 			ParameterizedType pt = (ParameterizedType) field.getGenericType();
 			handleGeneric(sb, field, pt.getActualTypeArguments()[0].getTypeName(), i, tm);
 			handleGeneric(sb, field, pt.getActualTypeArguments()[1].getTypeName(), i, tm);
@@ -149,7 +150,8 @@ public class PackageUtil2 {
 //						getGenericByTypeName(pt.getActualTypeArguments()[1].getTypeName()) + "> " + field.getName() + " = "+ i + ";\r\n");
 			tm.put(i, "\tmap<" + getGenericByTypeName(pt.getActualTypeArguments()[0].getTypeName())+ ", " + 
 						getGenericByTypeName(pt.getActualTypeArguments()[1].getTypeName()) + "> " + field.getName() + " = "+ i + ";\r\n");
-		}else if(field.getType() == List.class) {
+		}
+		else if (field.getType() == List.class) {
 			ParameterizedType pt = (ParameterizedType) field.getGenericType();
 			try {
 				Class<?> clazz = Class.forName(pt.getActualTypeArguments()[0].getTypeName());
@@ -174,11 +176,13 @@ public class PackageUtil2 {
 			} catch (ClassNotFoundException e) {
 //				e.printStackTrace();
 			}
-		} else if(isJavaClass(field.getType())) {
+		}
+		else if (isJavaClass(field.getType())) {
 			//sb.append("\t" + handleFieldType(field.getType().getName()) + " " + field.getName() + " = " + i + ";\r\n");
 			tm.put(i, "\t" + handleFieldType(field.getType().getName()) + " " + field.getName() + " = " + i + ";\r\n");
 			return;
-		} else {
+		}
+		else {
 //			sb.append("\tmessage " + field.getType().getSimpleName() + " { \r\n");
 			int j = 1;
 			try {
