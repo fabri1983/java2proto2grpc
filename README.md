@@ -8,7 +8,7 @@ This project generates *.proto* files out of java classes/interfaces, and then b
 
 #### Usage:
 
-First you need to create **.proto** files out of your **java classes/interfaces**.
+First you need to create **.proto** files out of your java **classes/interfaces**. Currently only consider classes/interfaces located at package **com.harlan.javagrpc.service**.
 ```sh
 mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.PackageUtil2
 ```
