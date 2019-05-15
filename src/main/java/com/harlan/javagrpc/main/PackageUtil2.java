@@ -30,7 +30,6 @@ public class PackageUtil2 {
 				sb.append("option java_multiple_files = true;\r\n");
 				sb.append("option java_package = \"" + clazz.getPackage().getName() + "\";\r\n");
 				sb.append("option java_outer_classname = \"" + name + "Proto\";\r\n");
-				sb.append("option optimize_for = SPEED;\r\n");
 				sb.append("\r\n");
 				sb.append("package " + name + ";\r\n");
 				sb.append("\r\n");
