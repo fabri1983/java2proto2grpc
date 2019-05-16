@@ -6,7 +6,7 @@ import com.halran.javagrpc.model.Response;
 
 public interface LoginService {
 	
-	public int login();
+	public int login(Request req);
 
 	public Response getRes(Request req, Request2 req2);
 	

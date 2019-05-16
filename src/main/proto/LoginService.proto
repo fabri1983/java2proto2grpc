@@ -7,8 +7,15 @@ option java_outer_classname = "LoginServiceProto";
 package LoginService;
 
 service LoginService {
-	rpc getRes (getResRequest) returns (getResResponse) {};
 	rpc login (loginRequest) returns (loginResponse) {};
+	rpc getRes (getResRequest) returns (getResResponse) {};
+}
+message loginRequest {
+	Request Request = 1;
+	repeated string list1 = 12;
+}
+message loginResponse {
+	int32 int = 1 ;
 }
 message getResRequest {
 	Request Request = 1;
@@ -19,11 +26,6 @@ message getResRequest {
 }
 message getResResponse {
 	Response Response = 1;
-}
-message loginRequest {
-}
-message loginResponse {
-	int32 int = 1 ;
 }
 message Req2innerListObj {
 	int32 req2innerListObjId = 1;
