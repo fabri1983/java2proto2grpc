@@ -4,37 +4,60 @@ import com.halran.javagrpc.model.Request;
 import com.halran.javagrpc.model.Request2;
 import com.halran.javagrpc.model.Response;
 import com.harlan.javagrpc.service.contract.LoginService;
+import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc.LoginServiceBlockingStub;
+
+import net.badata.protobuf.converter.Converter;
 
 public class LoginServiceRemoteProxy implements LoginService {
 
-	// TODO add grpc client field here and inject by constructor
+	private LoginServiceBlockingStub blockingStub;
 	
-	public LoginServiceRemoteProxy() {
+	public LoginServiceRemoteProxy(LoginServiceBlockingStub blockingStub) {
 		super();
+		this.blockingStub = blockingStub;
 	}
 
 	@Override
 	public int login(Request req) {
 		
-		// TODO convert domain model objects to protobuf objects
+		// convert domain model into protobuf object
+		com.harlan.javagrpc.service.contract.protobuf.loginRequest requestProto = Converter.create()
+				.toProtobuf(com.harlan.javagrpc.service.contract.protobuf.loginRequest.class, req);
 		
-		// TODO use the grpc client to call login()
+		// use the grpc client to call login()
+		com.harlan.javagrpc.service.contract.protobuf.loginResponse loginResponse = blockingStub.login(requestProto);
 		
-		// TODO convert protobuf to domain model objects
+		// no protobuf to domain model conversion since we expect an int
+		int login = loginResponse.getInt();
 		
-		return 0;
+		return login;
 	}
 
 	@Override
 	public Response getRes(Request req, Request2 req2) {
 
-		// TODO convert domain model objects to protobuf objects
+		// convert domain model into protobuf object
+		com.harlan.javagrpc.service.contract.protobuf.Request requestProto = Converter.create()
+				.toProtobuf(com.harlan.javagrpc.service.contract.protobuf.Request.class, req);
 		
-		// TODO use the grpc client to call getRes()
-
-		// TODO convert protobuf to domain model objects
+		// convert domain model into protobuf object
+		com.harlan.javagrpc.service.contract.protobuf.Request2 request2Proto = Converter.create()
+				.toProtobuf(com.harlan.javagrpc.service.contract.protobuf.Request2.class, req2);
 		
-		return null;
+		com.harlan.javagrpc.service.contract.protobuf.getResRequest resRequest = 
+				com.harlan.javagrpc.service.contract.protobuf.getResRequest.newBuilder()
+					.setRequest(requestProto)
+					.setRequest2(request2Proto)
+					.build();
+		
+		// use the grpc client to call getRes()
+		com.harlan.javagrpc.service.contract.protobuf.getResResponse resResponse = blockingStub.getRes(resRequest);
+		
+		// convert protobuf to domain model objects
+		com.halran.javagrpc.model.Response modelResponse = Converter.create()
+				.toDomain(com.halran.javagrpc.model.Response.class, resResponse);
+		
+		return modelResponse;
 	}
 
 }

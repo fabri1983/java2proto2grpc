@@ -11,15 +11,15 @@ import java.util.concurrent.TimeUnit;
 public class HelloWorldClient {
 
 	private final ManagedChannel channel;
-	private final GreeterGrpc.GreeterBlockingStub blockingStub;
+	private final GreeterGrpc.GreeterBlockingStub blockingGreeterStub;
 
 	public HelloWorldClient(String host, int port) {
 		channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
-		blockingStub = GreeterGrpc.newBlockingStub(channel);
+		blockingGreeterStub = GreeterGrpc.newBlockingStub(channel);
 	}
 
 	public void shutdown() throws InterruptedException {
-		channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
+		channel.shutdown().awaitTermination(2, TimeUnit.SECONDS);
 	}
 
 	public void greet(String name) {
@@ -27,7 +27,7 @@ public class HelloWorldClient {
 				.addHelloRequest(SearchRequest.HelloRequest.newBuilder()
 						.setName(name))
 				.build();
-		SearchResponse response = blockingStub.sayHello(request);
+		SearchResponse response = blockingGreeterStub.sayHello(request);
 //		HelloReply response2 = blockingStub.sayWorld(request);
 		System.out.println("hello" + response.getHelloReply(0).getMessage());
 //		System.out.println("world" + response2.getMessage());
