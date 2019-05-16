@@ -33,3 +33,8 @@ so you can make some test running *com.harlan.javagrpc.main.HelloWorldClient* an
 - Support *@java.lang.Deprecated* on classes. It translates to *option deprecated = true;* after message declaration on the .proto file.
 - Support *@java.lang.Deprecated* on java fields. It translates to *[deprecated = true];* after field declaration on the .proto file.
 - Test building for Java 9 and higher. I had some building errors on generated gRPC stubs due to Java internal relocation of some annotations.
+
+#### License
+Licenses corresponds to projects:
+- https://github.com/jhrgitgit/java2proto
+- https://github.com/BAData/protobuf-converter#license

@@ -1,0 +1,84 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.harlan.javagrpc.service.contract.protobuf";
+option java_outer_classname = "LoginServiceProto";
+
+package LoginService;
+
+service LoginService {
+	rpc getRes (getResRequest) returns (getResResponse) {};
+	rpc login (loginRequest) returns (loginResponse) {};
+}
+message getResRequest {
+	Request Request = 1;
+	repeated string list1 = 12;
+	Request2 Request2 = 2;
+	repeated string req2InnerString = 3;
+	repeated int32 integer = 4;
+}
+message getResResponse {
+	Response Response = 1;
+}
+message loginRequest {
+}
+message loginResponse {
+	int32 int = 1 ;
+}
+message Req2innerListObj {
+	int32 req2innerListObjId = 1;
+	string req2innerListObjName = 2;
+}
+message TestList {
+	int32 listId = 1;
+	string listName = 2;
+}
+message TestMap {
+	int32 mapId = 1;
+	string mapName = 2;
+}
+message Request2Inner {
+	int32 req2InnerId = 1;
+	string req2InnerName = 2;
+	repeated Req2InnerList req2InnerList = 4;
+	map<string, Request2InnerMap> request2InnerMap = 5;
+}
+message Request {
+	int32 i1 = 1;
+	int32 i2 = 2;
+	int64 l1 = 3;
+	int64 l2 = 4;
+	string s = 5;
+	double d1 = 6;
+	double d2 = 7;
+	float f1 = 8;
+	float f2 = 9;
+	bool b1 = 10;
+	bool b2 = 11;
+	repeated TestList list2 = 13;
+	map<string, TestMap> map = 14;
+}
+message Request2InnerMapObj {
+	int32 request2InnerMapObjId = 1;
+	string request2InnerMapObjName = 2;
+}
+message Req2InnerList {
+	int32 req2InnerListId = 1;
+	string req2InnerListName = 2;
+	Req2innerListObj req2innerListObj = 3;
+}
+message Request2InnerMap {
+	int32 request2InnerMapId = 1;
+	string request2InnerMapName = 2;
+	Request2InnerMapObj request2InnerMapObj = 3;
+}
+message Request2 {
+	int32 id = 1;
+	string name = 2;
+	Request2Inner req2Inner = 3;
+	repeated Response resps = 5;
+}
+message Response {
+	int32 id = 1;
+	string name = 2;
+}

@@ -1,4 +1,4 @@
-package com.halran.javagrpc.view.model;
+package com.halran.javagrpc.model;
 
 import java.util.List;
 

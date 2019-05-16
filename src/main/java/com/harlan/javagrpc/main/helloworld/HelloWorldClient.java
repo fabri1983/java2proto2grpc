@@ -1,10 +1,10 @@
-package com.harlan.javagrpc.main;
+package com.harlan.javagrpc.main.helloworld;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
-import io.grpc.examples.helloworld.GreeterGrpc;
-import io.grpc.examples.helloworld.SearchRequest;
-import io.grpc.examples.helloworld.SearchResponse;
+import io.grpc.examples.helloworld.protobuf.GreeterGrpc;
+import io.grpc.examples.helloworld.protobuf.SearchRequest;
+import io.grpc.examples.helloworld.protobuf.SearchResponse;
 
 import java.util.concurrent.TimeUnit;
 
@@ -15,7 +15,6 @@ public class HelloWorldClient {
 
 	public HelloWorldClient(String host, int port) {
 		channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
-
 		blockingStub = GreeterGrpc.newBlockingStub(channel);
 	}
 
@@ -24,9 +23,12 @@ public class HelloWorldClient {
 	}
 
 	public void greet(String name) {
-		SearchRequest request = SearchRequest.newBuilder().addHelloRequest(SearchRequest.HelloRequest.newBuilder().setName(name)).build();
+		SearchRequest request = SearchRequest.newBuilder()
+				.addHelloRequest(SearchRequest.HelloRequest.newBuilder()
+						.setName(name))
+				.build();
 		SearchResponse response = blockingStub.sayHello(request);
-		//HelloReply response2 = blockingStub.sayWorld(request);
+//		HelloReply response2 = blockingStub.sayWorld(request);
 		System.out.println("hello" + response.getHelloReply(0).getMessage());
 //		System.out.println("world" + response2.getMessage());
 	}
@@ -37,6 +39,6 @@ public class HelloWorldClient {
 			client.greet("world:" + i);
 		}
 		client.shutdown();
-
 	}
+	
 }

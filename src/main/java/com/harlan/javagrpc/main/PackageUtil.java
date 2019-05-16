@@ -25,7 +25,7 @@ public class PackageUtil {
 				sb.append("syntax = \"proto3\";\r\n");
 				sb.append("\r\n");
 				sb.append("option java_multiple_files = true;\r\n");
-				sb.append("option java_package = \"" + clazz.getPackage().getName() + "\";\r\n");
+				sb.append("option java_package = \"" + clazz.getPackage().getName() + ".protobuf\";\r\n");
 				sb.append("option java_outer_classname = \"" + name + "Proto\";\r\n");
 				sb.append("\r\n");
 				sb.append("package " + name + ";\r\n");

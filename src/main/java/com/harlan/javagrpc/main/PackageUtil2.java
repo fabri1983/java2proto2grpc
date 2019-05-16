@@ -16,7 +16,7 @@ public class PackageUtil2 {
 
 	public static void main(String[] args) {
 
-		final String packageName = "com.harlan.javagrpc.service";
+		final String packageName = "com.harlan.javagrpc.service.contract";
 		final String protoDir = "src/main/proto/";
 
 		List<Class<?>> classes = ClassUtil.getClasses(packageName);
@@ -28,7 +28,7 @@ public class PackageUtil2 {
 				sb.append("syntax = \"proto3\";\r\n");
 				sb.append("\r\n");
 				sb.append("option java_multiple_files = true;\r\n");
-				sb.append("option java_package = \"" + clazz.getPackage().getName() + "\";\r\n");
+				sb.append("option java_package = \"" + clazz.getPackage().getName() + ".protobuf\";\r\n");
 				sb.append("option java_outer_classname = \"" + name + "Proto\";\r\n");
 				sb.append("\r\n");
 				sb.append("package " + name + ";\r\n");
