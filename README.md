@@ -6,8 +6,11 @@ Credits belong to the creator of the above mentioned project.
 I just made it compatible with Windows, renamed some packages, tried to fix minor bugs, added usage of *protobuf-converter* 
 (https://github.com/BAData/protobuf-converter) to transform domain model objects to protobuf messages and viceversa.
 
-The project generates *.proto* files out of java classes/interfaces (by the moment classes/interfaces existing in this project), and then 
-by building the project using maven you can generate your gRPC stubs.
+
+#### What this project do:
+
+- generates *.proto* files out of java classes/interfaces (by the moment classes/interfaces existing in this project)
+- generates gRPC stubs out of *.proto files*.
 
 
 #### Usage:
