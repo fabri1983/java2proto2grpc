@@ -3,23 +3,42 @@ package com.halran.javagrpc.model;
 import java.util.List;
 import java.util.Map;
 
+import net.badata.protobuf.converter.annotation.ProtoClass;
+import net.badata.protobuf.converter.annotation.ProtoField;
+
+@ProtoClass(com.harlan.javagrpc.service.contract.protobuf.Request.class)
 public class Request {
 	
+	@ProtoField
 	private int i1;
+	@ProtoField
 	private Integer i2;
+	@ProtoField
 	private long l1;
+	@ProtoField
 	private Long l2;
+	@ProtoField
 	private String s;
+	@ProtoField
 	private double d1;
+	@ProtoField
 	private Double d2;
+	@ProtoField
 	private float f1;
+	@ProtoField
 	private Float f2;
+	@ProtoField
 	private boolean b1;
+	@ProtoField
 	private Boolean b2;
+//	@ProtoField
 //	private Request2 req2;
+	@ProtoField
 	private List<String> list1;
+	@ProtoField
 	private List<TestList> list2;
-	private Map<String,TestMap> map;
+	@ProtoField
+	private Map<String, TestMap> map;
 
 	public int getI1() {
 		return i1;

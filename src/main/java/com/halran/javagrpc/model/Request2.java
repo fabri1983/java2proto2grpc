@@ -2,13 +2,23 @@ package com.halran.javagrpc.model;
 
 import java.util.List;
 
+import net.badata.protobuf.converter.annotation.ProtoClass;
+import net.badata.protobuf.converter.annotation.ProtoField;
+
+@ProtoClass(com.harlan.javagrpc.service.contract.protobuf.Request2.class)
 public class Request2 {
 
+	@ProtoField
 	private int id;
+	@ProtoField
 	private String name;
+	@ProtoField
 	private Request2Inner req2Inner;
+//	@ProtoField
 //	private Request req;
+	@ProtoField
 	private List<Integer> integer;
+	@ProtoField
 	private List<Response> resps;
 
 	public int getId() {

@@ -9,7 +9,5 @@ public interface LoginService {
 	public int login(Request req);
 
 	public Response getRes(Request req, Request2 req2);
-	
-//	public Response getRes2(Request req, Request2 req2);
 
 }

@@ -5,20 +5,22 @@ import com.halran.javagrpc.model.Request2;
 import com.halran.javagrpc.model.Response;
 import com.harlan.javagrpc.service.contract.LoginService;
 
-public class LoginServiceRemote implements LoginService {
+public class LoginServiceRemoteProxy implements LoginService {
 
 	// TODO add grpc client field here and inject by constructor
 	
-	public LoginServiceRemote() {
+	public LoginServiceRemoteProxy() {
 		super();
 	}
 
 	@Override
 	public int login(Request req) {
 		
-		// TODO use protobuf-converter in order to transform model objects to protobuf messages and vice versa
+		// TODO convert domain model objects to protobuf objects
 		
-		// TODO use the grpc client to call login
+		// TODO use the grpc client to call login()
+		
+		// TODO convert protobuf to domain model objects
 		
 		return 0;
 	}
@@ -26,9 +28,11 @@ public class LoginServiceRemote implements LoginService {
 	@Override
 	public Response getRes(Request req, Request2 req2) {
 
-		// TODO use protobuf-converter in order to transform model objects to protobuf messages and vice versa
+		// TODO convert domain model objects to protobuf objects
 		
-		// TODO use the grpc client to call getRes
+		// TODO use the grpc client to call getRes()
+
+		// TODO convert protobuf to domain model objects
 		
 		return null;
 	}

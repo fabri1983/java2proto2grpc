@@ -1,9 +1,16 @@
 package com.halran.javagrpc.model;
 
+import net.badata.protobuf.converter.annotation.ProtoClass;
+import net.badata.protobuf.converter.annotation.ProtoField;
+
+@ProtoClass(com.harlan.javagrpc.service.contract.protobuf.Request2InnerMap.class)
 public class Request2InnerMap {
 
+	@ProtoField
 	private int request2InnerMapId;
+	@ProtoField
 	private String request2InnerMapName;
+	@ProtoField
 	private Request2InnerMapObj request2InnerMapObj;
 
 	public int getRequest2InnerMapId() {

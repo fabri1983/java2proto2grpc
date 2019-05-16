@@ -1,4 +1,4 @@
-package com.harlan.javagrpc.main.helloworld;
+package com.harlan.javagrpc.service;
 
 import io.grpc.examples.helloworld.protobuf.GreeterGrpc;
 import io.grpc.examples.helloworld.protobuf.SearchRequest;

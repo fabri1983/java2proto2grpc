@@ -1,8 +1,14 @@
 package com.halran.javagrpc.model;
 
+import net.badata.protobuf.converter.annotation.ProtoClass;
+import net.badata.protobuf.converter.annotation.ProtoField;
+
+@ProtoClass(com.harlan.javagrpc.service.contract.protobuf.Req2innerListObj.class)
 public class Req2innerListObj {
 	
+	@ProtoField
 	private int req2innerListObjId;
+	@ProtoField
 	private String req2innerListObjName;
 
 	public int getReq2innerListObjId() {

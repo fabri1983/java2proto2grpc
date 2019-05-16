@@ -3,12 +3,21 @@ package com.halran.javagrpc.model;
 import java.util.List;
 import java.util.Map;
 
+import net.badata.protobuf.converter.annotation.ProtoClass;
+import net.badata.protobuf.converter.annotation.ProtoField;
+
+@ProtoClass(com.harlan.javagrpc.service.contract.protobuf.Request2Inner.class)
 public class Request2Inner {
 
+	@ProtoField
 	private int req2InnerId;
+	@ProtoField
 	private String req2InnerName;
+	@ProtoField
 	private List<String> req2InnerString;
+	@ProtoField
 	private List<Req2InnerList> req2InnerList;
+	@ProtoField
 	private Map<String, Request2InnerMap> request2InnerMap;
 
 	public int getReq2InnerId() {

@@ -1,5 +1,7 @@
 package com.harlan.javagrpc.main.helloworld;
 
+import com.harlan.javagrpc.service.GreeterServiceImpl;
+
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.examples.helloworld.protobuf.GreeterGrpc;
