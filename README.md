@@ -53,3 +53,16 @@ definitions. Maybe using nested messages solves the problem.
 Licenses corresponds to projects:
 - https://github.com/jhrgitgit/java2proto
 - https://github.com/BAData/protobuf-converter#license
+
+
+#### Help tips
+- I have some tracked files in a repository which are automatically modified when building the code. 
+I don't want to untrack them, I just don't want them to appear as modified and I don't want them to be staged when I git add.
+Solution:
+	```sh
+	git update-index --assume-unchanged file
+	```
+	To undo and start tracking again:
+	```sh
+	git update-index --no-assume-unchanged [<file> ...]
+	```
