@@ -20,15 +20,17 @@ mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.PackageUtil2
 ```
 
 Then you can build the project (*mvn compile*) which uses  maven plugin *org.xolstice.maven.plugins:protobuf-maven-plugin* in order to generate 
-the gRPC stubs for client and server out of your *.proto* files. Generated code is located at *target/generated-sources/protobuf/*.
+the protobuf java classes and gRPC stubs for client and server out of your *.proto* files. Generated code is located at *target/generated-sources/protobuf/*.
 
 
 #### Helloworld and LoginService correct build:
 
-Folder **src/main/proto** contains two commited files named *helloworld.proto* and *LoginService.proto*. Any change on that file are ignored by 
-the .gitignore file. So you cna play around with them.
+Folder **src/main/proto** contains two commited files named *helloworld.proto* and *LoginService.proto*. Any change on those files are ignored as per 
+.gitignore rules. So you can play around with them.
+
 The file *helloworld.proto* is used to generated grpc-java example classes as per https://github.com/grpc/grpc-java/tree/master/examples, 
 so you can make some testing running *com.harlan.javagrpc.main.helloworld.HelloWorldClient* and *com.harlan.javagrpc.main.helloworld.HelloWorldServer*.
+
 The file *LoginService.proto* is the one you can generate running *com.harlan.javagrpc.main.PackageUtil2*, and it generates protobuf classes 
 and grpc stubs to make some testing running *com.harlan.javagrpc.main.login.LoginClient* and *com.harlan.javagrpc.main.login.LoginServer*.
 
