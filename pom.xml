@@ -12,7 +12,16 @@
 		<io.grpc.version>1.20.0</io.grpc.version>
 		<!-- protobuf version 3.8.0-rc-1 needs protobuf-java dependency to avoid code generation error -->
 		<google.protobuf.version>3.8.0-rc-1</google.protobuf.version>
+		<protobuf.converter.version>1.1.5</protobuf.converter.version>
 	</properties>
+	
+	<repositories>
+		<!-- Jitpack.io repository where protobuf-converter is hosted -->
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
+	</repositories>
 	
 	<dependencies>
 		<!-- Protocol Buffers compiler to be used by plugin protobuf-maven-plugin -->
@@ -50,6 +59,12 @@
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-stub</artifactId>
 			<version>${io.grpc.version}</version>
+		</dependency>
+		<!-- transforms Domain Model Objects into Google Protobuf Messages and vice versa. -->
+		<dependency>
+			<groupId>com.github.BAData</groupId>
+			<artifactId>protobuf-converter</artifactId>
+			<version>${protobuf.converter.version}</version>
 		</dependency>
 	</dependencies>
 
