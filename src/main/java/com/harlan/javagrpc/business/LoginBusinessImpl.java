@@ -9,7 +9,7 @@ public class LoginBusinessImpl implements LoginBusiness {
 	
 	@Override
 	public int login(Request req) {
-		return 1234567890;
+		return req.getI1();
 	}
 	
 	@Override

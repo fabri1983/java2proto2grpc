@@ -39,6 +39,13 @@ public class Request {
 	private List<TestList> list2;
 	@ProtoField
 	private Map<String, TestMap> map;
+	
+	public static Request from(int id, String name) {
+		Request newObj = new Request();
+		newObj.i1 = id;
+		newObj.s = name;
+		return newObj;
+	}
 
 	public int getI1() {
 		return i1;
