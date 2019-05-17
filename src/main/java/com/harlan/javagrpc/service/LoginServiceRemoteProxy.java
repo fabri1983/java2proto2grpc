@@ -21,11 +21,17 @@ public class LoginServiceRemoteProxy implements LoginService {
 	public int login(Request req) {
 		
 		// convert domain model into protobuf object
-		com.harlan.javagrpc.service.contract.protobuf.loginRequest requestProto = Converter.create()
-				.toProtobuf(com.harlan.javagrpc.service.contract.protobuf.loginRequest.class, req);
+		com.harlan.javagrpc.service.contract.protobuf.Request requestProto = Converter.create()
+				.toProtobuf(com.harlan.javagrpc.service.contract.protobuf.Request.class, req);
+		
+		// wrap the protobuf object
+		com.harlan.javagrpc.service.contract.protobuf.loginRequest loginRequestProto = 
+				com.harlan.javagrpc.service.contract.protobuf.loginRequest.newBuilder()
+					.setRequest(requestProto)
+					.build();
 		
 		// use the grpc client to call login()
-		com.harlan.javagrpc.service.contract.protobuf.loginResponse loginResponse = blockingStub.login(requestProto);
+		com.harlan.javagrpc.service.contract.protobuf.loginResponse loginResponse = blockingStub.login(loginRequestProto);
 		
 		// no protobuf to domain model conversion since we expect an int
 		int login = loginResponse.getInt();
@@ -44,6 +50,7 @@ public class LoginServiceRemoteProxy implements LoginService {
 		com.harlan.javagrpc.service.contract.protobuf.Request2 request2Proto = Converter.create()
 				.toProtobuf(com.harlan.javagrpc.service.contract.protobuf.Request2.class, req2);
 		
+		// wrap the protobuf objects
 		com.harlan.javagrpc.service.contract.protobuf.getResRequest resRequest = 
 				com.harlan.javagrpc.service.contract.protobuf.getResRequest.newBuilder()
 					.setRequest(requestProto)

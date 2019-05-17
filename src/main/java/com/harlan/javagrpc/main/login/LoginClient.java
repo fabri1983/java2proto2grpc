@@ -36,9 +36,9 @@ public class LoginClient {
 	public static void main(String[] args) throws InterruptedException {
 		LoginClient client = new LoginClient("127.0.0.1", 50051);
 		User[] users = new User[] { 
-				User.from(1, "pepito"),
-				User.from(2, "martita"),
-				User.from(3, "robertito")};
+				User.from(11, "pepito"),
+				User.from(22, "martita"),
+				User.from(33, "robertito")};
 		for (int i = 0; i < users.length; i++) {
 			client.login(users[i]);
 		}

@@ -39,7 +39,6 @@ and grpc stubs to make some testing running *com.harlan.javagrpc.main.login.Logi
 
 
 #### TODO
-- Add gRPC example using LoginService gRPC stubs. 
 - Test Enum types with and without fields.
 - Fix circular field declarations. See *Request.java* and *Request2.java*. It seems the problem resides on equal field names in some protobuf message 
 definitions. Maybe using nested messages solves the problem. 
