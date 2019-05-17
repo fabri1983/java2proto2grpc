@@ -1,11 +1,11 @@
 package com.harlan.javagrpc.service;
 
 import com.harlan.javagrpc.business.contract.LoginBusiness;
+import com.harlan.javagrpc.service.contract.protobuf.GetResMessageIn;
+import com.harlan.javagrpc.service.contract.protobuf.GetResMessageOut;
+import com.harlan.javagrpc.service.contract.protobuf.LoginMessageIn;
+import com.harlan.javagrpc.service.contract.protobuf.LoginMessageOut;
 import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc.LoginServiceImplBase;
-import com.harlan.javagrpc.service.contract.protobuf.getResRequest;
-import com.harlan.javagrpc.service.contract.protobuf.getResResponse;
-import com.harlan.javagrpc.service.contract.protobuf.loginRequest;
-import com.harlan.javagrpc.service.contract.protobuf.loginResponse;
 
 import io.grpc.stub.StreamObserver;
 
@@ -21,7 +21,7 @@ public class LoginServiceGrpcImpl extends LoginServiceImplBase {
 	}
 
 	@Override
-	public void login(loginRequest request, StreamObserver<loginResponse> responseObserver) {
+	public void login(LoginMessageIn request, StreamObserver<LoginMessageOut> responseObserver) {
 		
 		// convert protobuf type to domain model object
 		com.harlan.javagrpc.service.contract.protobuf.Request requestProto = request.getRequest();
@@ -32,7 +32,7 @@ public class LoginServiceGrpcImpl extends LoginServiceImplBase {
 		int loginId = loginBusiness.login(modelRequest);
 		
 		// there is no domain model to protobuf conversion because LoginService.login() returns just an int
-		loginResponse response = loginResponse.newBuilder()
+		LoginMessageOut response = LoginMessageOut.newBuilder()
 				.setInt(loginId)
 				.build();
 		
@@ -43,7 +43,7 @@ public class LoginServiceGrpcImpl extends LoginServiceImplBase {
 	}
 
 	@Override
-	public void getRes(getResRequest request, StreamObserver<getResResponse> responseObserver) {
+	public void getRes(GetResMessageIn request, StreamObserver<GetResMessageOut> responseObserver) {
 		
 		// convert protobuf type to domain model object
 		com.harlan.javagrpc.service.contract.protobuf.Request requestProto = request.getRequest();
@@ -63,7 +63,7 @@ public class LoginServiceGrpcImpl extends LoginServiceImplBase {
 				.toProtobuf(com.harlan.javagrpc.service.contract.protobuf.Response.class, responseModel);
 		
 		// wrap the protobuf object
-		getResResponse response = getResResponse.newBuilder()
+		GetResMessageOut response = GetResMessageOut.newBuilder()
 				.setResponse(responseProto)
 				.build();
 		

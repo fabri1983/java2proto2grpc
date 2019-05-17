@@ -39,14 +39,15 @@ public class PackageUtil2 {
 				Method[] methods = clazz.getMethods();
 				for (Method method : methods) {
 					sb.append("\t" + "rpc ");
-					sb.append(method.getName() + " (" + method.getName() + "Request) returns " + "(" + method.getName()
-							+ "Response) {};\r\n");
+					sb.append(method.getName() + " ");
+					sb.append("(" + capitalizeFirstChar(method.getName()) + "MessageIn) returns ");
+					sb.append("(" + capitalizeFirstChar(method.getName()) + "MessageOut) {};\r\n");
 				}
 				sb.append("}\r\n");
 				
 				//messages
 				for (Method method : methods) {
-					sb.append("message " + method.getName() + "Request {\r\n");
+					sb.append("message " + capitalizeFirstChar(method.getName()) + "MessageIn {\r\n");
 					Class<?>[] reqParam = method.getParameterTypes();
 					if(reqParam.length == 1) {
 						for (Class<?> cl : reqParam) {
@@ -65,7 +66,7 @@ public class PackageUtil2 {
 						int count = 0;
 						for (Class<?> cl : reqParam) {
 //							nameList.add(cl.getSimpleName());
-							sb.append("\t" + cl.getSimpleName() + " " + cl.getSimpleName() + " = " + ++count + ";\r\n");
+							sb.append("\t" + cl.getSimpleName() + " " + cl.getSimpleName() + " = " + (++count) + ";\r\n");
 							TreeMap<Integer, String> tm = new TreeMap<Integer, String>();
 							map.put(cl.getName(), tm);
 							Field[] fields = cl.getDeclaredFields();
@@ -81,7 +82,7 @@ public class PackageUtil2 {
 //						}
 					}
 					sb.append("}\r\n");
-					sb.append("message " + method.getName() + "Response {\r\n");
+					sb.append("message " + capitalizeFirstChar(method.getName()) + "MessageOut {\r\n");
 					Class<?> resClazz = method.getReturnType();
 //					sb.append("\t" + resClazz.getSimpleName() + " " + resClazz.getSimpleName() + " = 1;\r\n");
 					if(isJavaClass(resClazz)) {
@@ -111,6 +112,10 @@ public class PackageUtil2 {
 
 	}
 	
+	private static String capitalizeFirstChar(String s) {
+		return s.substring(0, 1).toUpperCase() + s.substring(1);
+	}
+
 	private static StringBuffer Map2StringBuffer(Map<String, TreeMap<Integer, String>> map) {
 		StringBuffer sb = new StringBuffer();
 		for (Map.Entry<String, TreeMap<Integer, String>> entry : map.entrySet()) {
@@ -118,7 +123,7 @@ public class PackageUtil2 {
 			TreeMap<Integer, String> fieldMap = entry.getValue();
 			try {
 				Class<?> clazz = Class.forName(className);
-				sb.append("message "+clazz.getSimpleName()+" {\r\n");
+				sb.append("message " + clazz.getSimpleName() + " {\r\n");
 				for (Integer key : fieldMap.keySet()) {
 					String field = fieldMap.get(key);
 					sb.append(field);

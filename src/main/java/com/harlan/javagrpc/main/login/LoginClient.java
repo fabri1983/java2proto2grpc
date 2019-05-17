@@ -24,6 +24,7 @@ public class LoginClient {
 	}
 
 	public void shutdown() throws InterruptedException {
+		System.out.println("Client shutdown.");
 		channel.shutdown().awaitTermination(2, TimeUnit.SECONDS);
 	}
 

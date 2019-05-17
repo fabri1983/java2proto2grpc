@@ -7,24 +7,22 @@ option java_outer_classname = "LoginServiceProto";
 package LoginService;
 
 service LoginService {
-	rpc login (loginRequest) returns (loginResponse) {};
-	rpc getRes (getResRequest) returns (getResResponse) {};
+	rpc login (LoginMessageIn) returns (LoginMessageOut) {};
+	rpc getRes (GetResMessageIn) returns (GetResMessageOut) {};
 }
-message loginRequest {
+message LoginMessageIn {
 	Request Request = 1;
-	repeated string list1 = 12;
 }
-message loginResponse {
+message LoginMessageOut {
 	int32 int = 1 ;
 }
-message getResRequest {
+message GetResMessageIn {
 	Request Request = 1;
-	repeated string list1 = 12;
 	Request2 Request2 = 2;
 	repeated string req2InnerString = 3;
 	repeated int32 integer = 4;
 }
-message getResResponse {
+message GetResMessageOut {
 	Response Response = 1;
 }
 message Req2innerListObj {
@@ -57,6 +55,7 @@ message Request {
 	float f2 = 9;
 	bool b1 = 10;
 	bool b2 = 11;
+	repeated string list1 = 12;
 	repeated TestList list2 = 13;
 	map<string, TestMap> map = 14;
 }

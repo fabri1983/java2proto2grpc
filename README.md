@@ -7,10 +7,12 @@ I just made it compatible with Windows, renamed some packages, tried to fix mino
 (https://github.com/BAData/protobuf-converter) to transform domain model objects to protobuf messages and viceversa.
 
 
-#### What this project do:
+#### What this project does:
 
-- generates *.proto* files out of java classes/interfaces (by the moment classes/interfaces existing in this project)
-- generates gRPC stubs out of *.proto files*.
+- Depends on Maven.
+- Generates *.proto* files out of Java classes/interfaces (by the moment classes/interfaces existing only in this project).
+- Generates gRPC stubs out of *.proto files*.
+- Provides two gRPC examples: *Helloworld* and *LoginService*.
 
 
 #### Usage:
@@ -39,8 +41,9 @@ and grpc stubs to make some testing running *com.harlan.javagrpc.main.login.Logi
 
 
 #### TODO
-- Test Enum types with and without fields.
+- Fix weird issue where some fields are defined in parent message definition. Probably due to miss use of HashTreeMap. Seems very related to next fix.
 - Fix circular field declarations. See *Request.java* and *Request2.java*. It seems the problem resides on equal field names in some protobuf message 
+- Test Enum types with and without fields.
 definitions. Maybe using nested messages solves the problem. 
 - Add custom Java *Annotations* to classes or fields in order to collect reserved field tags and names for the .proto definition file.
 - Support *@java.lang.Deprecated* on classes. It translates to *option deprecated = true;* after message declaration on the .proto file.
