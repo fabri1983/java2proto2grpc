@@ -31,8 +31,9 @@ public class LoginServiceGrpcImpl extends LoginServiceImplBase {
 		// Here you can use your domain model objects and call your business layer
 		int loginId = loginBusiness.login(modelRequest);
 		
+		// there is no domain model to protobuf conversion because LoginService.login() returns just an int
 		loginResponse response = loginResponse.newBuilder()
-				.setInt(loginId) // there is no protobuf object because LoginService.login() returns just an int
+				.setInt(loginId)
 				.build();
 		
 		// send it to the client
@@ -61,6 +62,7 @@ public class LoginServiceGrpcImpl extends LoginServiceImplBase {
 		com.harlan.javagrpc.service.contract.protobuf.Response responseProto = Converter.create()
 				.toProtobuf(com.harlan.javagrpc.service.contract.protobuf.Response.class, responseModel);
 		
+		// wrap the protobuf object
 		getResResponse response = getResResponse.newBuilder()
 				.setResponse(responseProto)
 				.build();
