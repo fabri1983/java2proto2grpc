@@ -48,7 +48,8 @@ definitions. Maybe using nested messages solves the problem.
 - Add custom Java *Annotations* to classes or fields in order to collect reserved field tags and names for the .proto definition file.
 - Support *@java.lang.Deprecated* on classes. It translates to *option deprecated = true;* after message declaration on the .proto file.
 - Support *@java.lang.Deprecated* on java fields. It translates to *[deprecated = true];* after field declaration on the .proto file.
-- Test building for Java 9 and higher. I had some building errors on generated gRPC stubs due to Java internal relocation of some annotations.
+- Test building for Java 9 and higher. I had some building errors on generated gRPC stubs due to Java internal relocation of *@javax.annotation.Generated*.
+See https://github.com/protocolbuffers/protobuf/issues/42.
 
 
 #### License
@@ -62,7 +63,7 @@ Licenses corresponds to projects:
 I don't want to untrack them, I just don't want them to appear as modified and I don't want them to be staged when I git add.
 Solution:
 	```sh
-	git update-index --assume-unchanged file
+	git update-index --assume-unchanged <file>
 	```
 	To undo and start tracking again:
 	```sh
