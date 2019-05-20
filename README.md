@@ -1,5 +1,4 @@
 ## java 2 proto 2 grpc
-*Still work in progress*.
 
 This project is a modification from original project https://github.com/jhrgitgit/java2proto.
 Credits belong to the creator of the above mentioned project.
