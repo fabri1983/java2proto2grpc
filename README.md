@@ -30,8 +30,12 @@ the protobuf java classes and gRPC stubs for client and server out of your *.pro
 
 #### Helloworld and LoginService correct build:
 
-Folder **src/main/proto** contains two commited files named *helloworld.proto* and *LoginService.proto*. Any change on those files are ignored as per 
-.gitignore rules. So you can play around with them.
+Folder **src/main/proto** contains two commited files named *helloworld.proto* and *LoginService.proto*. If you plan to made modificaitons on them you 
+can use next commands in order to ignore track any change:
+```sh
+git update-index --assume-unchanged src/main/proto/helloworld.proto
+git update-index --assume-unchanged src/main/proto/LoginService.proto
+```
 
 The file *helloworld.proto* is used to generated grpc-java example classes as per https://github.com/grpc/grpc-java/tree/master/examples, 
 so you can make some testing running *com.harlan.javagrpc.main.helloworld.HelloWorldClient* and *com.harlan.javagrpc.main.helloworld.HelloWorldServer*.
