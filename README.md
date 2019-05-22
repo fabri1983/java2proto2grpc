@@ -1,7 +1,7 @@
 ## java 2 proto 2 grpc
 
-This project is a modification from original projects https://github.com/jhrgitgit/java2proto and https://github.com/lloydsparkes/java-proto-generator.
-Credits belong to the creator of the mentioned projects.
+This project is a modification from original projects https://github.com/jhrgitgit/java2proto and https://github.com/lloydsparkes/java-proto-generator.  
+Credits belong to the creator of the mentioned projects.  
 I just made it compatible with Windows, renamed some packages, tried to fix minor bugs, added usage of *protobuf-converter* 
 (https://github.com/BAData/protobuf-converter) to transform domain model objects to protobuf messages and viceversa, and created LoginService client and server.
 
@@ -17,18 +17,19 @@ I just made it compatible with Windows, renamed some packages, tried to fix mino
 #### Usage:
 
 First you need to generate **.proto** files out of your java **classes/interfaces** located at your classpath.
-- Use PackageUtil2: generates *.proto* files from *com.harlan.javagrpc.service.contract* at **src/main/proto**:
+- Use PackageUtil2: generates *.proto* files from *com.harlan.javagrpc.service.contract* to folder **src/main/proto**:
 	```sh
 	mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.PackageUtil2
 	```
-- Use JavaToProtoMain: generates *.proto* files from a class/package at specific folder:
+- Use JavaToProtoMain: generates *.proto* files from a class/package at specific folder:  
 	**Currently not working. I'm updating the code to genertae syntax version 3.**
 	```sh
 	mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.JavaToProtoMain -Dexec.args="com.harlan.javagrpc.service.contract src/main/proto"
 	```
 
 Then you can build the project (*mvn compile*) which uses  maven plugin *org.xolstice.maven.plugins:protobuf-maven-plugin* in order to generate 
-the protobuf java classes and gRPC stubs for client and server out of your *.proto* files. Generated code is located at *target/generated-sources/protobuf/*.
+the protobuf java classes and gRPC stubs for client and server out of your *.proto* files.  
+Generated code is located at *target/generated-sources/protobuf/*.
 
 
 #### Helloworld and LoginService correct build:
@@ -68,8 +69,8 @@ Licenses corresponds to projects:
 
 
 #### Useful tips
-- I have some tracked files in a repository which are automatically modified when building the code. 
-I don't want to untrack them, I just don't want them to appear as modified and I don't want them to be staged when I git add.
+- I have some tracked files in a repository which are automatically modified when building the code.  
+I don't want to untrack them, I just don't want them to appear as modified and I don't want them to be staged when I git add.  
 Solution:
 	```sh
 	git update-index --assume-unchanged <file>
