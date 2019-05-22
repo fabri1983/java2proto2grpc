@@ -39,6 +39,7 @@ import java.util.List;
  * 		Ensure that the class name or the package is in the class path somewhere.
  * 
  * @author Lloyd Sparkes
+ * @author Pablo Fabricio Lettieri [fabri1983@gmail.com]
  */
 public class JavaToProtoMain {
 	

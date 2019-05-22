@@ -39,13 +39,19 @@ import java.util.Stack;
  * 		String protoFile = jpt.toString();	
  * 
  * @author Lloyd Sparkes
+ * @author Pablo Fabricio Lettieri [fabri1983@gmail.com]
  */
 
 public class JavaToProto {
 	
 	private static final String NAME = "JavaToProto Generator";
-	private static final String VERSION = "v0.1";
+	private static final String VERSION = "v0.2";
 	
+	// rpc related
+	private static final String SERVICE = "service";
+	private static final String RPC = "rpc";
+	
+	// protocol bufffers related
 	private static final String OPEN_BLOCK = "{";
 	private static final String CLOSE_BLOCK = "}";
 	private static final String MESSAGE = "message";
@@ -130,7 +136,7 @@ public class JavaToProto {
 		return results;
 	}
 	
-	public void processField(String repeated, String type, String name, int index){
+	private void processField(String repeated, String type, String name, int index){
 		builder.append(getTabs())
 			.append(repeated).append(SPACE).append(type).append(SPACE).append(name).append(SPACE)
 			.append("=").append(SPACE).append(index).append(LINE_END).append(NEWLINE);
@@ -144,7 +150,7 @@ public class JavaToProto {
 		
 		generateServiceWithRpcs();
 		
-		buildMessages();
+		generateMessagesFromMethods();
 	}
 	
 	private void appendHeader() {
@@ -172,7 +178,7 @@ public class JavaToProto {
 		String simpleName = currentClass().getSimpleName();
 		
 		// define the service as the class name
-		builder.append("service").append(SPACE).append(simpleName).append(SPACE).append(OPEN_BLOCK).append(NEWLINE);
+		builder.append(SERVICE).append(SPACE).append(simpleName).append(SPACE).append(OPEN_BLOCK).append(NEWLINE);
 		
 		tabDepth++;
 		
@@ -180,45 +186,88 @@ public class JavaToProto {
 		Method[] methods = currentClass().getMethods();
 		for (Method method : methods) {
 			builder.append(getTabs());
-			builder.append("rpc").append(SPACE);
-			String methodnameCapitalized = capitalizeFirstChar(method.getName());
-			builder.append(methodnameCapitalized).append(SPACE);
+			
+			String methodNameCapitalized = capitalizeFirstChar(method.getName());
+			String messageIn = methodNameCapitalized + "MessageIn";
+			String messageOut = methodNameCapitalized + "MessageOut";
+			
+			builder.append(RPC).append(SPACE).append(methodNameCapitalized).append(SPACE);
 			// parameter type and return type both are wrappers which their message definition is generated afterwards
-			builder.append("(").append(methodnameCapitalized).append("MessageIn) returns").append(SPACE)
-				.append("(").append(methodnameCapitalized).append("MessageOut) {}").append(LINE_END).append(NEWLINE);
+			builder.append("(").append(messageIn).append(")").append(SPACE).append("returns").append(SPACE)
+				.append("(").append(messageOut).append(")").append(SPACE).append("{}").append(LINE_END).append(NEWLINE);
 		}
 		
 		tabDepth--;
 		
 		builder.append(CLOSE_BLOCK).append(NEWLINE);
+		builder.append(NEWLINE);
 	}
 
-	private String buildMessages(){
+	private void generateMessagesFromMethods() {
 		
-//		if(currentClass().isInterface() || currentClass().isEnum() || Modifier.isAbstract(currentClass().getModifiers())){
-//			throw new RuntimeException("A Message cannot be an Interface, Abstract OR an Enum");
-//		}
+		Method[] methods = currentClass().getMethods();
+		for (Method method : methods) {
+			String methodNameCapitalized = capitalizeFirstChar(method.getName());
+			String messageIn = methodNameCapitalized + "MessageIn";
+			String messageOut = methodNameCapitalized + "MessageOut";
+			
+			// open wrapper message for method parameters 
+			builder.append(MESSAGE).append(SPACE).append(messageIn).append(SPACE).append(OPEN_BLOCK).append(NEWLINE);
+			
+			// process all parameter Classes
+			tabDepth++;
+			for(Class<?> type : method.getParameterTypes()) {
+				classStack.push(type);
+				buildMessagesFromCurrentClass();
+				classStack.pop();
+			}
+			tabDepth--;
+			
+			// close wrapper message for method parameters
+			builder.append(CLOSE_BLOCK).append(NEWLINE);
+			
+			// open wrapper message for return type
+			builder.append(MESSAGE).append(SPACE).append(messageOut).append(SPACE).append(OPEN_BLOCK).append(NEWLINE);
+			
+			// process return Class
+			tabDepth++;
+			classStack.push(method.getReturnType());
+			buildMessagesFromCurrentClass();
+			classStack.pop();
+			tabDepth--;
+			
+			// close wrapper message for return type
+			builder.append(CLOSE_BLOCK).append(NEWLINE);
+		}
+	}
+	
+	private String buildMessagesFromCurrentClass(){
 		
-		String simpleName = currentClass().getSimpleName();
+		if(currentClass().isInterface() || currentClass().isEnum() || Modifier.isAbstract(currentClass().getModifiers())){
+			throw new RuntimeException("A Message cannot be an Interface, Abstract OR an Enum");
+		}
+		
+		String messageName = currentClass().getSimpleName();
 		
 		typeMap.put(currentClass(), getPath());
 		
-		builder.append(getTabs()).append(MESSAGE).append(SPACE).append(simpleName).append(OPEN_BLOCK).append(NEWLINE);
+		builder.append(getTabs()).append(MESSAGE).append(SPACE).append(messageName).append(OPEN_BLOCK).append(NEWLINE);
 		
 		tabDepth++;
+		
 		processFields();
+		
 		tabDepth--;
 		
 		builder.append(getTabs()).append(CLOSE_BLOCK).append(NEWLINE);
 		
-		return simpleName;		
+		return messageName;		
 	}
 	
 	private void processFields(){
 		Field[] fields = currentClass().getDeclaredFields();
 		
 		int i = 0;
-		
 		for(Field f : fields){
 			i++;
 			
@@ -295,7 +344,7 @@ public class JavaToProto {
 	
 	private void buildNestedType(Class<?> type){
 		classStack.push(type);
-		buildMessages();
+		buildMessagesFromCurrentClass();
 		classStack.pop();
 	}
 	
