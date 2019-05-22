@@ -4,11 +4,24 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
 public class ClassUtil {
+
+	public static List<Class<?>> getClassesOrSingleClass(String s) {
+		// treat it as a class
+		try {
+			Class<?> singleClass = Class.forName(s);
+			return Arrays.asList(singleClass);
+		} catch (ClassNotFoundException e) {
+			// not a class, a missing class, or maybe a package
+		}
+		// treat it as a package
+		return getClasses(s);
+	}
 
 	/**
 	 * Scans all classes accessible from the context class loader which belong to the given package and subpackages.

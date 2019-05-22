@@ -1,7 +1,7 @@
 ## java 2 proto 2 grpc
 
-This project is a modification from original project https://github.com/jhrgitgit/java2proto.
-Credits belong to the creator of the mentioned project.
+This project is a modification from original projects https://github.com/jhrgitgit/java2proto and https://github.com/lloydsparkes/java-proto-generator.
+Credits belong to the creator of the mentioned projects.
 I just made it compatible with Windows, renamed some packages, tried to fix minor bugs, added usage of *protobuf-converter* 
 (https://github.com/BAData/protobuf-converter) to transform domain model objects to protobuf messages and viceversa, and created LoginService client and server.
 
@@ -9,19 +9,23 @@ I just made it compatible with Windows, renamed some packages, tried to fix mino
 #### What this project does:
 
 - Depends on Maven.
-- Generates *.proto* files out of Java classes/interfaces (by the moment classes/interfaces existing only in this project).
+- Generates *.proto* files out of Java classes/interfaces existing in the classpath.
 - Generates gRPC stubs out of *.proto files*.
 - Provides two gRPC examples: *Helloworld* and *LoginService*.
 
 
 #### Usage:
 
-First you need to generate **.proto** files out of your java **classes/interfaces**. Currently only considering classes/interfaces located at 
-package **com.harlan.javagrpc.service.contract**.
-Next command will generates *.proto* files at **src/main/proto**:
-```sh
-mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.PackageUtil2
-```
+First you need to generate **.proto** files out of your java **classes/interfaces** located at your classpath.
+- Use PackageUtil2: generates *.proto* files from *com.harlan.javagrpc.service.contract* at **src/main/proto**:
+	```sh
+	mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.PackageUtil2
+	```
+- Use JavaToProtoMain: generates *.proto* files from a class/package at specific folder:
+	**Currently not working. I'm updating the code to genertae syntax version 3.**
+	```sh
+	mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.JavaToProtoMain -Dexec.args="com.harlan.javagrpc.service.contract src/main/proto"
+	```
 
 Then you can build the project (*mvn compile*) which uses  maven plugin *org.xolstice.maven.plugins:protobuf-maven-plugin* in order to generate 
 the protobuf java classes and gRPC stubs for client and server out of your *.proto* files. Generated code is located at *target/generated-sources/protobuf/*.
@@ -59,6 +63,7 @@ See https://github.com/protocolbuffers/protobuf/issues/42.
 #### License
 Licenses corresponds to projects:
 - https://github.com/jhrgitgit/java2proto
+- https://github.com/lloydsparkes/java-proto-generator
 - https://github.com/BAData/protobuf-converter#license
 
 

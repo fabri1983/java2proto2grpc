@@ -54,6 +54,7 @@ public class PackageUtil2 {
 							sb.append("\t" + cl.getSimpleName() + " " + cl.getSimpleName() + " = 1;\r\n");
 							TreeMap<Integer,String> tm = new TreeMap<Integer,String>();
 							map.put(cl.getName(), tm);
+							// process fields
 							Field[] fields = cl.getDeclaredFields();
 							int i = 1;
 							for (Field field : fields) {
@@ -69,6 +70,7 @@ public class PackageUtil2 {
 							sb.append("\t" + cl.getSimpleName() + " " + cl.getSimpleName() + " = " + (++count) + ";\r\n");
 							TreeMap<Integer, String> tm = new TreeMap<Integer, String>();
 							map.put(cl.getName(), tm);
+							// process fields
 							Field[] fields = cl.getDeclaredFields();
 							int i = 1;
 							for (Field field : fields) {
