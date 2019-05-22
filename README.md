@@ -24,7 +24,7 @@ First you need to generate **.proto** files out of your java **classes/interface
 - Use JavaToProtoMain: generates *.proto* files from a class/package at specific folder:
 	**Currently not working. I'm updating the code to genertae syntax version 3.**
 	```sh
-	mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.JavaToProtoMain com.harlan.javagrpc.service.contract src/main/proto
+	mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.JavaToProtoMain -Dexec.args="com.harlan.javagrpc.service.contract src/main/proto"
 	```
 
 Then you can build the project (*mvn compile*) which uses  maven plugin *org.xolstice.maven.plugins:protobuf-maven-plugin* in order to generate 

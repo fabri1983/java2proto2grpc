@@ -10,36 +10,37 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Copyright - Lloyd Sparkes 2012
- * Updated to reflect proto3 language version.
- * 
- * LICENSE: Public Domain - do as you wish, just retain this message.
- * 		I just ask that if you find bugs or improve the code, you raise a push request or an issue, so i can update the code for everyone.
+ * Copyright - Lloyd Sparkes 2012.</br>
+ * 2019: Updated to reflect proto3 language version.
+ * </p>
+ * This class simply takes a class/interface, or a set of them given a package, and generate a Protocol Buffers file per class/interface.
+ * </p>
+ * LICENSE: Public Domain - do as you wish, just retain this message.</br>
+ * I just ask that if you find bugs or improve the code, you raise a push request or an issue, so i can update the code for everyone.</br>
  * DISCLAIMER: I am not responsible for your usage of this code, or for any bugs or issues with this code or any resulting side effects.
- * 
- * This class simply takes a POJO and creates the associated Proto Buffer Specification File.
- *  
+ * </p>
+ * <pre>
  * Supports:
- * 		Nested POJO's
- * 		Enums
- * 		Arrays/Collections/Lists/Sets (BUT only if they have a type specifier!! (so List<Byte> is supported, List is not supported)
- * 		Maps/KeyValuePairs (BUT they need a type specifier!! (so Map<String,Integer> is supported, Map is not supported)
- * 		Primitives
- * 		Boxed Primitives 
- * 
+ *   Nested POJO's
+ *   Enums
+ *   Arrays/Collections/Lists/Sets (BUT only if they have a type specifier!! (so List<Byte> is supported, List is not supported)
+ *   Maps/KeyValuePairs (BUT they need a type specifier!! (so Map<String,Integer> is supported, Map is not supported)
+ *   Primitives
+ *   Boxed Primitives 
+ *   
  * Does Not Support:
- * 		Nested Collections e.g. Map<List<String>,String>
- * 		Arrays with more than one Dimension
- * 
+ *   Nested Collections e.g. Map<List<String>,String>
+ *   Arrays with more than one Dimension
+ *   
  * Usage - CLI:
- * 		mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.JavaToProtoMain <classname/package> [<output folder name>]
+ *   mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.JavaToProtoMain <classname/package> [<output folder name>]
  * 
- * 		If output file name is not specified the output will be to the console.
+ *   If output file name is not specified the output will be to the console.
  * 
- * 		Ensure that the class name or the package is in the class path somewhere.
- * 
+ *   Ensure that the class name or the package is in the class path somewhere.
+ * </pre>
  * @author Lloyd Sparkes
- * @author Pablo Fabricio Lettieri [fabri1983@gmail.com]
+ * @author Pablo Fabricio Lettieri <fabri1983@gmail.com>
  */
 public class JavaToProtoMain {
 	
@@ -68,7 +69,7 @@ public class JavaToProtoMain {
 		for (Class<?> clazz : classes) {
 			
 			JavaToProto jtp = new JavaToProto(clazz);
-			String protoFile = jtp.toString();
+			String protobuf = jtp.toString();
 			
 			// Write to file in output folder?
 			if (args.length == 2){
@@ -77,10 +78,10 @@ public class JavaToProtoMain {
 					File f = new File(outputProtoDir + clazz.getSimpleName() + ".proto");
 					FileWriter fw = new FileWriter(f);
 					out = new BufferedWriter(fw);
-					out.write(protoFile);
+					out.write(protobuf);
 				} catch (Exception e) {
 					System.err.println("Got Exception while writing to File.");
-					System.err.println(protoFile);
+					System.err.println(protobuf);
 					e.printStackTrace();
 				} finally {
 					if (out != null) {
@@ -92,7 +93,7 @@ public class JavaToProtoMain {
 			}
 			// Write to Console
 			else {
-				System.out.println(protoFile);
+				System.out.println(protobuf);
 			}
 		}
 	}
