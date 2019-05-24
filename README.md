@@ -22,7 +22,7 @@ First you need to generate **.proto** files out of your java **classes/interface
 	mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.PackageUtil2
 	```
 - Use JavaToProtoMain: generates *.proto* files from a class/package at specific folder:  
-	**Currently not working. I'm updating the code to genertae syntax version 3.**
+	**Currently work in progress. Messages are being nested and it ends up with lot of repeated messages.**
 	```sh
 	mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.JavaToProtoMain -Dexec.args="com.harlan.javagrpc.service.contract src/main/proto"
 	```
@@ -69,7 +69,7 @@ Licenses corresponds to projects:
 
 
 #### Useful tips
-- I have some tracked files in a repository which are automatically modified when building the code.  
+- I have some tracked files which potentially can be modified.  
 I don't want to untrack them, I just don't want them to appear as modified and I don't want them to be staged when I git add.  
 Solution:
 	```sh
