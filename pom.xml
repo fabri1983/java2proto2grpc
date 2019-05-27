@@ -61,6 +61,14 @@
 			<artifactId>grpc-stub</artifactId>
 			<version>${io.grpc.version}</version>
 		</dependency>
+		<!-- Declare grpc-bom dependency to solve conflicts with xxx dependency -->
+		<!--dependency>
+			<groupId>io.grpc</groupId>
+			<artifactId>grpc-bom</artifactId>
+			<version>${io.grpc.version}</version>
+			<type>pom</type>
+			<scope>import</scope>
+		</dependency-->
 		<!-- transforms Domain Model Objects into Google Protobuf Messages and vice versa. -->
 		<dependency>
 			<groupId>com.github.BAData</groupId>
