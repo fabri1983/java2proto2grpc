@@ -2,7 +2,7 @@
 # Project related
 #################
 !src/main/proto/donotremove
-
+src/main/proto/
 
 ###############
 # Intellij IDEA

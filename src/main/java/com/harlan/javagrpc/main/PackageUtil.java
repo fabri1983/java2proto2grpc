@@ -1,22 +1,27 @@
 package com.harlan.javagrpc.main;
 
+import com.harlan.javagrpc.converter.RemoteAccessEnabled;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class PackageUtil {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 
 		String packageName = "com.harlan.javagrpc.service";
 		String protoDir = "src/main/proto/";
-
-		List<Class<?>> classes = ClassGrabberUtil.getClasses(packageName);
+		Files.createDirectories(Paths.get(protoDir));
+		
+		List<Class<?>> classes = ClassGrabberUtil.getClasses(packageName, RemoteAccessEnabled.class);
 		for (Class<?> clazz : classes) {
 
 			try {

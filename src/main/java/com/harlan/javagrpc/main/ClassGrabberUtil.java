@@ -1,5 +1,7 @@
 package com.harlan.javagrpc.main;
 
+import com.harlan.javagrpc.converter.RemoteAccessEnabled;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -11,25 +13,29 @@ import java.util.List;
 
 public class ClassGrabberUtil {
 
-	public static List<Class<?>> getClassesOrSingleClass(String s) {
+	public static List<Class<?>> getClassesOrSingleClass(String s, Class<RemoteAccessEnabled> annotationFilter) {
 		// treat it as a class
 		try {
 			Class<?> singleClass = Class.forName(s);
+			if (!singleClass.isAnnotationPresent(annotationFilter)) {
+				return Collections.emptyList();
+			}
 			return Arrays.asList(singleClass);
 		} catch (ClassNotFoundException e) {
 			// not a class, a missing class, or maybe a package
 		}
 		// treat it as a package
-		return getClasses(s);
+		return getClasses(s, annotationFilter);
 	}
 
 	/**
 	 * Scans all classes accessible from the context class loader which belong to the given package and subpackages.
 	 *
 	 * @param packageName The base package
+	 * @param annotationFilter 
 	 * @return The classes
 	 */
-	public static List<Class<?>> getClasses(String packageName) {
+	public static List<Class<?>> getClasses(String packageName, Class<RemoteAccessEnabled> annotationFilter) {
 	    ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 	    assert classLoader != null;
 	    String path = packageName.replace('.', '/');
@@ -47,7 +53,7 @@ public class ClassGrabberUtil {
 	    }
 	    List<Class<?>> classes = new ArrayList<Class<?>>();
 	    for (File directory : dirs) {
-	        classes.addAll(findClasses(directory, packageName));
+	        classes.addAll(findClasses(directory, packageName, annotationFilter));
 	    }
 	    return classes;
 	}
@@ -59,7 +65,7 @@ public class ClassGrabberUtil {
 	 * @param packageName The package name for classes found inside the base directory
 	 * @return The classes
 	 */
-	public static List<Class<?>> findClasses(File directory, String packageName) {
+	public static List<Class<?>> findClasses(File directory, String packageName, Class<RemoteAccessEnabled> annotationFilter) {
 	    if (!directory.exists()) {
 	        return Collections.emptyList();
 	    }
@@ -68,10 +74,13 @@ public class ClassGrabberUtil {
 	    for (File file : files) {
 	        if (file.isDirectory()) {
 	            assert !file.getName().contains(".");
-	            classes.addAll(findClasses(file, packageName + "." + file.getName()));
+	            classes.addAll(findClasses(file, packageName + "." + file.getName(), annotationFilter));
 	        } else if (file.getName().endsWith(".class")) {
 	            try {
-					classes.add(Class.forName(packageName + '.' + file.getName().substring(0, file.getName().length() - 6)));
+					Class<?> clazz = Class.forName(packageName + '.' + file.getName().substring(0, file.getName().length() - 6));
+					if (clazz.isAnnotationPresent(annotationFilter)) {
+						classes.add(clazz);
+					}
 				} catch (ClassNotFoundException ex) {
 					ex.printStackTrace();
 				}

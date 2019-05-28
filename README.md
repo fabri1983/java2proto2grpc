@@ -16,7 +16,8 @@ I just made it compatible with Windows, renamed some packages, tried to fix mino
 
 #### Usage:
 
-First you need to generate **.proto** files out of your java **classes/interfaces** located at your classpath.
+First you need to generate **.proto** files out of your java **classes/interfaces** located at your classpath 
+and which are decorated with annotaiton *@RemoteAccessEnabled*.
 - Use PackageUtil2: generates *.proto* files from *com.harlan.javagrpc.service.contract* to folder **src/main/proto**:
 	```sh
 	mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.PackageUtil2

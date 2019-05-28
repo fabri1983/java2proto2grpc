@@ -1,11 +1,14 @@
 package com.harlan.javagrpc.main;
 
 import com.harlan.javagrpc.converter.JavaToProto;
+import com.harlan.javagrpc.converter.RemoteAccessEnabled;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 
@@ -65,6 +68,7 @@ public class JavaToProtoMain {
 	private static void generateProtobufs(String[] args) throws IOException {
 		List<Class<?>> classes = getClasses(args[0]);
 		String outputProtoDir = parseOutputFolder(args[1]);
+		Files.createDirectories(Paths.get(outputProtoDir));
 		
 		for (Class<?> clazz : classes) {
 			
@@ -102,7 +106,7 @@ public class JavaToProtoMain {
 		List<Class<?>> classes = Collections.emptyList();
 		
 		try {
-			classes = ClassGrabberUtil.getClassesOrSingleClass(classnameOrPackage);
+			classes = ClassGrabberUtil.getClassesOrSingleClass(classnameOrPackage, RemoteAccessEnabled.class);
 		} catch (Exception e) {
 			System.err.println("Could not load class. Make sure it is in the classpath!");
 			e.printStackTrace();
