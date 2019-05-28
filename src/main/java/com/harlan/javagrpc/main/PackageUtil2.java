@@ -19,7 +19,7 @@ public class PackageUtil2 {
 		final String packageName = "com.harlan.javagrpc.service.contract";
 		final String protoDir = "src/main/proto/";
 
-		List<Class<?>> classes = ClassUtil.getClasses(packageName);
+		List<Class<?>> classes = ClassGrabberUtil.getClasses(packageName);
 		for (Class<?> clazz : classes) {
 
 			try {

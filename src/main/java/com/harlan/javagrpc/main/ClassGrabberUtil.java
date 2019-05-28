@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
-public class ClassUtil {
+public class ClassGrabberUtil {
 
 	public static List<Class<?>> getClassesOrSingleClass(String s) {
 		// treat it as a class

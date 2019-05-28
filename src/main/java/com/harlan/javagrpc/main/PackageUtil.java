@@ -16,7 +16,7 @@ public class PackageUtil {
 		String packageName = "com.harlan.javagrpc.service";
 		String protoDir = "src/main/proto/";
 
-		List<Class<?>> classes = ClassUtil.getClasses(packageName);
+		List<Class<?>> classes = ClassGrabberUtil.getClasses(packageName);
 		for (Class<?> clazz : classes) {
 
 			try {

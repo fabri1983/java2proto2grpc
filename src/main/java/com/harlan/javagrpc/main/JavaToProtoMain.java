@@ -102,7 +102,7 @@ public class JavaToProtoMain {
 		List<Class<?>> classes = Collections.emptyList();
 		
 		try {
-			classes = ClassUtil.getClassesOrSingleClass(classnameOrPackage);
+			classes = ClassGrabberUtil.getClassesOrSingleClass(classnameOrPackage);
 		} catch (Exception e) {
 			System.err.println("Could not load class. Make sure it is in the classpath!");
 			e.printStackTrace();
