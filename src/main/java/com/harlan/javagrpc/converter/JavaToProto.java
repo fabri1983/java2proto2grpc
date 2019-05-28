@@ -181,9 +181,12 @@ public class JavaToProto {
 		
 		tabDepth++;
 		
-		// define rpc methods (only public methods)
-		Method[] methods = currentClass().getMethods();
+		// define rpc methods
+		Method[] methods = currentClass().getDeclaredMethods(); // excludes inherited methods
 		for (Method method : methods) {
+			if (Modifier.isPrivate(method.getModifiers())) {
+				continue;
+			}
 			builder.append(getTabs());
 			
 			String methodNameCapitalized = capitalizeFirstChar(method.getName());
@@ -204,8 +207,11 @@ public class JavaToProto {
 
 	private void generateMessagesFromMethods() {
 		
-		Method[] methods = currentClass().getMethods();
+		Method[] methods = currentClass().getDeclaredMethods(); // excludes inherited methods
 		for (Method method : methods) {
+			if (Modifier.isPrivate(method.getModifiers())) {
+				continue;
+			}
 			String methodNameCapitalized = capitalizeFirstChar(method.getName());
 			String messageIn = methodNameCapitalized + "MessageIn";
 			String messageOut = methodNameCapitalized + "MessageOut";

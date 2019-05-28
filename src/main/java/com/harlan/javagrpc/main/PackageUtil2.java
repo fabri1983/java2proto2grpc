@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -41,8 +42,11 @@ public class PackageUtil2 {
 				sb.append("service " + name + " {\r\n");
 				
 				//服务
-				Method[] methods = clazz.getMethods();
+				Method[] methods = clazz.getDeclaredMethods(); // excludes inherited methods
 				for (Method method : methods) {
+					if (Modifier.isPrivate(method.getModifiers())) {
+						continue;
+					}
 					sb.append("\t" + "rpc ");
 					sb.append(method.getName() + " ");
 					sb.append("(" + capitalizeFirstChar(method.getName()) + "MessageIn) returns ");
@@ -52,6 +56,9 @@ public class PackageUtil2 {
 				
 				//messages
 				for (Method method : methods) {
+					if (Modifier.isPrivate(method.getModifiers())) {
+						continue;
+					}
 					sb.append("message " + capitalizeFirstChar(method.getName()) + "MessageIn {\r\n");
 					Class<?>[] reqParam = method.getParameterTypes();
 					if(reqParam.length == 1) {
