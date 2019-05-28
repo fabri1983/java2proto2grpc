@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "google/protobuf/empty.proto";
+
 option java_multiple_files = true;
 option java_package = "com.harlan.javagrpc.service.contract.protobuf";
 option java_outer_classname = "LoginServiceProto";
@@ -7,9 +9,11 @@ option java_outer_classname = "LoginServiceProto";
 package LoginService;
 
 service LoginService {
+	rpc loginVoid (google.protobuf.Empty) returns (google.protobuf.Empty) {};
 	rpc login (LoginMessageIn) returns (LoginMessageOut) {};
 	rpc getRes (GetResMessageIn) returns (GetResMessageOut) {};
 }
+
 message LoginMessageIn {
 	Request Request = 1;
 }

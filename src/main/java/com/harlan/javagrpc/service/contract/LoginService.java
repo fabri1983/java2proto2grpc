@@ -8,8 +8,10 @@ import com.harlan.javagrpc.converter.RemoteAccessEnabled;
 @RemoteAccessEnabled
 public interface LoginService {
 	
+	public void loginVoid();
+	
 	public int login(Request req);
-
+	
 	public Response getRes(Request req, Request2 req2);
 
 }

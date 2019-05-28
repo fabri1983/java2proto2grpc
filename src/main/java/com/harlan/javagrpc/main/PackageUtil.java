@@ -30,12 +30,14 @@ public class PackageUtil {
 				StringBuffer sb = new StringBuffer(2048);
 				sb.append("syntax = \"proto3\";\r\n");
 				sb.append("\r\n");
+				sb.append("import \"google/protobuf/empty.proto\";\r\n");
+				sb.append("\r\n");
 				sb.append("option java_multiple_files = true;\r\n");
 				sb.append("option java_package = \"" + clazz.getPackage().getName() + ".protobuf\";\r\n");
 				sb.append("option java_outer_classname = \"" + name + "Proto\";\r\n");
 				sb.append("\r\n");
 				sb.append("package " + name + ";\r\n");
-				sb.append("}\r\n");
+				sb.append("\r\n");
 				sb.append("service " + name + " {\r\n");
 				
 				//服务
@@ -45,54 +47,82 @@ public class PackageUtil {
 						continue;
 					}
 					sb.append("\t" + "rpc ");
-					sb.append(method.getName() + " (" + method.getName() + "Request) returns " + "(" + method.getName()
-							+ "Response) {};\r\n");
+					sb.append(method.getName() + " ");
+					
+					// parameter type
+					String methodParameterType = "google.protobuf.Empty";
+					if (method.getParameterCount() > 0) {
+						methodParameterType = capitalizeFirstChar(method.getName()) + "MessageIn";
+					}
+					
+					sb.append("(" + methodParameterType + ") returns ");
+					
+					// return type
+					String methodReturnType = "google.protobuf.Empty";
+					if (!method.getReturnType().equals(Void.TYPE)) {
+						methodReturnType = capitalizeFirstChar(method.getName()) + "MessageOut";
+					}
+					
+					sb.append("(" + methodReturnType + ") {};\r\n");
 				}
 				sb.append("}\r\n");
+				sb.append("\r\n");
 				
 				//message
 				for (Method method : methods) {
 					if (Modifier.isPrivate(method.getModifiers())) {
 						continue;
 					}
-					sb.append("message " + method.getName() + "Request {\r\n");
-					Class<?>[] reqParam = method.getParameterTypes();
-					if(reqParam.length == 1) {
-						for (Class<?> cl : reqParam) {
-							Field[] fields = cl.getDeclaredFields();
-							int i = 1;
-							for (Field field : fields) {
-								handleField(sb, field, i);
-								i++;
+					
+					// has any parameter?
+					if (method.getParameterCount() > 0) {
+						
+						sb.append("message " + capitalizeFirstChar(method.getName()) + "MessageIn {\r\n");
+						
+						Class<?>[] reqParam = method.getParameterTypes();
+						if(reqParam.length == 1) {
+							for (Class<?> cl : reqParam) {
+								Field[] fields = cl.getDeclaredFields();
+								int i = 1;
+								for (Field field : fields) {
+									handleField(sb, field, i);
+									i++;
+								}
+							}
+						} else if (reqParam.length > 1) {
+							List<String> nameList = new ArrayList<>();
+							for (Class<?> cl : reqParam) {
+								nameList.add(cl.getSimpleName());
+								sb.append("\t message " + cl.getSimpleName() + " {\r\n");
+								Field[] fields = cl.getDeclaredFields();
+								int i = 1;
+								for (Field field : fields) {
+									handleField(sb, field,i);
+									i++;
+								}
+								sb.append("\t}\r\n");
+							}
+							for (int i = 0; i <= nameList.size() - 1; i++) {
+								sb.append("\t repeated " + nameList.get(i) + " " + nameList.get(i) + " = " + (i + 1) + ";\r\n");
 							}
 						}
-					} else if (reqParam.length > 1) {
-						List<String> nameList = new ArrayList<>();
-						for (Class<?> cl : reqParam) {
-							nameList.add(cl.getSimpleName());
-							sb.append("\t message " + cl.getSimpleName() + " {\r\n");
-							Field[] fields = cl.getDeclaredFields();
-							int i = 1;
-							for (Field field : fields) {
-								handleField(sb, field,i);
-								i++;
-							}
-							sb.append("\t}\r\n");
-						}
-						for (int i = 0; i <= nameList.size() - 1; i++) {
-							sb.append("\t repeated " + nameList.get(i) + " " + nameList.get(i) + " = " + (i + 1) + ";\r\n");
-						}
+						sb.append("}\r\n");
 					}
-					sb.append("}\r\n");
-					sb.append("message " + method.getName() + "Response {\r\n");
-					Class<?> resClazz = method.getReturnType();
-					Field[] fields = resClazz.getDeclaredFields();
-					int i = 1;
-					for (Field field : fields) {
-						handleField(sb, field,i);
-						i++;
+					
+					// has return type?
+					if (!method.getReturnType().equals(Void.TYPE)) {
+						
+						sb.append("message " + capitalizeFirstChar(method.getName()) + "MessageOut {\r\n");
+						
+						Class<?> resClazz = method.getReturnType();
+						Field[] fields = resClazz.getDeclaredFields();
+						int i = 1;
+						for (Field field : fields) {
+							handleField(sb, field,i);
+							i++;
+						}
+						sb.append("}\r\n");
 					}
-					sb.append("}\r\n");
 				}
 
 				FileWriter writer = new FileWriter(protoDir + name + ".proto");
@@ -106,6 +136,10 @@ public class PackageUtil {
 
 	}
 	
+	private static String capitalizeFirstChar(String s) {
+		return s.substring(0, 1).toUpperCase() + s.substring(1);
+	}
+
 	/**
 	 * 判断是否为自定义对象类型
 	 * @param clz

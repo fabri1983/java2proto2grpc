@@ -1,5 +1,6 @@
 package com.harlan.javagrpc.service;
 
+import com.google.protobuf.Empty;
 import com.harlan.javagrpc.business.contract.LoginBusiness;
 import com.harlan.javagrpc.service.contract.protobuf.GetResMessageIn;
 import com.harlan.javagrpc.service.contract.protobuf.GetResMessageOut;
@@ -20,6 +21,20 @@ public class LoginServiceGrpcImpl extends LoginServiceImplBase {
 		this.loginBusiness = loginBusiness;
 	}
 
+	@Override
+	public void loginVoid(Empty request, StreamObserver<Empty> responseObserver) {
+		
+		loginBusiness.loginVoid();
+		
+		Empty response = Empty.newBuilder()
+				.build();
+		
+		// send it to the client
+		responseObserver.onNext(response);
+		// finish dealing with RPC, else the connection will be hung, and client will wait for more information to come in
+		responseObserver.onCompleted();
+	}
+	
 	@Override
 	public void login(LoginMessageIn request, StreamObserver<LoginMessageOut> responseObserver) {
 		

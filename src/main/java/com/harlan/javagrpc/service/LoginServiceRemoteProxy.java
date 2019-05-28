@@ -22,6 +22,11 @@ public class LoginServiceRemoteProxy implements LoginService {
 	}
 
 	@Override
+	public void loginVoid() {
+		
+	}
+
+	@Override
 	public int login(Request req) {
 		
 		// convert domain model into protobuf object

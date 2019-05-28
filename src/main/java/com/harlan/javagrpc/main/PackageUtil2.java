@@ -33,6 +33,8 @@ public class PackageUtil2 {
 				StringBuffer sb = new StringBuffer(2048);
 				sb.append("syntax = \"proto3\";\r\n");
 				sb.append("\r\n");
+				sb.append("import \"google/protobuf/empty.proto\";\r\n");
+				sb.append("\r\n");
 				sb.append("option java_multiple_files = true;\r\n");
 				sb.append("option java_package = \"" + clazz.getPackage().getName() + ".protobuf\";\r\n");
 				sb.append("option java_outer_classname = \"" + name + "Proto\";\r\n");
@@ -49,70 +51,97 @@ public class PackageUtil2 {
 					}
 					sb.append("\t" + "rpc ");
 					sb.append(method.getName() + " ");
-					sb.append("(" + capitalizeFirstChar(method.getName()) + "MessageIn) returns ");
-					sb.append("(" + capitalizeFirstChar(method.getName()) + "MessageOut) {};\r\n");
+					
+					// parameter type
+					String methodParameterType = "google.protobuf.Empty";
+					if (method.getParameterCount() > 0) {
+						methodParameterType = capitalizeFirstChar(method.getName()) + "MessageIn";
+					}
+					
+					sb.append("(" + methodParameterType + ") returns ");
+					
+					// return type
+					String methodReturnType = "google.protobuf.Empty";
+					if (!method.getReturnType().equals(Void.TYPE)) {
+						methodReturnType = capitalizeFirstChar(method.getName()) + "MessageOut";
+					}
+					
+					sb.append("(" + methodReturnType + ") {};\r\n");
 				}
 				sb.append("}\r\n");
+				sb.append("\r\n");
 				
 				//messages
 				for (Method method : methods) {
 					if (Modifier.isPrivate(method.getModifiers())) {
 						continue;
 					}
-					sb.append("message " + capitalizeFirstChar(method.getName()) + "MessageIn {\r\n");
-					Class<?>[] reqParam = method.getParameterTypes();
-					if(reqParam.length == 1) {
-						for (Class<?> cl : reqParam) {
-							sb.append("\t" + cl.getSimpleName() + " " + cl.getSimpleName() + " = 1;\r\n");
+					
+					// has any parameter?
+					if (method.getParameterCount() > 0) {
+					
+						sb.append("message " + capitalizeFirstChar(method.getName()) + "MessageIn {\r\n");
+					
+						Class<?>[] reqParam = method.getParameterTypes();
+						if(reqParam.length == 1) {
+							for (Class<?> cl : reqParam) {
+								sb.append("\t" + cl.getSimpleName() + " " + cl.getSimpleName() + " = 1;\r\n");
+								TreeMap<Integer,String> tm = new TreeMap<Integer,String>();
+								map.put(cl.getName(), tm);
+								// process fields
+								Field[] fields = cl.getDeclaredFields();
+								int i = 1;
+								for (Field field : fields) {
+									handleField(sb, field, i, tm);
+									i++;
+								}
+							}
+						} else if (reqParam.length > 1) {
+	//						List<String> nameList = new ArrayList<>();
+							int count = 0;
+							for (Class<?> cl : reqParam) {
+	//							nameList.add(cl.getSimpleName());
+								sb.append("\t" + cl.getSimpleName() + " " + cl.getSimpleName() + " = " + (++count) + ";\r\n");
+								TreeMap<Integer, String> tm = new TreeMap<Integer, String>();
+								map.put(cl.getName(), tm);
+								// process fields
+								Field[] fields = cl.getDeclaredFields();
+								int i = 1;
+								for (Field field : fields) {
+									handleField(sb, field, i, tm);
+									i++;
+								}
+	//							sb.append("\t}\r\n");
+							}
+	//						for (int i = 0; i <= nameList.size() - 1; i++) {
+	//							sb.append("\t repeated " + nameList.get(i) + " " + nameList.get(i) + " = " + (i + 1) + ";\r\n");
+	//						}
+						}
+						sb.append("}\r\n");
+					}
+					
+					// has return type?
+					if (!method.getReturnType().equals(Void.TYPE)) {
+					
+						sb.append("message " + capitalizeFirstChar(method.getName()) + "MessageOut {\r\n");
+						
+						Class<?> resClazz = method.getReturnType();
+	//					sb.append("\t" + resClazz.getSimpleName() + " " + resClazz.getSimpleName() + " = 1;\r\n");
+						if(isJavaClass(resClazz)) {
+							sb.append("\t" + handleFieldType(resClazz.getSimpleName()) + " " + resClazz.getSimpleName() + " = 1 ;\r\n");
+						}else {
+							sb.append("\t" + resClazz.getSimpleName() + " " + resClazz.getSimpleName() + " = 1;\r\n");
 							TreeMap<Integer,String> tm = new TreeMap<Integer,String>();
-							map.put(cl.getName(), tm);
-							// process fields
-							Field[] fields = cl.getDeclaredFields();
+							map.put(resClazz.getName(), tm);
+							Field[] fields = resClazz.getDeclaredFields();
 							int i = 1;
 							for (Field field : fields) {
 								handleField(sb, field, i, tm);
 								i++;
 							}
 						}
-					} else if (reqParam.length > 1) {
-//						List<String> nameList = new ArrayList<>();
-						int count = 0;
-						for (Class<?> cl : reqParam) {
-//							nameList.add(cl.getSimpleName());
-							sb.append("\t" + cl.getSimpleName() + " " + cl.getSimpleName() + " = " + (++count) + ";\r\n");
-							TreeMap<Integer, String> tm = new TreeMap<Integer, String>();
-							map.put(cl.getName(), tm);
-							// process fields
-							Field[] fields = cl.getDeclaredFields();
-							int i = 1;
-							for (Field field : fields) {
-								handleField(sb, field, i, tm);
-								i++;
-							}
-//							sb.append("\t}\r\n");
-						}
-//						for (int i = 0; i <= nameList.size() - 1; i++) {
-//							sb.append("\t repeated " + nameList.get(i) + " " + nameList.get(i) + " = " + (i + 1) + ";\r\n");
-//						}
+						sb.append("}\r\n");
 					}
-					sb.append("}\r\n");
-					sb.append("message " + capitalizeFirstChar(method.getName()) + "MessageOut {\r\n");
-					Class<?> resClazz = method.getReturnType();
-//					sb.append("\t" + resClazz.getSimpleName() + " " + resClazz.getSimpleName() + " = 1;\r\n");
-					if(isJavaClass(resClazz)) {
-						sb.append("\t" + handleFieldType(resClazz.getSimpleName()) + " " + resClazz.getSimpleName() + " = 1 ;\r\n");
-					}else {
-						sb.append("\t" + resClazz.getSimpleName() + " " + resClazz.getSimpleName() + " = 1;\r\n");
-						TreeMap<Integer,String> tm = new TreeMap<Integer,String>();
-						map.put(resClazz.getName(), tm);
-						Field[] fields = resClazz.getDeclaredFields();
-						int i = 1;
-						for (Field field : fields) {
-							handleField(sb, field,i,tm);
-							i++;
-						}
-					}
-					sb.append("}\r\n");
 				}
 				sb.append(Map2StringBuffer(map));
 				FileWriter writer = new FileWriter(protoDir + name + ".proto");

@@ -8,6 +8,10 @@ import com.harlan.javagrpc.business.contract.LoginBusiness;
 public class LoginBusinessImpl implements LoginBusiness {
 	
 	@Override
+	public void loginVoid() {
+	}
+	
+	@Override
 	public int login(Request req) {
 		return req.getI1();
 	}
