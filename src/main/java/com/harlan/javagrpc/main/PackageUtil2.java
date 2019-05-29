@@ -211,15 +211,21 @@ public class PackageUtil2 {
 			try {
 				Class<?> clazz = Class.forName(className);
 				if (clazz.isEnum()) {
-					sb.append("enum " + clazz.getSimpleName() + " {\r\n");
+					// NOTE: do not generate enum types since we treat them as string
+//					sb.append("enum " + clazz.getSimpleName() + " {\r\n");
+//					for (Integer key : fieldMap.keySet()) {
+//						String field = fieldMap.get(key);
+//						sb.append(field);
+//					}
+//					sb.append("}\r\n");
 				} else {
 					sb.append("message " + clazz.getSimpleName() + " {\r\n");
+					for (Integer key : fieldMap.keySet()) {
+						String field = fieldMap.get(key);
+						sb.append(field);
+					}
+					sb.append("}\r\n");
 				}
-				for (Integer key : fieldMap.keySet()) {
-					String field = fieldMap.get(key);
-					sb.append(field);
-				}
-				sb.append("}\r\n");
 			} catch (ClassNotFoundException e) {
 //				e.printStackTrace();
 			}
@@ -383,7 +389,6 @@ public class PackageUtil2 {
 		case "java.lang.Long":
 			return "sint64";
 		case "java.lang.String":
-		case "java.lang.Enum":
 			return "string";
 		case "double":
 		case "java.lang.Double":
@@ -400,10 +405,23 @@ public class PackageUtil2 {
 		case "java.time.LocalDateTime":
 		case "java.time.LocalDate":
 		case "java.time.LocalTime":
+		case "java.util.Date":
 			return "Timestamp";
 		default:
-			return "";
+			break;
 		}
+		
+		try {
+			Class<?> clazz = Class.forName(typeName);
+			// Enum is treated as string
+			if (clazz.isEnum()) {
+				return "string";
+			}
+		} catch (ClassNotFoundException e) {
+//			e.printStackTrace();
+		}
+		
+		return "";
 	}
 
 }

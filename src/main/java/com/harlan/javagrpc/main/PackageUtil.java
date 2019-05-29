@@ -276,10 +276,23 @@ public class PackageUtil {
 		case "java.time.LocalDateTime":
 		case "java.time.LocalDate":
 		case "java.time.LocalTime":
+		case "java.util.Date":
 			return "Timestamp";
 		default:
-			return "";
+			break;
 		}
+		
+		try {
+			Class<?> clazz = Class.forName(typeName);
+			// Enum is treated as string
+			if (clazz.isEnum()) {
+				return "string";
+			}
+		} catch (ClassNotFoundException e) {
+//			e.printStackTrace();
+		}
+		
+		return "";
 	}
 	
 }

@@ -12,6 +12,7 @@ I just made it compatible with Windows, renamed some packages, tried to fix mino
 - Generates *.proto* files out of Java classes/interfaces existing in the classpath.
 - Generates gRPC stubs out of *.proto files*.
 - Provides two gRPC examples: *Helloworld* and *LoginService*.
+- *java.lang.Enum* are defined as *string* when generating proto file. You then need to extend *net.badata.protobuf.converter.type.EnumStringConverter*.
 
 
 #### Usage:
@@ -50,11 +51,11 @@ and grpc stubs to make some testing running *com.harlan.javagrpc.main.login.Logi
 
 
 #### TODO
-- Fix weird issue where some fields are defined in parent message definition instead of current processing message.
-Probably due to missuse of HashTreeMap. Seems very related to next fix.
+- Fix weird issue in which some fields are defined in parent message definition instead of current processing message.
+Probably due to missuse of HashTreeMap. Seems very related to next bullet.
 - Fix circular field declarations. See *Request.java* and *Request2.java*. It seems the problem resides on equal field names in some protobuf message 
-definitions. Maybe using nested messages solves the problem. 
-- Test Enum types with and without fields.
+definitions. Maybe using nested messages solves the problem.
+- Add converters similar to *net.badata.protobuf.converter.type.DateLongConverter* for fields with type: LocalDateTime, LocalTime, LocalDate. Use *google.protobuf.Timestamp*.
 - Add custom Java *Annotations* to classes or fields in order to collect reserved field tags and names for the .proto definition file.
 - Support *@java.lang.Deprecated* on classes. It translates to *option deprecated = true;* after message declaration on the .proto file.
 - Support *@java.lang.Deprecated* on java fields. It translates to *[deprecated = true];* after field declaration on the .proto file.
