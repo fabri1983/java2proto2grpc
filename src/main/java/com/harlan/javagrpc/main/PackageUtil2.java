@@ -94,7 +94,7 @@ public class PackageUtil2 {
 							if ("".equals(paramType)) {
 								paramType = cl.getSimpleName();
 							}
-							String paramName = lowerCaseFirstChar(cl.getSimpleName());
+							String paramName = lowerCaseFirstChar(cl.getSimpleName()) + capitalizeFirstChar(parameter.getName());
 							sb.append("\t" + paramType + " " + paramName + " = 1;\r\n");
 							
 							TreeMap<Integer,String> tm = new TreeMap<Integer,String>();
@@ -121,7 +121,7 @@ public class PackageUtil2 {
 								if ("".equals(paramType)) {
 									paramType = cl.getSimpleName();
 								}
-								String paramName = lowerCaseFirstChar(cl.getSimpleName());
+								String paramName = lowerCaseFirstChar(cl.getSimpleName()) + capitalizeFirstChar(parameter.getName());
 								sb.append("\t" + paramType + " " + paramName + " = " + (++count) + ";\r\n");
 								
 								TreeMap<Integer, String> tm = new TreeMap<Integer, String>();
@@ -207,6 +207,10 @@ public class PackageUtil2 {
 		StringBuffer sb = new StringBuffer();
 		for (Map.Entry<String, TreeMap<Integer, String>> entry : map.entrySet()) {
 			String className = entry.getKey();
+			// for some reason String is saved in the map
+			if ("java.lang.String".equals(className)) {
+				continue;
+			}
 			TreeMap<Integer, String> fieldMap = entry.getValue();
 			try {
 				Class<?> clazz = Class.forName(className);
@@ -382,33 +386,40 @@ public class PackageUtil2 {
 
 	private static String getProtobufFieldType(String typeName) {
 		switch (typeName) {
-		case "int":
-		case "java.lang.Integer":
-			return "sint32";
-		case "long":
-		case "java.lang.Long":
-			return "sint64";
-		case "java.lang.String":
-			return "string";
-		case "double":
-		case "java.lang.Double":
-			return "double";
-		case "float":
-		case "java.lang.Float":
-			return "float";
-		case "boolean":
-		case "java.lang.Boolean":
-			return "bool";
-		case "byte":
-		case "java.lang.Byte":
-			return "byte";
-		case "java.time.LocalDateTime":
-		case "java.time.LocalDate":
-		case "java.time.LocalTime":
-		case "java.util.Date":
-			return "Timestamp";
-		default:
-			break;
+			case "int":
+			case "Integer":
+			case "java.lang.Integer":
+				return "sint32";
+			case "long":
+			case "Long":
+			case "java.lang.Long":
+				return "sint64";
+			case "String":
+			case "java.lang.String":
+				return "string";
+			case "double":
+			case "Double":
+			case "java.lang.Double":
+				return "double";
+			case "float":
+			case "Float":
+			case "java.lang.Float":
+				return "float";
+			case "boolean":
+			case "Boolean":
+			case "java.lang.Boolean":
+				return "bool";
+			case "byte":
+			case "Byte":
+			case "java.lang.Byte":
+				return "byte";
+			case "java.time.LocalDateTime":
+			case "java.time.LocalDate":
+			case "java.time.LocalTime":
+			case "java.util.Date":
+				return "Timestamp";
+			default:
+				break;
 		}
 		
 		try {
