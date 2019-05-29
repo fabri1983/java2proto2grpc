@@ -17,7 +17,6 @@ service LoginService {
 
 message GetResMessageIn {
 	Request arg0 = 1;
-	repeated string list1 = 12;
 	Request2 arg1 = 2;
 	repeated string req2InnerString = 3;
 	repeated sint32 integer = 4;

@@ -85,22 +85,28 @@ public class PackageUtil2 {
 						sb.append("message " + capitalizeFirstChar(method.getName()) + "MessageIn {\r\n");
 					
 						Parameter[] parameters = method.getParameters();
-						if(parameters.length == 1) {
+						if (parameters.length == 1) {
 							Parameter parameter = parameters[0];
 							Class<?> cl = parameter.getType();
 							String paramType = getProtobufFieldType(cl.getSimpleName());
 							if ("".equals(paramType)) {
 								paramType = cl.getSimpleName();
 							}
-							sb.append("\t" + paramType + " " + parameter.getName() + " = 1;\r\n");
+							String paramName = lowerCaseFirstChar(cl.getSimpleName());
+							sb.append("\t" + paramType + " " + paramName + " = 1;\r\n");
+							
 							TreeMap<Integer,String> tm = new TreeMap<Integer,String>();
 							map.put(cl.getName(), tm);
 							// process fields
-							Field[] fields = cl.getDeclaredFields();
-							int i = 1;
-							for (Field field : fields) {
-								handleField(sb, field, i, tm);
-								i++;
+							if (cl.isEnum()) {
+								handleEnum(sb, cl, 1);
+							} else {
+								Field[] fields = cl.getDeclaredFields();
+								int i = 1;
+								for (Field field : fields) {
+									handleField(sb, field, i, tm);
+									i++;
+								}
 							}
 						}
 						else if (parameters.length > 1) {
@@ -113,15 +119,21 @@ public class PackageUtil2 {
 								if ("".equals(paramType)) {
 									paramType = cl.getSimpleName();
 								}
-								sb.append("\t" + paramType + " " + parameter.getName() + " = " + (++count) + ";\r\n");
+								String paramName = lowerCaseFirstChar(cl.getSimpleName());
+								sb.append("\t" + paramType + " " + paramName + " = " + (++count) + ";\r\n");
+								
 								TreeMap<Integer, String> tm = new TreeMap<Integer, String>();
 								map.put(cl.getName(), tm);
 								// process fields
-								Field[] fields = cl.getDeclaredFields();
-								int i = 1;
-								for (Field field : fields) {
-									handleField(sb, field, i, tm);
-									i++;
+								if (cl.isEnum()) {
+									handleEnum(sb, cl, count);
+								} else {
+									Field[] fields = cl.getDeclaredFields();
+									int i = 1;
+									for (Field field : fields) {
+										handleField(sb, field, i, tm);
+										i++;
+									}
 								}
 	//							sb.append("\t}\r\n");
 							}
@@ -129,6 +141,7 @@ public class PackageUtil2 {
 	//							sb.append("\t repeated " + nameList.get(i) + " " + nameList.get(i) + " = " + (i + 1) + ";\r\n");
 	//						}
 						}
+						
 						sb.append("}\r\n");
 					}
 					
@@ -157,6 +170,7 @@ public class PackageUtil2 {
 								i++;
 							}
 						}
+						
 						sb.append("}\r\n");
 					}
 				}
@@ -206,10 +220,15 @@ public class PackageUtil2 {
 	 * @return
 	 */
 	private static boolean isJavaClass(Class<?> clz) {
-		return clz != null && !"".equals(getProtobufFieldType(clz.getName()));
+		return clz != null && ( clz.isEnum() || !"".equals(getProtobufFieldType(clz.getName())) );
 		//return clz != null && clz.getClassLoader() == null;
 	}
 	
+	private static void handleEnum(StringBuffer sb, Class<?> cl, int i) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	private static void handleField(StringBuffer sb, Field field, Integer i, TreeMap<Integer,String> tm) {
 		if (field.getType() == Map.class) {
 			ParameterizedType pt = (ParameterizedType) field.getGenericType();
