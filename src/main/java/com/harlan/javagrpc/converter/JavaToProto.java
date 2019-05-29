@@ -5,6 +5,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -95,17 +98,18 @@ public class JavaToProto {
 		results.put(Long.class, "sint64");
 		results.put(Boolean.class, "bool");
 		results.put(String.class, "string");
+		results.put(LocalDateTime.class, "Timestamp");
+		results.put(LocalDate.class, "Timestamp");
+		results.put(LocalTime.class, "Timestamp");
 		
 		return results;
 	}
 
 	public String getTabs(){
 		String res = "";
-		
 		for(int i = 0; i < tabDepth; i++){
 			res = res + TAB;
 		}
-		
 		return res;
 	}
 	
@@ -158,7 +162,10 @@ public class JavaToProto {
 		
 		builder.append("syntax = \"proto3\"").append(LINE_END).append(NEWLINE);
 		builder.append(NEWLINE);
+		// for empty return type and/or parameters
 		builder.append("import \"google/protobuf/empty.proto\"").append(LINE_END).append(NEWLINE);
+		// for time representation from LocalDateTime, LocalDate and LocalTime classes
+		builder.append("import \"google/protobuf/timestamp.proto\"").append(LINE_END).append(NEWLINE);
 		builder.append(NEWLINE);
 		
 		// File Header

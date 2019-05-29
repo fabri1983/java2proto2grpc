@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -30,7 +31,8 @@ public class PackageUtil {
 				StringBuffer sb = new StringBuffer(2048);
 				sb.append("syntax = \"proto3\";\r\n");
 				sb.append("\r\n");
-				sb.append("import \"google/protobuf/empty.proto\";\r\n");
+				sb.append("import \"google/protobuf/empty.proto\";\r\n"); // for empty return type and/or parameters
+				sb.append("import \"google/protobuf/timestamp.proto\";\r\n"); // for time representation from LocalDateTime, LocalDate and LocalTime classes
 				sb.append("\r\n");
 				sb.append("option java_multiple_files = true;\r\n");
 				sb.append("option java_package = \"" + clazz.getPackage().getName() + ".protobuf\";\r\n");
@@ -79,21 +81,32 @@ public class PackageUtil {
 						
 						sb.append("message " + capitalizeFirstChar(method.getName()) + "MessageIn {\r\n");
 						
-						Class<?>[] reqParam = method.getParameterTypes();
-						if(reqParam.length == 1) {
-							for (Class<?> cl : reqParam) {
-								Field[] fields = cl.getDeclaredFields();
-								int i = 1;
-								for (Field field : fields) {
-									handleField(sb, field, i);
-									i++;
-								}
+						Parameter[] parameters = method.getParameters();
+						if(parameters.length == 1) {
+							Parameter parameter = parameters[0];
+							Class<?> cl = parameter.getType();
+							String paramType = getProtobufFieldType(cl.getSimpleName());
+							if ("".equals(paramType)) {
+								paramType = cl.getSimpleName();
 							}
-						} else if (reqParam.length > 1) {
+							sb.append("\t" + paramType + " " + parameter.getName() + ";\r\n");
+							Field[] fields = cl.getDeclaredFields();
+							int i = 1;
+							for (Field field : fields) {
+								handleField(sb, field, i);
+								i++;
+							}
+						}
+						else if (parameters.length > 1) {
 							List<String> nameList = new ArrayList<>();
-							for (Class<?> cl : reqParam) {
+							for (Parameter parameter : parameters) {
+								Class<?> cl = parameter.getType();
 								nameList.add(cl.getSimpleName());
-								sb.append("\t message " + cl.getSimpleName() + " {\r\n");
+								String paramType = getProtobufFieldType(cl.getSimpleName());
+								if ("".equals(paramType)) {
+									paramType = cl.getSimpleName();
+								}
+								sb.append("\t" + paramType + " " + parameter.getName() + ";\r\n");
 								Field[] fields = cl.getDeclaredFields();
 								int i = 1;
 								for (Field field : fields) {
@@ -163,7 +176,7 @@ public class PackageUtil {
 			try {
 				Class<?> clazz = Class.forName(pt.getActualTypeArguments()[0].getTypeName());
 				if(isJavaClass(clazz)) {
-					sb.append("\trepeated " + handleFieldType(clazz.getName()) + " " +  field.getName() + " = " + i + ";\r\n");
+					sb.append("\trepeated " + getProtobufFieldType(clazz.getName()) + " " +  field.getName() + " = " + i + ";\r\n");
 					return;
 				}
 				sb.append("\tmessage " + clazz.getSimpleName() + " { \r\n");
@@ -180,7 +193,7 @@ public class PackageUtil {
 				e.printStackTrace();
 			}
 		} else if(isJavaClass(field.getType())) {
-			sb.append("\t" + handleFieldType(field.getType().getName()) + " " + field.getName() + " = " + i + ";\r\n");
+			sb.append("\t" + getProtobufFieldType(field.getType().getName()) + " " + field.getName() + " = " + i + ";\r\n");
 			return;
 		}else {
 			sb.append("\tmessage " + field.getType().getSimpleName() + " { \r\n");
@@ -206,7 +219,7 @@ public class PackageUtil {
 		try {
 			Class<?> clazz = Class.forName(typeName);
 			if (isJavaClass(clazz)) {
-				return handleFieldType(typeName);
+				return getProtobufFieldType(typeName);
 			} else {
 				return clazz.getSimpleName();
 			}
@@ -238,40 +251,35 @@ public class PackageUtil {
 		}
 	}
 
-	private static String handleFieldType(String typeName) {
-		String returnName = "";
+	private static String getProtobufFieldType(String typeName) {
 		switch (typeName) {
 		case "int":
 		case "java.lang.Integer":
-			returnName = "int32";
-			break;
+			return "sint32";
 		case "long":
 		case "java.lang.Long":
-			returnName = "int64";
-			break;
+			return "sint64";
 		case "java.lang.String":
-			returnName = "string";
-			break;
+			return "string";
 		case "double":
 		case "java.lang.Double":
-			returnName = "double";
-			break;
+			return "double";
 		case "float":
 		case "java.lang.Float":
-			returnName = "float";
-			break;
+			return "float";
 		case "boolean":
 		case "java.lang.Boolean":
-			returnName = "bool";
-			break;
+			return "bool";
 		case "byte":
 		case "java.lang.Byte":
-			returnName = "byte";
-			break;
+			return "byte";
+		case "java.time.LocalDateTime":
+		case "java.time.LocalDate":
+		case "java.time.LocalTime":
+			return "Timestamp";
 		default:
-			break;
+			return "";
 		}
-		return returnName;
 	}
 	
 }

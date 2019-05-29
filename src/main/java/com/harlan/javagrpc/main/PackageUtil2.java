@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -17,8 +18,8 @@ import java.util.TreeMap;
 
 public class PackageUtil2 {
 	
-	private static Map<String,TreeMap<Integer,String>> map = new HashMap<>();
-
+	private static final Map<String,TreeMap<Integer,String>> map = new HashMap<>();
+	
 	public static void main(String[] args) throws IOException {
 
 		final String packageName = "com.harlan.javagrpc.service.contract";
@@ -33,7 +34,8 @@ public class PackageUtil2 {
 				StringBuffer sb = new StringBuffer(2048);
 				sb.append("syntax = \"proto3\";\r\n");
 				sb.append("\r\n");
-				sb.append("import \"google/protobuf/empty.proto\";\r\n");
+				sb.append("import \"google/protobuf/empty.proto\";\r\n"); // for empty return type and/or parameters
+				sb.append("import \"google/protobuf/timestamp.proto\";\r\n"); // for time representation from LocalDateTime, LocalDate and LocalTime classes
 				sb.append("\r\n");
 				sb.append("option java_multiple_files = true;\r\n");
 				sb.append("option java_package = \"" + clazz.getPackage().getName() + ".protobuf\";\r\n");
@@ -82,26 +84,36 @@ public class PackageUtil2 {
 					
 						sb.append("message " + capitalizeFirstChar(method.getName()) + "MessageIn {\r\n");
 					
-						Class<?>[] reqParam = method.getParameterTypes();
-						if(reqParam.length == 1) {
-							for (Class<?> cl : reqParam) {
-								sb.append("\t" + cl.getSimpleName() + " " + cl.getSimpleName() + " = 1;\r\n");
-								TreeMap<Integer,String> tm = new TreeMap<Integer,String>();
-								map.put(cl.getName(), tm);
-								// process fields
-								Field[] fields = cl.getDeclaredFields();
-								int i = 1;
-								for (Field field : fields) {
-									handleField(sb, field, i, tm);
-									i++;
-								}
+						Parameter[] parameters = method.getParameters();
+						if(parameters.length == 1) {
+							Parameter parameter = parameters[0];
+							Class<?> cl = parameter.getType();
+							String paramType = getProtobufFieldType(cl.getSimpleName());
+							if ("".equals(paramType)) {
+								paramType = cl.getSimpleName();
 							}
-						} else if (reqParam.length > 1) {
+							sb.append("\t" + paramType + " " + parameter.getName() + " = 1;\r\n");
+							TreeMap<Integer,String> tm = new TreeMap<Integer,String>();
+							map.put(cl.getName(), tm);
+							// process fields
+							Field[] fields = cl.getDeclaredFields();
+							int i = 1;
+							for (Field field : fields) {
+								handleField(sb, field, i, tm);
+								i++;
+							}
+						}
+						else if (parameters.length > 1) {
 	//						List<String> nameList = new ArrayList<>();
 							int count = 0;
-							for (Class<?> cl : reqParam) {
+							for (Parameter parameter : parameters) {
+								Class<?> cl = parameter.getType();
 	//							nameList.add(cl.getSimpleName());
-								sb.append("\t" + cl.getSimpleName() + " " + cl.getSimpleName() + " = " + (++count) + ";\r\n");
+								String paramType = getProtobufFieldType(cl.getSimpleName());
+								if ("".equals(paramType)) {
+									paramType = cl.getSimpleName();
+								}
+								sb.append("\t" + paramType + " " + parameter.getName() + " = " + (++count) + ";\r\n");
 								TreeMap<Integer, String> tm = new TreeMap<Integer, String>();
 								map.put(cl.getName(), tm);
 								// process fields
@@ -127,10 +139,15 @@ public class PackageUtil2 {
 						
 						Class<?> resClazz = method.getReturnType();
 	//					sb.append("\t" + resClazz.getSimpleName() + " " + resClazz.getSimpleName() + " = 1;\r\n");
-						if(isJavaClass(resClazz)) {
-							sb.append("\t" + handleFieldType(resClazz.getSimpleName()) + " " + resClazz.getSimpleName() + " = 1 ;\r\n");
-						}else {
-							sb.append("\t" + resClazz.getSimpleName() + " " + resClazz.getSimpleName() + " = 1;\r\n");
+						if (isJavaClass(resClazz)) {
+							String returnType = getProtobufFieldType(resClazz.getSimpleName());
+							String returnName = lowerCaseFirstChar(resClazz.getSimpleName());
+							sb.append("\t" + returnType + " " + returnName + " = 1 ;\r\n");
+						}
+						else {
+							String returnType = resClazz.getSimpleName();
+							String returnName = lowerCaseFirstChar(resClazz.getSimpleName());
+							sb.append("\t" + returnType + " " + returnName + " = 1;\r\n");
 							TreeMap<Integer,String> tm = new TreeMap<Integer,String>();
 							map.put(resClazz.getName(), tm);
 							Field[] fields = resClazz.getDeclaredFields();
@@ -159,6 +176,10 @@ public class PackageUtil2 {
 		return s.substring(0, 1).toUpperCase() + s.substring(1);
 	}
 
+	private static String lowerCaseFirstChar(String s) {
+		return s.substring(0, 1).toLowerCase() + s.substring(1);
+	}
+	
 	private static StringBuffer Map2StringBuffer(Map<String, TreeMap<Integer, String>> map) {
 		StringBuffer sb = new StringBuffer();
 		for (Map.Entry<String, TreeMap<Integer, String>> entry : map.entrySet()) {
@@ -185,7 +206,8 @@ public class PackageUtil2 {
 	 * @return
 	 */
 	private static boolean isJavaClass(Class<?> clz) {
-		return clz != null && clz.getClassLoader() == null;
+		return clz != null && !"".equals(getProtobufFieldType(clz.getName()));
+		//return clz != null && clz.getClassLoader() == null;
 	}
 	
 	private static void handleField(StringBuffer sb, Field field, Integer i, TreeMap<Integer,String> tm) {
@@ -203,7 +225,7 @@ public class PackageUtil2 {
 			try {
 				Class<?> clazz = Class.forName(pt.getActualTypeArguments()[0].getTypeName());
 				if(isJavaClass(clazz)) {
-					sb.append("\trepeated " + handleFieldType(clazz.getName()) + " " +  field.getName() + " = " + i + ";\r\n");
+					sb.append("\trepeated " + getProtobufFieldType(clazz.getName()) + " " +  field.getName() + " = " + i + ";\r\n");
 					return;
 				}
 //				sb.append("\tmessage " + clazz.getSimpleName() + " { \r\n");
@@ -226,7 +248,7 @@ public class PackageUtil2 {
 		}
 		else if (isJavaClass(field.getType())) {
 			//sb.append("\t" + handleFieldType(field.getType().getName()) + " " + field.getName() + " = " + i + ";\r\n");
-			tm.put(i, "\t" + handleFieldType(field.getType().getName()) + " " + field.getName() + " = " + i + ";\r\n");
+			tm.put(i, "\t" + getProtobufFieldType(field.getType().getName()) + " " + field.getName() + " = " + i + ";\r\n");
 			return;
 		}
 		else {
@@ -258,7 +280,7 @@ public class PackageUtil2 {
 		try {
 			Class<?> clazz = Class.forName(typeName);
 			if (isJavaClass(clazz)) {
-				return handleFieldType(typeName);
+				return getProtobufFieldType(typeName);
 			} else {
 				return clazz.getSimpleName();
 			}
@@ -295,40 +317,35 @@ public class PackageUtil2 {
 		}
 	}
 
-	private static String handleFieldType(String typeName) {
-		String returnName = "";
+	private static String getProtobufFieldType(String typeName) {
 		switch (typeName) {
 		case "int":
 		case "java.lang.Integer":
-			returnName = "int32";
-			break;
+			return "sint32";
 		case "long":
 		case "java.lang.Long":
-			returnName = "int64";
-			break;
+			return "sint64";
 		case "java.lang.String":
-			returnName = "string";
-			break;
+			return "string";
 		case "double":
 		case "java.lang.Double":
-			returnName = "double";
-			break;
+			return "double";
 		case "float":
 		case "java.lang.Float":
-			returnName = "float";
-			break;
+			return "float";
 		case "boolean":
 		case "java.lang.Boolean":
-			returnName = "bool";
-			break;
+			return "bool";
 		case "byte":
 		case "java.lang.Byte":
-			returnName = "byte";
-			break;
+			return "byte";
+		case "java.time.LocalDateTime":
+		case "java.time.LocalDate":
+		case "java.time.LocalTime":
+			return "Timestamp";
 		default:
-			break;
+			return "";
 		}
-		return returnName;
 	}
 
 }
