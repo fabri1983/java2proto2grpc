@@ -21,6 +21,13 @@ public class Request2 {
 	@ProtoField
 	private List<Response> resps;
 
+	public static Request2 from(int id, String name) {
+		Request2 newObj = new Request2();
+		newObj.id = id;
+		newObj.name = name;
+		return newObj;
+	}
+
 	public int getId() {
 		return id;
 	}

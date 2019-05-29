@@ -35,7 +35,7 @@ public class LoginServiceRemoteProxy implements LoginService {
 		
 		// wrap the protobuf object
 		LoginMessageIn loginRequestProto = LoginMessageIn.newBuilder()
-				.setArg0(requestProto)
+				.setRequest(requestProto)
 				.build();
 		
 		// use the grpc client to call login()
@@ -60,8 +60,8 @@ public class LoginServiceRemoteProxy implements LoginService {
 		
 		// wrap the protobuf objects
 		GetResMessageIn resRequest = GetResMessageIn.newBuilder()
-				.setArg0(requestProto)
-				.setArg1(request2Proto)
+				.setRequest(requestProto)
+				.setRequest2(request2Proto)
 				.build();
 		
 		// use the grpc client to call getRes()
@@ -69,7 +69,7 @@ public class LoginServiceRemoteProxy implements LoginService {
 		
 		// convert protobuf to domain model objects
 		com.halran.javagrpc.model.Response modelResponse = Converter.create()
-				.toDomain(com.halran.javagrpc.model.Response.class, resResponse);
+				.toDomain(com.halran.javagrpc.model.Response.class, resResponse.getResponse());
 		
 		return modelResponse;
 	}

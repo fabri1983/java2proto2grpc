@@ -1,6 +1,9 @@
 package com.harlan.javagrpc.main.login;
 
+import com.halran.javagrpc.model.Corpus;
 import com.halran.javagrpc.model.Request;
+import com.halran.javagrpc.model.Request2;
+import com.halran.javagrpc.model.Response;
 import com.harlan.javagrpc.service.LoginServiceRemoteProxy;
 import com.harlan.javagrpc.service.contract.LoginService;
 import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc;
@@ -28,10 +31,12 @@ public class LoginClient {
 		channel.shutdown().awaitTermination(2, TimeUnit.SECONDS);
 	}
 
-	public void login(User user) {
-		Request request = Request.from(user.getId(), user.getName());
+	public void login(User user, Corpus corpus) {
+		Request request = Request.from(user.getId(), user.getName(), corpus);
+		Request2 request2 = Request2.from(user.getId(), user.getName());
 		int loginId = loginService.login(request);
-		System.out.println("login id: " + loginId);
+		Response response = loginService.getRes(request, request2);
+		System.out.println("login id: " + loginId + ". Corpus: " + response.getCorpus().toString());
 	}
 
 	public static void main(String[] args) throws InterruptedException {
@@ -40,8 +45,9 @@ public class LoginClient {
 				User.from(11, "pepito"),
 				User.from(22, "martita"),
 				User.from(33, "robertito")};
+		Corpus[] corpusValues = Corpus.values();
 		for (int i = 0; i < users.length; i++) {
-			client.login(users[i]);
+			client.login(users[i], corpusValues[i % corpusValues.length]);
 		}
 		client.shutdown();
 	}

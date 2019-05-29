@@ -302,11 +302,11 @@ public class JavaToProto {
 		Field[] fields = currentClass().getDeclaredFields();
 		
 		int i = 0;
-		for(Field f : fields){
+		for (Field f : fields){
 			i++;
 			
 			int mod = f.getModifiers();
-			if(Modifier.isAbstract(mod) || Modifier.isTransient(mod)){
+			if (Modifier.isAbstract(mod) || Modifier.isTransient(mod)){
 				//Skip this field
 				continue;
 			}
@@ -314,55 +314,55 @@ public class JavaToProto {
 			Class<?> fieldType = f.getType();
 			
 			//Primitives or Types we have come across before
-			if(typesMap.containsKey(fieldType)){
-				processField(OPTIONAL,typesMap.get(fieldType), f.getName(), i);
+			if (typesMap.containsKey(fieldType)){
+				processField(OPTIONAL, typesMap.get(fieldType), f.getName(), i);
 				continue;
 			}
 			
-			if(fieldType.isEnum()){
+			if (fieldType.isEnum()){
 				processEnum(fieldType);
-				processField(OPTIONAL,typesMap.get(fieldType), f.getName(), i);
+				processField(OPTIONAL, typesMap.get(fieldType), f.getName(), i);
 				continue;
 			}
 			
-			if(Map.class.isAssignableFrom(fieldType)){
+			if (Map.class.isAssignableFrom(fieldType)){
 				Class<?> innerType = null;
 				Class<?> innerType2 = null;
 				String entryName = "Entry_"+f.getName();
 				
 				Type t = f.getGenericType();
 				
-				if(t instanceof ParameterizedType){
+				if (t instanceof ParameterizedType){
 					ParameterizedType tt = (ParameterizedType)t;
 					innerType = (Class<?>) tt.getActualTypeArguments()[0];
 					innerType2 = (Class<?>) tt.getActualTypeArguments()[1];	
 					buildEntryType(entryName, innerType, innerType2);
 				}
 				
-				processField(REPEATED,entryName, f.getName(), i);
+				processField(REPEATED, entryName, f.getName(), i);
 				continue;
 			}
 			
-			if(fieldType.isArray()){
+			if (fieldType.isArray()){
 				Class<?> innerType = fieldType.getComponentType();
-				if(!typesMap.containsKey(innerType)){
+				if (!typesMap.containsKey(innerType)){
 					buildNestedType(innerType);
 				}
 				processField(REPEATED,typesMap.get(fieldType), f.getName(), i);
 				continue;
 			}
 			
-			if(Collection.class.isAssignableFrom(fieldType)){
+			if (Collection.class.isAssignableFrom(fieldType)){
 				Class<?> innerType = null;
 				
 				Type t = f.getGenericType();
 				
-				if(t instanceof ParameterizedType){
+				if (t instanceof ParameterizedType){
 					ParameterizedType tt = (ParameterizedType)t;
 					innerType = (Class<?>) tt.getActualTypeArguments()[0];
 				}
 				
-				if(!typesMap.containsKey(innerType)){
+				if (!typesMap.containsKey(innerType)){
 					buildNestedType(innerType);
 				}
 				processField(REPEATED,typesMap.get(fieldType), f.getName(), i);

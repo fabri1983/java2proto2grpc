@@ -14,6 +14,8 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 import java.util.TreeMap;
 
 public class PackageUtil2 {
@@ -99,7 +101,7 @@ public class PackageUtil2 {
 							map.put(cl.getName(), tm);
 							// process fields
 							if (cl.isEnum()) {
-								handleEnum(sb, cl, 1);
+								handleEnum(cl);
 							} else {
 								Field[] fields = cl.getDeclaredFields();
 								int i = 1;
@@ -126,7 +128,7 @@ public class PackageUtil2 {
 								map.put(cl.getName(), tm);
 								// process fields
 								if (cl.isEnum()) {
-									handleEnum(sb, cl, count);
+									handleEnum(cl);
 								} else {
 									Field[] fields = cl.getDeclaredFields();
 									int i = 1;
@@ -161,13 +163,20 @@ public class PackageUtil2 {
 							String returnType = resClazz.getSimpleName();
 							String returnName = lowerCaseFirstChar(resClazz.getSimpleName());
 							sb.append("\t" + returnType + " " + returnName + " = 1;\r\n");
+							
 							TreeMap<Integer,String> tm = new TreeMap<Integer,String>();
 							map.put(resClazz.getName(), tm);
-							Field[] fields = resClazz.getDeclaredFields();
-							int i = 1;
-							for (Field field : fields) {
-								handleField(sb, field, i, tm);
-								i++;
+							
+							// process fields
+							if (resClazz.isEnum()) {
+								handleEnum(resClazz);
+							} else {
+								Field[] fields = resClazz.getDeclaredFields();
+								int i = 1;
+								for (Field field : fields) {
+									handleField(sb, field, i, tm);
+									i++;
+								}
 							}
 						}
 						
@@ -201,7 +210,11 @@ public class PackageUtil2 {
 			TreeMap<Integer, String> fieldMap = entry.getValue();
 			try {
 				Class<?> clazz = Class.forName(className);
-				sb.append("message " + clazz.getSimpleName() + " {\r\n");
+				if (clazz.isEnum()) {
+					sb.append("enum " + clazz.getSimpleName() + " {\r\n");
+				} else {
+					sb.append("message " + clazz.getSimpleName() + " {\r\n");
+				}
 				for (Integer key : fieldMap.keySet()) {
 					String field = fieldMap.get(key);
 					sb.append(field);
@@ -220,13 +233,23 @@ public class PackageUtil2 {
 	 * @return
 	 */
 	private static boolean isJavaClass(Class<?> clz) {
-		return clz != null && ( clz.isEnum() || !"".equals(getProtobufFieldType(clz.getName())) );
+		return clz != null && !"".equals(getProtobufFieldType(clz.getName()));
 		//return clz != null && clz.getClassLoader() == null;
 	}
 	
-	private static void handleEnum(StringBuffer sb, Class<?> cl, int i) {
-		// TODO Auto-generated method stub
-		
+	private static void handleEnum(Class<?> cl) {
+		// NOTE: currently Enum types are not being generated since they are defined as string
+//		TreeMap<Integer, String> fieldsMap = map.get(cl.getName());
+//		// if Enum was already processed then do nothing
+//		if (fieldsMap != null && !fieldsMap.isEmpty()) {
+//			return;
+//		}
+//		int i = 0;
+//		for(Object e : cl.getEnumConstants()){
+//			String enumFieldName = "\t" + e.toString() + " = " + i + ";\r\n";
+//			fieldsMap.put(i, enumFieldName);
+//			++i;
+//		}
 	}
 
 	private static void handleField(StringBuffer sb, Field field, Integer i, TreeMap<Integer,String> tm) {
@@ -239,7 +262,7 @@ public class PackageUtil2 {
 			tm.put(i, "\tmap<" + getGenericByTypeName(pt.getActualTypeArguments()[0].getTypeName())+ ", " + 
 						getGenericByTypeName(pt.getActualTypeArguments()[1].getTypeName()) + "> " + field.getName() + " = "+ i + ";\r\n");
 		}
-		else if (field.getType() == List.class) {
+		else if (field.getType() == List.class || field.getType() == Set.class || field.getType() == Queue.class) {
 			ParameterizedType pt = (ParameterizedType) field.getGenericType();
 			try {
 				Class<?> clazz = Class.forName(pt.getActualTypeArguments()[0].getTypeName());
@@ -251,11 +274,15 @@ public class PackageUtil2 {
 				if (!map.containsKey(clazz.getName())) {
 					TreeMap<Integer, String> listTm = new TreeMap<Integer, String>();
 					map.put(clazz.getName(), listTm);
-					Field[] fields = clazz.getDeclaredFields();
-					int j = 1;
-					for (Field f : fields) {
-						handleField(sb, f, j, listTm);
-						j++;
+					if (clazz.isEnum()) {
+						handleEnum(clazz);
+					} else {
+						Field[] fields = clazz.getDeclaredFields();
+						int j = 1;
+						for (Field f : fields) {
+							handleField(sb, f, j, listTm);
+							j++;
+						}
 					}
 				}
 //				sb.append("\t}\r\n");
@@ -270,6 +297,9 @@ public class PackageUtil2 {
 			tm.put(i, "\t" + getProtobufFieldType(field.getType().getName()) + " " + field.getName() + " = " + i + ";\r\n");
 			return;
 		}
+		else if (field.isEnumConstant()) {
+			handleEnum(field.getType());
+		}
 		else {
 //			sb.append("\tmessage " + field.getType().getSimpleName() + " { \r\n");
 			int j = 1;
@@ -278,10 +308,14 @@ public class PackageUtil2 {
 				if(!map.containsKey(cl.getName())) {
 					TreeMap<Integer, String> ObjTm = new TreeMap<Integer, String>();
 					map.put(cl.getName(), ObjTm);
-					Field[] fields = cl.getDeclaredFields();
-					for(Field f : fields) {
-						handleField(sb, f, j,ObjTm);
-						j++;
+					if (cl.isEnum()) {
+						handleEnum(cl);
+					} else {
+						Field[] fields = cl.getDeclaredFields();
+						for(Field f : fields) {
+							handleField(sb, f, j,ObjTm);
+							j++;
+						}
 					}
 //					sb.append("\t}\r\n");
 				}
@@ -319,11 +353,15 @@ public class PackageUtil2 {
 			if(!map.containsKey(clazz.getName())) {
 				TreeMap<Integer, String> ObjTm = new TreeMap<Integer, String>();
 				map.put(clazz.getName(), ObjTm);
-				Field[] fields = clazz.getDeclaredFields();
-				int j = 1;
-				for(Field f : fields) {
-					handleField(sb, f, j,ObjTm);
-					j++;
+				if (clazz.isEnum()) {
+					handleEnum(clazz);
+				} else {
+					Field[] fields = clazz.getDeclaredFields();
+					int j = 1;
+					for(Field f : fields) {
+						handleField(sb, f, j,ObjTm);
+						j++;
+					}
 				}
 			}
 //			sb.append("\tmessage " + clazz.getSimpleName() + " { \r\n");
@@ -345,6 +383,7 @@ public class PackageUtil2 {
 		case "java.lang.Long":
 			return "sint64";
 		case "java.lang.String":
+		case "java.lang.Enum":
 			return "string";
 		case "double":
 		case "java.lang.Double":

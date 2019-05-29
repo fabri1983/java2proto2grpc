@@ -16,8 +16,8 @@ service LoginService {
 }
 
 message GetResMessageIn {
-	Request arg0 = 1;
-	Request2 arg1 = 2;
+	Request request = 1;
+	Request2 request2 = 2;
 	repeated string req2InnerString = 3;
 	repeated sint32 integer = 4;
 }
@@ -25,7 +25,7 @@ message GetResMessageOut {
 	Response response = 1;
 }
 message LoginMessageIn {
-	Request arg0 = 1;
+	Request request = 1;
 }
 message LoginMessageOut {
 	sint32 int = 1 ;
@@ -50,20 +50,21 @@ message Request2Inner {
 	map<string, Request2InnerMap> request2InnerMap = 5;
 }
 message Request {
-	sint32 i1 = 1;
-	sint32 i2 = 2;
-	sint64 l1 = 3;
-	sint64 l2 = 4;
-	string s = 5;
-	double d1 = 6;
-	double d2 = 7;
-	float f1 = 8;
-	float f2 = 9;
-	bool b1 = 10;
-	bool b2 = 11;
-	repeated string list1 = 12;
-	repeated TestList list2 = 13;
-	map<string, TestMap> map = 14;
+	string corpus = 1;
+	sint32 i1 = 2;
+	sint32 i2 = 3;
+	sint64 l1 = 4;
+	sint64 l2 = 5;
+	string s = 6;
+	double d1 = 7;
+	double d2 = 8;
+	float f1 = 9;
+	float f2 = 10;
+	bool b1 = 11;
+	bool b2 = 12;
+	repeated string list1 = 13;
+	repeated TestList list2 = 14;
+	map<string, TestMap> map = 15;
 }
 message Request2InnerMapObj {
 	sint32 request2InnerMapObjId = 1;
@@ -83,9 +84,11 @@ message Request2 {
 	sint32 id = 1;
 	string name = 2;
 	Request2Inner req2Inner = 3;
+	repeated sint32 integer = 4;
 	repeated Response resps = 5;
 }
 message Response {
-	sint32 id = 1;
-	string name = 2;
+	string corpus = 1;
+	sint32 id = 2;
+	string name = 3;
 }

@@ -39,7 +39,7 @@ public class LoginServiceGrpcImpl extends LoginServiceImplBase {
 	public void login(LoginMessageIn request, StreamObserver<LoginMessageOut> responseObserver) {
 		
 		// convert protobuf type to domain model object
-		com.harlan.javagrpc.service.contract.protobuf.Request requestProto = request.getArg0();
+		com.harlan.javagrpc.service.contract.protobuf.Request requestProto = request.getRequest();
 		com.halran.javagrpc.model.Request modelRequest = Converter.create()
 				.toDomain(com.halran.javagrpc.model.Request.class, requestProto);
 		
@@ -61,12 +61,12 @@ public class LoginServiceGrpcImpl extends LoginServiceImplBase {
 	public void getRes(GetResMessageIn request, StreamObserver<GetResMessageOut> responseObserver) {
 		
 		// convert protobuf type to domain model object
-		com.harlan.javagrpc.service.contract.protobuf.Request requestProto = request.getArg0();
+		com.harlan.javagrpc.service.contract.protobuf.Request requestProto = request.getRequest();
 		com.halran.javagrpc.model.Request requestModel = Converter.create()
 				.toDomain(com.halran.javagrpc.model.Request.class, requestProto);
 		
 		// convert protobuf type to domain model object
-		com.harlan.javagrpc.service.contract.protobuf.Request2 request2Proto = request.getArg1();
+		com.harlan.javagrpc.service.contract.protobuf.Request2 request2Proto = request.getRequest2();
 		com.halran.javagrpc.model.Request2 request2Model = Converter.create()
 				.toDomain(com.halran.javagrpc.model.Request2.class, request2Proto);
 		

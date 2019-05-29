@@ -1,5 +1,7 @@
 package com.halran.javagrpc.model;
 
+import com.halran.javagrpc.model.converter.CorpusEnumStringConverter;
+
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +11,8 @@ import net.badata.protobuf.converter.annotation.ProtoField;
 @ProtoClass(com.harlan.javagrpc.service.contract.protobuf.Request.class)
 public class Request {
 	
+	@ProtoField(converter = CorpusEnumStringConverter.class)
+	private Corpus corpus;
 	@ProtoField
 	private int i1;
 	@ProtoField
@@ -40,11 +44,20 @@ public class Request {
 	@ProtoField
 	private Map<String, TestMap> map;
 	
-	public static Request from(int id, String name) {
+	public static Request from(int id, String name, Corpus corpus) {
 		Request newObj = new Request();
 		newObj.i1 = id;
 		newObj.s = name;
+		newObj.corpus = corpus;
 		return newObj;
+	}
+
+	public Corpus getCorpus() {
+		return corpus;
+	}
+
+	public void setCorpus(Corpus corpus) {
+		this.corpus = corpus;
 	}
 
 	public int getI1() {

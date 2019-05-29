@@ -18,7 +18,7 @@ public class LoginBusinessImpl implements LoginBusiness {
 	
 	@Override
 	public Response getRes(Request req, Request2 req2) {
-		return Response.from(req.getI1(), req.getS());
+		return Response.from(req.getI1(), req.getS(), req.getCorpus());
 	}
 
 }
