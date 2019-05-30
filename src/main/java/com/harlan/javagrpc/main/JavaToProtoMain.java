@@ -1,7 +1,8 @@
 package com.harlan.javagrpc.main;
 
 import com.harlan.javagrpc.converter.JavaToProto;
-import com.harlan.javagrpc.converter.RemoteAccessEnabled;
+import com.harlan.javagrpc.converter.annotation.RemoteAccessEnabled;
+import com.harlan.javagrpc.util.ClassGrabberUtil;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -66,6 +67,7 @@ public class JavaToProtoMain {
 	}
 
 	private static void generateProtobufs(String[] args) throws IOException {
+		
 		List<Class<?>> classes = getClasses(args[0]);
 		String outputProtoDir = parseOutputFolder(args[1]);
 		Files.createDirectories(Paths.get(outputProtoDir));

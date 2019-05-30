@@ -35,7 +35,7 @@ public class LoginServiceRemoteProxy implements LoginService {
 		
 		// wrap the protobuf object
 		LoginMessageIn loginRequestProto = LoginMessageIn.newBuilder()
-				.setRequest(requestProto)
+				.setRequestArg0(requestProto)
 				.build();
 		
 		// use the grpc client to call login()
@@ -60,8 +60,8 @@ public class LoginServiceRemoteProxy implements LoginService {
 		
 		// wrap the protobuf objects
 		GetResMessageIn resRequest = GetResMessageIn.newBuilder()
-				.setRequest(requestProto)
-				.setRequest2(request2Proto)
+				.setRequestArg0(requestProto)
+				.setRequest2Arg1(request2Proto)
 				.build();
 		
 		// use the grpc client to call getRes()

@@ -8,7 +8,7 @@ import java.util.Map;
 import net.badata.protobuf.converter.annotation.ProtoClass;
 import net.badata.protobuf.converter.annotation.ProtoField;
 
-@ProtoClass(com.harlan.javagrpc.service.contract.protobuf.Request.class)
+@ProtoClass(value = com.harlan.javagrpc.service.contract.protobuf.Request.class)
 public class Request {
 	
 	@ProtoField(converter = CorpusEnumStringConverter.class)
@@ -43,6 +43,8 @@ public class Request {
 	private List<TestList> list2;
 	@ProtoField
 	private Map<String, TestMap> map;
+	@ProtoField
+	private int[] intArray;
 	
 	public static Request from(int id, String name, Corpus corpus) {
 		Request newObj = new Request();
@@ -178,6 +180,14 @@ public class Request {
 
 	public void setMap(Map<String, TestMap> map) {
 		this.map = map;
+	}
+
+	public int[] getIntArray() {
+		return intArray;
+	}
+
+	public void setIntArray(int[] intArray) {
+		this.intArray = intArray;
 	}
 
 }

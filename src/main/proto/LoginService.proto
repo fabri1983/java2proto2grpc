@@ -11,13 +11,13 @@ package LoginService;
 
 service LoginService {
 	rpc getRes (GetResMessageIn) returns (GetResMessageOut) {};
-	rpc loginVoid (google.protobuf.Empty) returns (google.protobuf.Empty) {};
 	rpc login (LoginMessageIn) returns (LoginMessageOut) {};
+	rpc loginVoid (google.protobuf.Empty) returns (google.protobuf.Empty) {};
 }
 
 message GetResMessageIn {
-	Request request = 1;
-	Request2 request2 = 2;
+	Request requestArg0 = 1;
+	Request2 request2Arg1 = 2;
 	repeated string req2InnerString = 3;
 	repeated sint32 integer = 4;
 }
@@ -25,10 +25,10 @@ message GetResMessageOut {
 	Response response = 1;
 }
 message LoginMessageIn {
-	Request request = 1;
+	Request requestArg0 = 1;
 }
 message LoginMessageOut {
-	sint32 int = 1 ;
+	sint32 int = 1;
 }
 message Req2innerListObj {
 	sint32 req2innerListObjId = 1;
@@ -65,6 +65,7 @@ message Request {
 	repeated string list1 = 13;
 	repeated TestList list2 = 14;
 	map<string, TestMap> map = 15;
+	repeated sint32 intArray = 16;
 }
 message Request2InnerMapObj {
 	sint32 request2InnerMapObjId = 1;

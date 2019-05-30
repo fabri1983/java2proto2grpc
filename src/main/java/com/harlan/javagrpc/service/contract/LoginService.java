@@ -3,7 +3,7 @@ package com.harlan.javagrpc.service.contract;
 import com.halran.javagrpc.model.Request;
 import com.halran.javagrpc.model.Request2;
 import com.halran.javagrpc.model.Response;
-import com.harlan.javagrpc.converter.RemoteAccessEnabled;
+import com.harlan.javagrpc.converter.annotation.RemoteAccessEnabled;
 
 @RemoteAccessEnabled
 public interface LoginService {

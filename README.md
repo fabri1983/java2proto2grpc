@@ -3,25 +3,26 @@
 This project is a modification from original projects https://github.com/jhrgitgit/java2proto and https://github.com/lloydsparkes/java-proto-generator.  
 Credits belong to the creator of the mentioned projects.  
 I just made it compatible with Windows, renamed some packages, tried to fix minor bugs, added usage of *protobuf-converter* 
-(https://github.com/BAData/protobuf-converter) to transform domain model objects to protobuf messages and viceversa, and created LoginService client and server.
+(https://github.com/BAData/protobuf-converter) with custom modifications to transform domain model objects to protobuf messages and viceversa, 
+and created LoginService client and server.
 
 
 #### What this project does:
 
 - Depends on Maven.
-- Generates *.proto* files out of Java classes/interfaces existing in the classpath.
+- Generates *.proto* files out of Java classes/interfaces existing in the classpath and decorated by *@com.harlan.javagrpc.converter.annotation.RemoteAccessEnabled*;
 - Generates gRPC stubs out of *.proto files*.
 - Provides two gRPC examples: *Helloworld* and *LoginService*.
-- *java.lang.Enum* are defined as *string* when generating proto file. You then need to extend *net.badata.protobuf.converter.type.EnumStringConverter*.
+- *java.lang.Enum* are defined as *string* when generating proto file. You need to extend *net.badata.protobuf.converter.type.EnumStringConverter*.
 
 
 #### Usage:
 
 First you need to generate **.proto** files out of your java **classes/interfaces** located at your classpath 
 and which are decorated with annotaiton *@RemoteAccessEnabled*.
-- Use PackageUtil2: generates *.proto* files from *com.harlan.javagrpc.service.contract* to folder **src/main/proto**:
+- Use JavaToProtoMain2: generates *.proto* files from *com.harlan.javagrpc.service.contract* to folder **src/main/proto**:
 	```sh
-	mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.PackageUtil2
+	mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.JavaToProtoMain2
 	```
 - Use JavaToProtoMain: generates *.proto* files from a class/package at specific folder:  
 	**Currently work in progress. Messages are being nested and it ends up with lot of repeated messages.**
@@ -46,7 +47,7 @@ git update-index --assume-unchanged src/main/proto/LoginService.proto
 The file *helloworld.proto* is used to generated grpc-java example classes as per https://github.com/grpc/grpc-java/tree/master/examples, 
 so you can make some testing running *com.harlan.javagrpc.main.helloworld.HelloWorldClient* and *com.harlan.javagrpc.main.helloworld.HelloWorldServer*.
 
-The file *LoginService.proto* is the one you can generate running *com.harlan.javagrpc.main.PackageUtil2*, and it generates protobuf classes 
+The file *LoginService.proto* is the one you can generate running *com.harlan.javagrpc.main.JavaToProtoMain2*, and it generates protobuf classes 
 and grpc stubs to make some testing running *com.harlan.javagrpc.main.login.LoginClient* and *com.harlan.javagrpc.main.login.LoginServer*.
 
 

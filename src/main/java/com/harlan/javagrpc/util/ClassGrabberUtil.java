@@ -1,6 +1,6 @@
-package com.harlan.javagrpc.main;
+package com.harlan.javagrpc.util;
 
-import com.harlan.javagrpc.converter.RemoteAccessEnabled;
+import com.harlan.javagrpc.converter.annotation.RemoteAccessEnabled;
 
 import java.io.File;
 import java.io.IOException;

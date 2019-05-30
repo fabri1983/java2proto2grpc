@@ -14,7 +14,6 @@
 		<io.grpc.version>1.20.0</io.grpc.version>
 		<!-- protobuf version 3.8.0-rc-1 needs protobuf-java dependency to avoid code generation error -->
 		<google.protobuf.version>3.8.0-rc-1</google.protobuf.version>
-		<protobuf.converter.version>1.1.5</protobuf.converter.version>
 		<junit.version>4.13-beta-3</junit.version>
 	</properties>
 	
@@ -71,12 +70,6 @@
 			<type>pom</type>
 			<scope>import</scope>
 		</dependency-->
-		<!-- transforms Domain Model Objects into Google Protobuf Messages and vice versa. -->
-		<dependency>
-			<groupId>com.github.BAData</groupId>
-			<artifactId>protobuf-converter</artifactId>
-			<version>${protobuf.converter.version}</version>
-		</dependency>
 		<!-- JUnit -->
 		<dependency>
 			<groupId>junit</groupId>
