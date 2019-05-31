@@ -6,7 +6,9 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -26,6 +28,7 @@ public class JavaToProto2 {
 		sb.append("\r\n");
 		sb.append("import \"google/protobuf/empty.proto\";\r\n"); // for empty return type and/or parameters
 		sb.append("import \"google/protobuf/timestamp.proto\";\r\n"); // for time representation from LocalDateTime, LocalDate and LocalTime classes
+		sb.append("import \"google/protobuf/duration.proto\";\r\n"); // for duration representation from Duration class
 		sb.append("\r\n");
 		sb.append("option java_multiple_files = true;\r\n");
 		sb.append("option java_package = \"" + clazz.getPackage().getName() + ".protobuf\";\r\n");
@@ -33,21 +36,68 @@ public class JavaToProto2 {
 		sb.append("\r\n");
 		sb.append("package " + name + ";\r\n");
 		sb.append("\r\n");
-		sb.append("service " + name + " {\r\n");
 		
 		//服务
 		Method[] methods = clazz.getDeclaredMethods(); // excludes inherited methods
+		
+		// sort methods by name and parameters type (in the declared order)
+		Arrays.sort(methods, new Comparator<Method>() {
+			@Override
+			public int compare(Method o1, Method o2) {
+				String nameM1 = o1.getName() + appendParameterTypes(o1);
+				String nameM2 = o2.getName() + appendParameterTypes(o1);
+				return nameM1.compareTo(nameM2);
+			}
+
+			private String appendParameterTypes(Method o1) {
+				if (o1.getParameterCount() == 0) {
+					return "";
+				}
+				StringBuilder paramStrBuilder = new StringBuilder(64);
+				for (Class<?> clazz : o1.getParameterTypes()) {
+					paramStrBuilder.append(clazz.getSimpleName());
+				}
+				return paramStrBuilder.toString();
+			}
+		});
+		
+		generateRpcMethods(sb, name, methods);
+		
+		generateMessages(sb, methods);
+		
+		// process all messages accumulated in the map
+		sb.append(Map2StringBuffer(map));
+		
+		map.clear();
+		
+		return sb.toString();
+	}
+
+	private void generateRpcMethods(StringBuffer sb, String serviceName, Method[] methods) {
+		// Generate map which tells us if a method name is repeated so we can adjust its name when generating rpc methods.
+		// The map will contain the method name as key and a counter as value.
+		// The values of this map will be modified along the process of rpc methods generation
+		Map<String, Integer> methodNameWithCounterMap = generateMethodNameWithCounterMap(methods);
+		
+		sb.append("service " + serviceName + " {\r\n");
+		
+		// generate rpc methods
 		for (Method method : methods) {
 			if (Modifier.isPrivate(method.getModifiers())) {
 				continue;
 			}
+			
 			sb.append("\t" + "rpc ");
-			sb.append(method.getName() + " ");
+			String methodName = method.getName();
+			String counterSuffix = getCounterAndDecrement(methodName, methodNameWithCounterMap);
+			sb.append(methodName + counterSuffix + " ");
+			
+			String baseMessageName = capitalizeFirstChar(methodName) + counterSuffix;
 			
 			// parameter type
 			String methodParameterType = "google.protobuf.Empty";
 			if (method.getParameterCount() > 0) {
-				methodParameterType = capitalizeFirstChar(method.getName()) + "MessageIn";
+				methodParameterType = baseMessageName + "MessageIn";
 			}
 			
 			sb.append("(" + methodParameterType + ") returns ");
@@ -55,24 +105,35 @@ public class JavaToProto2 {
 			// return type
 			String methodReturnType = "google.protobuf.Empty";
 			if (!method.getReturnType().equals(Void.TYPE)) {
-				methodReturnType = capitalizeFirstChar(method.getName()) + "MessageOut";
+				methodReturnType = baseMessageName + "MessageOut";
 			}
 			
 			sb.append("(" + methodReturnType + ") {};\r\n");
 		}
 		sb.append("}\r\n");
 		sb.append("\r\n");
+	}
+
+	private void generateMessages(StringBuffer sb, Method[] methods) {
+		// Generate map which tells us if a method name is repeated so we can adjust its name when generating rpc methods.
+		// The map will contain the method name as key and a counter as value.
+		// The values of this map will be modified along the process of rpc methods generation
+		Map<String, Integer> methodNameWithCounterMap = generateMethodNameWithCounterMap(methods);
 		
-		// process messages
+		// process messages for each method's parameters and return types
 		for (Method method : methods) {
 			if (Modifier.isPrivate(method.getModifiers())) {
 				continue;
 			}
 			
+			String methodName = method.getName();
+			String counterSuffix = getCounterAndDecrement(methodName, methodNameWithCounterMap);
+			String baseMessageName = capitalizeFirstChar(methodName) + counterSuffix;
+			
 			// has any parameter?
 			if (method.getParameterCount() > 0) {
 			
-				sb.append("message " + capitalizeFirstChar(method.getName()) + "MessageIn {\r\n");
+				sb.append("message " + baseMessageName + "MessageIn {\r\n");
 			
 				Parameter[] parameters = method.getParameters();
 				if (parameters.length > 0) {
@@ -120,11 +181,11 @@ public class JavaToProto2 {
 			// has return type?
 			if (!method.getReturnType().equals(Void.TYPE)) {
 			
-				sb.append("message " + capitalizeFirstChar(method.getName()) + "MessageOut {\r\n");
+				sb.append("message " + baseMessageName + "MessageOut {\r\n");
 				
 				Class<?> resClazz = method.getReturnType();
 				String repeatedKeyword = resClazz.isArray() ? "repeated " : "";
-
+	
 				String classSimpleName = removeArraySymbol(resClazz.getSimpleName());
 				String returnType = getProtobufFieldType(resClazz);
 				if ("".equals(returnType)) {
@@ -155,18 +216,58 @@ public class JavaToProto2 {
 				sb.append("}\r\n");
 			}
 		}
-		
-		// process all messages accumulated in the map
-		sb.append(Map2StringBuffer(map));
-		
-		map.clear();
-		
-		return sb.toString();
+	}
+
+	private Map<String, Integer> generateMethodNameWithCounterMap(Method[] methods) {
+		Map<String, Integer> methodNameWithCounterMap = new HashMap<>((int)(methods.length / 0.75) + 1);
+		Integer zero = Integer.valueOf(0);
+		Integer two = Integer.valueOf(2);
+		for (Method method : methods) {
+			if (Modifier.isPrivate(method.getModifiers())) {
+				continue;
+			}
+			String key = method.getName();
+			if (methodNameWithCounterMap.containsKey(key)) {
+				// when method name is repeated the counter reflects its occurrences, that's why is changed to 2
+				Integer value = methodNameWithCounterMap.get(key);
+				if (value.intValue() == 0) { // 0 was the initial value
+					methodNameWithCounterMap.put(key, two);
+				} else {
+					methodNameWithCounterMap.put(key, Integer.valueOf(value.intValue() + 1));
+				}
+			} else {
+				methodNameWithCounterMap.put(key, zero); // zero means not repeated at all
+			}
+		}
+		return methodNameWithCounterMap;
 	}
 	
 	private boolean isAbstractOrTransient(Field field) {
 		int mod = field.getModifiers();
 		return Modifier.isAbstract(mod) || Modifier.isTransient(mod);
+	}
+
+	/**
+	 * If method name exists and has counter greater than 0 then returns the actual counter as String.
+	 * Otherwise returns empty String.
+	 * NOTE: the counter is decremented!
+	 * 
+	 * @param target
+	 * @param methodNameWithCounterMap
+	 * @return
+	 */
+	private String getCounterAndDecrement(String target, Map<String, Integer> methodNameWithCounterMap) {
+		Integer currentCounter = methodNameWithCounterMap.get(target);
+		// if counter is 0 then return method name
+		if (currentCounter.intValue() == 0) {
+			return "";
+		}
+		// return method name + current counter value, then decrement
+		else {
+			Integer newCounterValue = Integer.valueOf(currentCounter.intValue() - 1);
+			methodNameWithCounterMap.put(target, newCounterValue);
+			return currentCounter.toString();
+		}
 	}
 
 	private String capitalizeFirstChar(String s) {
@@ -379,7 +480,7 @@ public class JavaToProto2 {
 		if (clazz.isArray()) {
 			typeName = clazz.getComponentType().getSimpleName();
 		}
-
+		
 		switch (typeName) {
 			case "int":
 			case "Integer":
@@ -416,7 +517,10 @@ public class JavaToProto2 {
 			case "java.time.LocalDate":
 			case "java.time.LocalTime":
 			case "java.util.Date":
-				return "Timestamp";
+				return "google.protobuf.Timestamp";
+			case "Duration":
+			case "java.time.Duration":
+				return "google.protobuf.Duration";
 			default:
 				break;
 		}

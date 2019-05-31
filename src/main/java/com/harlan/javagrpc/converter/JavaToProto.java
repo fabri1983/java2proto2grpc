@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -98,9 +99,10 @@ public class JavaToProto {
 		results.put(Long.class, "sint64");
 		results.put(Boolean.class, "bool");
 		results.put(String.class, "string");
-		results.put(LocalDateTime.class, "Timestamp");
-		results.put(LocalDate.class, "Timestamp");
-		results.put(LocalTime.class, "Timestamp");
+		results.put(LocalDateTime.class, "google.protobuf.Timestamp");
+		results.put(LocalDate.class, "google.protobuf.Timestamp");
+		results.put(LocalTime.class, "google.protobuf.Timestamp");
+		results.put(Duration.class, "google.protobuf.Duration");
 		
 		return results;
 	}
@@ -166,6 +168,8 @@ public class JavaToProto {
 		builder.append("import \"google/protobuf/empty.proto\"").append(LINE_END).append(NEWLINE);
 		// for time representation from LocalDateTime, LocalDate and LocalTime classes
 		builder.append("import \"google/protobuf/timestamp.proto\"").append(LINE_END).append(NEWLINE);
+		// for duration representation from Duration class
+		builder.append("import \"google/protobuf/duration.proto\"").append(LINE_END).append(NEWLINE);
 		builder.append(NEWLINE);
 		
 		// File Header
