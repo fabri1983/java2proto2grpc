@@ -11,9 +11,9 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<os.maven.version>1.6.1</os.maven.version>
 		<protobuf.maven.version>0.6.1</protobuf.maven.version>
-		<io.grpc.version>1.20.0</io.grpc.version>
-		<!-- protobuf version 3.8.0-rc-1 needs protobuf-java dependency to avoid code generation error -->
-		<google.protobuf.version>3.8.0-rc-1</google.protobuf.version>
+		<io.grpc.version>1.21.0</io.grpc.version>
+		<!-- protobuf version 3.8.0 needs protobuf-java dependency to avoid code generation error -->
+		<google.protobuf.version>3.8.0</google.protobuf.version>
 		<junit.version>4.13-beta-3</junit.version>
 	</properties>
 	

@@ -52,6 +52,7 @@ and grpc stubs to make some testing running *com.harlan.javagrpc.main.login.Logi
 
 
 #### TODO
+- Modularize JavaToProto2. Code is written in a very imperative way, and hard to mantain.
 - Fix weird issue in which some fields are defined in parent message definition instead of current processing message.
 Probably due to missuse of HashTreeMap. Seems very related to next bullet.
 - Fix circular field declarations. See *Request.java* and *Request2.java*. It seems the problem resides on equal field names in some protobuf message 
@@ -60,8 +61,9 @@ definitions. Maybe using nested messages solves the problem.
 - Add custom Java *Annotations* to classes or fields in order to collect reserved field tags and names for the .proto definition file.
 - Support *@java.lang.Deprecated* on classes. It translates to *option deprecated = true;* after message declaration on the .proto file.
 - Support *@java.lang.Deprecated* on java fields. It translates to *[deprecated = true];* after field declaration on the .proto file.
-- Test building for Java 9 and higher. I had some building errors when generating gRPC stubs due to Java internal relocation of *@javax.annotation.Generated*.
+- Test building for Java 9+. I had some building errors when generating gRPC stubs due to Java internal relocation of *@javax.annotation.Generated*.
 See https://github.com/protocolbuffers/protobuf/issues/42.
+Cusotm fix: add to your project classpath next dependency: *javax.annotation:javax.annotation-api*.
 
 
 #### License
