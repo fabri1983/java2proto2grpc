@@ -61,10 +61,11 @@ message Request {
 	float f2 = 10;
 	bool b1 = 11;
 	bool b2 = 12;
-	repeated string list1 = 13;
-	repeated TestList list2 = 14;
-	map<string, TestMap> map = 15;
-	repeated sint32 intArray = 16;
+	Request2 req2 = 13;
+	repeated string list1 = 14;
+	repeated TestList list2 = 15;
+	map<string, TestMap> map = 16;
+	repeated sint32 intArray = 17;
 }
 message Request2InnerMapObj {
 	sint32 request2InnerMapObjId = 1;
@@ -84,8 +85,9 @@ message Request2 {
 	sint32 id = 1;
 	string name = 2;
 	Request2Inner req2Inner = 3;
-	repeated sint32 integer = 4;
-	repeated Response resps = 5;
+	Request req = 4;
+	repeated sint32 integer = 5;
+	repeated Response resps = 6;
 }
 message Response {
 	string corpus = 1;

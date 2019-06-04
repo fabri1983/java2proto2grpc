@@ -35,8 +35,8 @@ public class Request {
 	private boolean b1;
 	@ProtoField
 	private Boolean b2;
-//	@ProtoField
-//	private Request2 req2;
+	@ProtoField
+	private Request2 req2;
 	@ProtoField
 	private List<String> list1;
 	@ProtoField
@@ -150,13 +150,13 @@ public class Request {
 		this.b2 = b2;
 	}
 
-//	public Request2 getReq2() {
-//		return req2;
-//	}
-//
-//	public void setReq2(Request2 req2) {
-//		this.req2 = req2;
-//	}
+	public Request2 getReq2() {
+		return req2;
+	}
+
+	public void setReq2(Request2 req2) {
+		this.req2 = req2;
+	}
 
 	public List<String> getList1() {
 		return list1;

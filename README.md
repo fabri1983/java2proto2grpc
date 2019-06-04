@@ -2,9 +2,9 @@
 
 This project is a modification from original projects https://github.com/jhrgitgit/java2proto and https://github.com/lloydsparkes/java-proto-generator.  
 Credits belong to the creator of the mentioned projects.  
-I just made it compatible with Windows, renamed some packages, tried to fix minor bugs, added usage of *protobuf-converter* 
+I just made it compatible with Windows, renamed some packages, fixed some bugs, added usage of *protobuf-converter* 
 (https://github.com/BAData/protobuf-converter) with custom modifications to transform domain model objects to protobuf messages and viceversa, 
-and created LoginService client and server.
+created LoginService client and server, and more.
 
 
 #### What does this project do:
@@ -15,7 +15,8 @@ and created LoginService client and server.
 - Generates gRPC stubs out of *.proto files*.
 - Provides two gRPC examples: *Helloworld* and *LoginService*.
 - *java.lang.Enum* is defined as *string* when generating proto file. So when using *@net.badata.protobuf.converter.annotation.ProtoField* 
-you need to extend *net.badata.protobuf.converter.type.EnumStringConverter* and set it as *converter* attribute. See **Request** class.
+you need to extend *net.badata.protobuf.converter.type.EnumStringConverter* and set it as *converter* attribute. See **Request** and **Response** classes.
+- Provides conversion api between protobuf objects and DTOs or Domain Model Objects, and viceversa.
 
 
 #### Usage:
@@ -55,17 +56,16 @@ and grpc stubs to make some testing running *com.harlan.javagrpc.main.login.Logi
 
 #### TODO
 - Modularize JavaToProto2. Code is written in a very imperative way, and hard to mantain.
-- Fix weird issue in which some fields are defined in parent message definition instead of current processing message.
-Probably due to missuse of HashTreeMap. Seems very related to next bullet.
-- Fix circular field declarations. See *Request.java* and *Request2.java*. It seems the problem resides on equal field names in some protobuf message 
-definitions. Maybe using nested messages solves the problem.
-- Add converters similar to *net.badata.protobuf.converter.type.DateLongConverter* for fields with type: LocalDateTime, LocalTime, LocalDate. Use *google.protobuf.Timestamp*.
-- Add custom Java *Annotations* to classes or fields in order to collect reserved field tags and names for the .proto definition file.
+- Add converters similar to *net.badata.protobuf.converter.type.DateLongConverter* for fields with type: LocalDateTime, LocalTime, LocalDate, Date. 
+Use *google.protobuf.Timestamp* in the converter implementation.
+- Add converters similar to *net.badata.protobuf.converter.type.DateLongConverter* for fields with type: Duration. 
+Use *google.protobuf.Duration* in the converter implementation.
+- Add custom Java *Annotations* to classes and/or fields in order to collect reserved field tags and names for the .proto definition file.
 - Support *@java.lang.Deprecated* on classes. It translates to *option deprecated = true;* after message declaration on the .proto file.
 - Support *@java.lang.Deprecated* on java fields. It translates to *[deprecated = true];* after field declaration on the .proto file.
 - Java 9+: I had some building errors when generating gRPC stubs due to Java internal relocation of *@javax.annotation.Generated*.
-	See https://github.com/protocolbuffers/protobuf/issues/42.
-	Custom fix: add to your project classpath next dependency: *javax.annotation:javax.annotation-api*.
+	- See https://github.com/protocolbuffers/protobuf/issues/42.
+	- Custom fix: add to your project classpath next dependency: *javax.annotation:javax.annotation-api*.
 - Java9+: In Java 8 when gathering parameter name we get Arg0, Arg1, etc. Java9+ might return the real parameter name so probably I need to 
 make an adjustment in protobuf message generation. 
 

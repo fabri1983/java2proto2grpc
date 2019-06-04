@@ -259,8 +259,8 @@ public class JavaToProto2 {
 			Type[] actualTypeArguments = pt.getActualTypeArguments();
 			String typeName0 = actualTypeArguments[0].getTypeName();
 			String typeName1 = actualTypeArguments[1].getTypeName();
-			handleGeneric(sb, typeName0);
-			handleGeneric(sb, typeName1);
+			handleGeneric(typeName0);
+			handleGeneric(typeName1);
 			
 			// build up a param name because at this level Java does not return the real param name
 			String paramFinalName = lowerCaseFirstChar(classSimpleName) + capitalizeFirstChar(parameter.getName());
@@ -280,8 +280,10 @@ public class JavaToProto2 {
 				
 				if (isJavaClass(clazz)) {
 					sb.append("\trepeated " + getProtobufFieldType(clazz) + " " +  paramFinalName + " = " + protoFieldIndex + ";\r\n");
-					return;
+					return; // we now is a Java class so it has no fields to process
 				}
+				
+				sb.append("\trepeated " + removeArraySymbol(clazz.getSimpleName()) + " " + paramFinalName + " = " + protoFieldIndex + ";\r\n");
 				
 				if (!map.containsKey(clazz.getName())) {
 					
@@ -298,14 +300,11 @@ public class JavaToProto2 {
 							if (isAbstractOrTransientOrStatic(f)) {
 								continue;
 							}
-							handleField(sb, f, j, listTm);
+							handleField(f, j, listTm);
 							j++;
 						}
 					}
 				}
-				
-				sb.append("\trepeated " + removeArraySymbol(clazz.getSimpleName()) + " " + paramFinalName + " = " + protoFieldIndex + ";\r\n");
-				
 			} catch (ClassNotFoundException e) {
 //				e.printStackTrace();
 			}
@@ -323,36 +322,28 @@ public class JavaToProto2 {
 //			handleEnum(parameter.getType());
 //		}
 		else {
-			try {
-				Class<?> cl = Class.forName(processingClass.getName());
+			// build up a param name because at this level Java does not return the real param name
+			String paramFinalName = lowerCaseFirstChar(classSimpleName) + capitalizeFirstChar(parameter.getName());
+			sb.append("\t" + classSimpleName + " " + paramFinalName + " = " + protoFieldIndex +";\r\n");
+			
+			if (!map.containsKey(processingClass.getName())) {
 				
-				// build up a param name because at this level Java does not return the real param name
-				String paramFinalName = lowerCaseFirstChar(classSimpleName) + capitalizeFirstChar(parameter.getName());
+				TreeMap<Integer, String> ObjTm = new TreeMap<Integer, String>();
+				map.put(processingClass.getName(), ObjTm);
 				
-				if (!map.containsKey(processingClass.getName())) {
-					
-					TreeMap<Integer, String> ObjTm = new TreeMap<Integer, String>();
-					map.put(processingClass.getName(), ObjTm);
-					
-					if (cl.isEnum() || (cl.isArray() && cl.getComponentType().isEnum())) {
-						handleEnum(cl);
-					} else {
-						int j = 1;
-						Field[] fields = cl.getDeclaredFields();
-						for(Field f : fields) {
-							if (isAbstractOrTransientOrStatic(f)) {
-								continue;
-							}
-							handleField(sb, f, j, ObjTm);
-							j++;
+				if (processingClass.isEnum() || (processingClass.isArray() && processingClass.getComponentType().isEnum())) {
+					handleEnum(processingClass);
+				} else {
+					int j = 1;
+					Field[] fields = processingClass.getDeclaredFields();
+					for(Field f : fields) {
+						if (isAbstractOrTransientOrStatic(f)) {
+							continue;
 						}
+						handleField(f, j, ObjTm);
+						j++;
 					}
 				}
-				
-				sb.append("\t" + classSimpleName + " " + paramFinalName + " = " + protoFieldIndex +";\r\n");
-				
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
 			}
 		}
 	}
@@ -367,8 +358,8 @@ public class JavaToProto2 {
 			Type[] actualTypeArguments = pt.getActualTypeArguments();
 			String typeName0 = actualTypeArguments[0].getTypeName();
 			String typeName1 = actualTypeArguments[1].getTypeName();
-			handleGeneric(sb, typeName0);
-			handleGeneric(sb, typeName1);
+			handleGeneric(typeName0);
+			handleGeneric(typeName1);
 			
 			sb.append("\tmap<" + getGenericByTypeName(typeName0) + ", " + 
 						getGenericByTypeName(typeName1) + "> " + returnName + " = 1;\r\n");
@@ -382,8 +373,10 @@ public class JavaToProto2 {
 				
 				if (isJavaClass(clazz)) {
 					sb.append("\trepeated " + getProtobufFieldType(clazz) + " " +  returnName + " = 1;\r\n");
-					return;
+					return; // we now is a Java class so it has no fields to process
 				}
+				
+				sb.append("\trepeated " + removeArraySymbol(clazz.getSimpleName()) + " " + returnName + " = 1;\r\n");
 				
 				if (!map.containsKey(clazz.getName())) {
 					
@@ -400,14 +393,11 @@ public class JavaToProto2 {
 							if (isAbstractOrTransientOrStatic(f)) {
 								continue;
 							}
-							handleField(sb, f, j, listTm);
+							handleField(f, j, listTm);
 							j++;
 						}
 					}
 				}
-				
-				sb.append("\trepeated " + removeArraySymbol(clazz.getSimpleName()) + " " + returnName + " = 1;\r\n");
-				
 			} catch (ClassNotFoundException e) {
 //				e.printStackTrace();
 			}
@@ -423,38 +413,31 @@ public class JavaToProto2 {
 //			handleEnum(field.getType());
 //		}
 		else {
-			try {
-				Class<?> cl = Class.forName(processingClass.getName());
+			sb.append("\t" + classSimpleName + " " + returnName + " = 1;\r\n");
+			
+			if (!map.containsKey(processingClass.getName())) {
 				
-				if (!map.containsKey(processingClass.getName())) {
-					
-					TreeMap<Integer, String> ObjTm = new TreeMap<Integer, String>();
-					map.put(processingClass.getName(), ObjTm);
-					
-					if (cl.isEnum() || (cl.isArray() && cl.getComponentType().isEnum())) {
-						handleEnum(cl);
-					} else {
-						int j = 1;
-						Field[] fields = cl.getDeclaredFields();
-						for(Field f : fields) {
-							if (isAbstractOrTransientOrStatic(f)) {
-								continue;
-							}
-							handleField(sb, f, j, ObjTm);
-							j++;
+				TreeMap<Integer, String> ObjTm = new TreeMap<Integer, String>();
+				map.put(processingClass.getName(), ObjTm);
+				
+				if (processingClass.isEnum() || (processingClass.isArray() && processingClass.getComponentType().isEnum())) {
+					handleEnum(processingClass);
+				} else {
+					int j = 1;
+					Field[] fields = processingClass.getDeclaredFields();
+					for(Field f : fields) {
+						if (isAbstractOrTransientOrStatic(f)) {
+							continue;
 						}
+						handleField(f, j, ObjTm);
+						j++;
 					}
 				}
-				
-				sb.append("\t" + classSimpleName + " " + returnName + " = 1;\r\n");
-				
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
 			}
 		}
 	}
 
-	private void handleField(StringBuffer sb, Field field, Integer i, TreeMap<Integer, String> tm) {
+	private void handleField(Field field, Integer i, TreeMap<Integer, String> tm) {
 		Class<?> processingClass = field.getType();
 		String classSimpleName = removeArraySymbol(processingClass.getSimpleName());
 		
@@ -464,8 +447,8 @@ public class JavaToProto2 {
 			Type[] actualTypeArguments = pt.getActualTypeArguments();
 			String typeName0 = actualTypeArguments[0].getTypeName();
 			String typeName1 = actualTypeArguments[1].getTypeName();
-			handleGeneric(sb, typeName0);
-			handleGeneric(sb, typeName1);
+			handleGeneric(typeName0);
+			handleGeneric(typeName1);
 			
 			tm.put(i, "\tmap<" + getGenericByTypeName(typeName0) + ", " + 
 					getGenericByTypeName(typeName1) + "> " + field.getName() + " = "+ i + ";\r\n");
@@ -478,9 +461,11 @@ public class JavaToProto2 {
 				Class<?> clazz = Class.forName(actualTypeArguments[0].getTypeName());
 				
 				if (isJavaClass(clazz)) {
-					sb.append("\trepeated " + getProtobufFieldType(clazz) + " " +  field.getName() + " = " + i + ";\r\n");
-					return;
+					tm.put(i, "\trepeated " + getProtobufFieldType(clazz) + " " +  field.getName() + " = " + i + ";\r\n");
+					return; // we now is a Java class so it has no fields to process
 				}
+
+				tm.put(i, "\trepeated " + removeArraySymbol(clazz.getSimpleName()) + " " + field.getName() + " = " + i + ";\r\n");
 				
 				if (!map.containsKey(clazz.getName())) {
 					
@@ -497,14 +482,11 @@ public class JavaToProto2 {
 							if (isAbstractOrTransientOrStatic(f)) {
 								continue;
 							}
-							handleField(sb, f, j, listTm);
+							handleField(f, j, listTm);
 							j++;
 						}
 					}
 				}
-				
-				tm.put(i, "\trepeated " + removeArraySymbol(clazz.getSimpleName()) + " " + field.getName() + " = " + i + ";\r\n");
-				
 			} catch (ClassNotFoundException e) {
 //				e.printStackTrace();
 			}
@@ -520,47 +502,44 @@ public class JavaToProto2 {
 //			handleEnum(field.getType());
 //		}
 		else {
-			try {
-				Class<?> cl = Class.forName(processingClass.getName());
+			tm.put(i, "\t" + classSimpleName + " " + field.getName() + " = " + i +";\r\n");
+			
+			if (!map.containsKey(processingClass.getName())) {
 				
-				if (!map.containsKey(processingClass.getName())) {
-					
-					TreeMap<Integer, String> ObjTm = new TreeMap<Integer, String>();
-					map.put(processingClass.getName(), ObjTm);
-					
-					if (cl.isEnum() || (cl.isArray() && cl.getComponentType().isEnum())) {
-						handleEnum(cl);
-					} else {
-						int j = 1;
-						Field[] fields = cl.getDeclaredFields();
-						for(Field f : fields) {
-							if (isAbstractOrTransientOrStatic(f)) {
-								continue;
-							}
-							handleField(sb, f, j, ObjTm);
-							j++;
+				TreeMap<Integer, String> ObjTm = new TreeMap<Integer, String>();
+				map.put(processingClass.getName(), ObjTm);
+				
+				if (processingClass.isEnum() || (processingClass.isArray() && processingClass.getComponentType().isEnum())) {
+					handleEnum(processingClass);
+				} else {
+					int j = 1;
+					Field[] fields = processingClass.getDeclaredFields();
+					for(Field f : fields) {
+						if (isAbstractOrTransientOrStatic(f)) {
+							continue;
 						}
+						handleField(f, j, ObjTm);
+						j++;
 					}
 				}
-				
-				tm.put(i, "\t" + classSimpleName + " " + field.getName() + " = " + i +";\r\n");
-				
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
 			}
 		}
 	}
 	
-	private void handleGeneric(StringBuffer sb, String typeName) {
+	private void handleGeneric( String typeName) {
 		try {
 			Class<?> clazz = Class.forName(typeName);
 			if (isJavaClass(clazz)) {
 				return;
 			}
+			
 			String className = removeArraySymbol(clazz.getName());
+			
 			if (!map.containsKey(className)) {
+				
 				TreeMap<Integer, String> ObjTm = new TreeMap<Integer, String>();
 				map.put(className, ObjTm);
+				
 				if (clazz.isEnum() || (clazz.isArray() && clazz.getComponentType().isEnum())) {
 					handleEnum(clazz);
 				} else {
@@ -570,7 +549,7 @@ public class JavaToProto2 {
 						if (isAbstractOrTransientOrStatic(f)) {
 							continue;
 						}
-						handleField(sb, f, i, ObjTm);
+						handleField(f, i, ObjTm);
 						i++;
 					}
 				}

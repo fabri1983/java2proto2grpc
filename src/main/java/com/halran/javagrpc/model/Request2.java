@@ -14,8 +14,8 @@ public class Request2 {
 	private String name;
 	@ProtoField
 	private Request2Inner req2Inner;
-//	@ProtoField
-//	private Request req;
+	@ProtoField
+	private Request req;
 	@ProtoField
 	private List<Integer> integer;
 	@ProtoField
@@ -52,13 +52,13 @@ public class Request2 {
 		this.req2Inner = req2Inner;
 	}
 
-//	public Request getReq() {
-//		return req;
-//	}
-//
-//	public void setReq(Request req) {
-//		this.req = req;
-//	}
+	public Request getReq() {
+		return req;
+	}
+
+	public void setReq(Request req) {
+		this.req = req;
+	}
 
 	public List<Integer> getInteger() {
 		return integer;
