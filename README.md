@@ -1,13 +1,13 @@
 ## java 2 proto 2 grpc
 
 This project is a modification from original projects https://github.com/jhrgitgit/java2proto and https://github.com/lloydsparkes/java-proto-generator.  
-Credits belong to the creator of the mentioned projects.  
+Credits belong to the creators of the mentioned projects.  
 I just made it compatible with Windows, renamed some packages, fixed some bugs, added usage of *protobuf-converter* 
 (https://github.com/BAData/protobuf-converter) with custom modifications to transform domain model objects to protobuf messages and viceversa, 
 created LoginService client and server, and more.
 
 
-#### What does this project do:
+#### Features:
 
 - Depends on Maven.
 - Java 8 only (and minor versions too). See the **TODO** section for Java 9+.
@@ -15,26 +15,26 @@ created LoginService client and server, and more.
 - Generates gRPC stubs out of *.proto files*.
 - Provides two gRPC examples: *Helloworld* and *LoginService*.
 - *java.lang.Enum* is defined as *string* when generating proto file. So when using *@net.badata.protobuf.converter.annotation.ProtoField* 
-you need to extend *net.badata.protobuf.converter.type.EnumStringConverter* and set it as *converter* attribute. See **Request** and **Response** classes.
-- Provides conversion api between protobuf objects and DTOs or Domain Model Objects, and viceversa.
+you need to extend *net.badata.protobuf.converter.type.EnumStringConverter* and set it as *converter* attribute. See **Request** and **Response** examples classes.
+- Conversion api between protobuf objects and DTOs or Domain Model Objects, and viceversa.
 
 
 #### Usage:
 
 First you need to generate **.proto** files out of your java **classes/interfaces** located at your classpath 
-and which are decorated with annotaiton *@RemoteAccessEnabled*.
-- Use JavaToProtoMain2: generates *.proto* files from *com.harlan.javagrpc.service.contract* to folder **src/main/proto**:
+and which are decorated with annotation *@RemoteAccessEnabled*.
+- JavaToProtoMain2: generates *.proto* files from *com.harlan.javagrpc.service.contract* to folder **src/main/proto**:
 	```sh
-	mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.JavaToProtoMain2
+	mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.JavaToProto2Main -Dexec.args="com.harlan.javagrpc.service.contract src/main/proto"
 	```
-- Use JavaToProtoMain: generates *.proto* files from a class/package at specific folder:  
+- JavaToProtoMain: generates *.proto* files from a class/package at specific folder:  
 	**Currently work in progress. Messages are being nested and it ends up with lot of repeated messages.**
 	```sh
 	mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.JavaToProtoMain -Dexec.args="com.harlan.javagrpc.service.contract src/main/proto"
 	```
 
-Then you can build the project (*mvn compile*) which uses  maven plugin *org.xolstice.maven.plugins:protobuf-maven-plugin* in order to generate 
-the protobuf java classes and gRPC stubs for client and server out of your *.proto* files.  
+Then you can build the project (*mvn compile* or *Build command* in your IDE) which uses plugin *org.xolstice.maven.plugins:protobuf-maven-plugin* 
+in order to generate the protobuf java classes and gRPC stubs for client and server out of your *.proto* files.    
 Generated code is located at *target/generated-sources/protobuf/*.
 
 

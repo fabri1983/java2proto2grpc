@@ -56,7 +56,7 @@ public class JavaToProtoMain {
 	public static void main(String[] args) throws IOException {
 		
 		// no arguments?
-		if(args.length == 0){
+		if (args.length == 0) {
 			System.err.println("Usage:");
 			System.err.println("\t mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.JavaToProtoMain <classname/package> [<output folder name>]");
 			System.err.println("");
@@ -70,7 +70,9 @@ public class JavaToProtoMain {
 		
 		List<Class<?>> classes = getClasses(args[0]);
 		String outputProtoDir = parseOutputFolder(args[1]);
-		Files.createDirectories(Paths.get(outputProtoDir));
+		if (outputProtoDir != null && !outputProtoDir.isEmpty()) {
+			Files.createDirectories(Paths.get(outputProtoDir));
+		}
 		
 		for (Class<?> clazz : classes) {
 			
