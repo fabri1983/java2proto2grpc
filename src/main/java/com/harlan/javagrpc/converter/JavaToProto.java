@@ -307,11 +307,11 @@ public class JavaToProto {
 		
 		int i = 0;
 		for (Field f : fields){
-			i++;
+			i++; // protobuf indexing starts with 1
 			
+			// Skip this field?
 			int mod = f.getModifiers();
-			if (Modifier.isAbstract(mod) || Modifier.isTransient(mod)){
-				//Skip this field
+			if (Modifier.isAbstract(mod) || Modifier.isTransient(mod) || Modifier.isStatic(mod)){
 				continue;
 			}
 			

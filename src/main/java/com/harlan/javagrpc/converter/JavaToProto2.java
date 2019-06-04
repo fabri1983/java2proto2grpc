@@ -184,9 +184,9 @@ public class JavaToProto2 {
 		return methodNameWithCounterMap;
 	}
 	
-	private boolean isAbstractOrTransient(Field field) {
+	private boolean isAbstractOrTransientOrStatic(Field field) {
 		int mod = field.getModifiers();
-		return Modifier.isAbstract(mod) || Modifier.isTransient(mod);
+		return Modifier.isAbstract(mod) || Modifier.isTransient(mod) || Modifier.isStatic(mod);
 	}
 
 	/**
@@ -295,7 +295,7 @@ public class JavaToProto2 {
 						int j = 1;
 						Field[] fields = clazz.getDeclaredFields();
 						for (Field f : fields) {
-							if (isAbstractOrTransient(f)) {
+							if (isAbstractOrTransientOrStatic(f)) {
 								continue;
 							}
 							handleField(sb, f, j, listTm);
@@ -340,7 +340,7 @@ public class JavaToProto2 {
 						int j = 1;
 						Field[] fields = cl.getDeclaredFields();
 						for(Field f : fields) {
-							if (isAbstractOrTransient(f)) {
+							if (isAbstractOrTransientOrStatic(f)) {
 								continue;
 							}
 							handleField(sb, f, j, ObjTm);
@@ -397,7 +397,7 @@ public class JavaToProto2 {
 						int j = 1;
 						Field[] fields = clazz.getDeclaredFields();
 						for (Field f : fields) {
-							if (isAbstractOrTransient(f)) {
+							if (isAbstractOrTransientOrStatic(f)) {
 								continue;
 							}
 							handleField(sb, f, j, listTm);
@@ -437,7 +437,7 @@ public class JavaToProto2 {
 						int j = 1;
 						Field[] fields = cl.getDeclaredFields();
 						for(Field f : fields) {
-							if (isAbstractOrTransient(f)) {
+							if (isAbstractOrTransientOrStatic(f)) {
 								continue;
 							}
 							handleField(sb, f, j, ObjTm);
@@ -494,7 +494,7 @@ public class JavaToProto2 {
 						int j = 1;
 						Field[] fields = clazz.getDeclaredFields();
 						for (Field f : fields) {
-							if (isAbstractOrTransient(f)) {
+							if (isAbstractOrTransientOrStatic(f)) {
 								continue;
 							}
 							handleField(sb, f, j, listTm);
@@ -534,7 +534,7 @@ public class JavaToProto2 {
 						int j = 1;
 						Field[] fields = cl.getDeclaredFields();
 						for(Field f : fields) {
-							if (isAbstractOrTransient(f)) {
+							if (isAbstractOrTransientOrStatic(f)) {
 								continue;
 							}
 							handleField(sb, f, j, ObjTm);
@@ -567,7 +567,7 @@ public class JavaToProto2 {
 					Field[] fields = clazz.getDeclaredFields();
 					int i = 1;
 					for(Field f : fields) {
-						if (isAbstractOrTransient(f)) {
+						if (isAbstractOrTransientOrStatic(f)) {
 							continue;
 						}
 						handleField(sb, f, i, ObjTm);
