@@ -23,7 +23,7 @@ you need to extend *net.badata.protobuf.converter.type.EnumStringConverter* and 
 
 First you need to generate **.proto** files out of your java **classes/interfaces** located at your classpath 
 and which are decorated with annotation *@RemoteAccessEnabled*.
-- JavaToProtoMain2: generates *.proto* files from *com.harlan.javagrpc.service.contract* to folder **src/main/proto**:
+- **JavaToProto2Main**: generates *.proto* files from a class/package at specific folder:  
 	```sh
 	mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.JavaToProto2Main -Dexec.args="com.harlan.javagrpc.service.contract src/main/proto"
 	```
