@@ -7,13 +7,15 @@ I just made it compatible with Windows, renamed some packages, tried to fix mino
 and created LoginService client and server.
 
 
-#### What this project does:
+#### What does this project do:
 
 - Depends on Maven.
-- Generates *.proto* files out of Java classes/interfaces existing in the classpath and decorated by *@com.harlan.javagrpc.converter.annotation.RemoteAccessEnabled*;
+- Java 8 only (and minor versions too). See the **TODO** section for Java 9+.
+- Generates *.proto* files out of Java classes/interfaces existing in the classpath and decorated by *@RemoteAccessEnabled*.
 - Generates gRPC stubs out of *.proto files*.
 - Provides two gRPC examples: *Helloworld* and *LoginService*.
-- *java.lang.Enum* are defined as *string* when generating proto file. You need to extend *net.badata.protobuf.converter.type.EnumStringConverter*.
+- *java.lang.Enum* is defined as *string* when generating proto file. So when using *@net.badata.protobuf.converter.annotation.ProtoField* 
+you need to extend *net.badata.protobuf.converter.type.EnumStringConverter* and set it as *converter* attribute. See **Request** class.
 
 
 #### Usage:
@@ -61,9 +63,11 @@ definitions. Maybe using nested messages solves the problem.
 - Add custom Java *Annotations* to classes or fields in order to collect reserved field tags and names for the .proto definition file.
 - Support *@java.lang.Deprecated* on classes. It translates to *option deprecated = true;* after message declaration on the .proto file.
 - Support *@java.lang.Deprecated* on java fields. It translates to *[deprecated = true];* after field declaration on the .proto file.
-- Test building for Java 9+. I had some building errors when generating gRPC stubs due to Java internal relocation of *@javax.annotation.Generated*.
-See https://github.com/protocolbuffers/protobuf/issues/42.
-Cusotm fix: add to your project classpath next dependency: *javax.annotation:javax.annotation-api*.
+- Java 9+: I had some building errors when generating gRPC stubs due to Java internal relocation of *@javax.annotation.Generated*.
+	See https://github.com/protocolbuffers/protobuf/issues/42.
+	Custom fix: add to your project classpath next dependency: *javax.annotation:javax.annotation-api*.
+- Java9+: In Java 8 when gathering parameter name we get Arg0, Arg1, etc. Java9+ might return the real parameter name so probably I need to 
+make an adjustment in protobuf message generation. 
 
 
 #### License
