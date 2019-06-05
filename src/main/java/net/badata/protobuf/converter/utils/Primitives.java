@@ -44,8 +44,8 @@ public final class Primitives {
 	// Sad that we can't use a BiMap. :(
 
 	static {
-		Map<Class<?>, Class<?>> primToWrap = new HashMap<Class<?>, Class<?>>((int)(10 / 0.75) + 1);
-		Map<Class<?>, Class<?>> wrapToPrim = new HashMap<Class<?>, Class<?>>((int)(10 / 0.75) + 1);
+		Map<Class<?>, Class<?>> primToWrap = new HashMap<Class<?>, Class<?>>((int)(9 / 0.75) + 1);
+		Map<Class<?>, Class<?>> wrapToPrim = new HashMap<Class<?>, Class<?>>((int)(9 / 0.75) + 1);
 
 		add(primToWrap, wrapToPrim, boolean.class, Boolean.class);
 		add(primToWrap, wrapToPrim, byte.class, Byte.class);
@@ -101,6 +101,20 @@ public final class Primitives {
 		return WRAPPER_TO_PRIMITIVE_TYPE.containsKey(type);
 	}
 
+	/**
+	 * Returns {@code true} if {@code type} is an array of one of the nine primitive-wrapper types, 
+	 * such as {@link Integer}[ ] or int[ ].
+	 *
+	 * @param type class
+	 * @return true if wrapped type
+	 * @see Class#isPrimitive
+	 */
+	public static boolean isArrayOfWrapperType(Class<?> type) {
+		return type != null && type.isArray() && 
+				(WRAPPER_TO_PRIMITIVE_TYPE.containsKey(type.getComponentType()) 
+						|| PRIMITIVE_TO_WRAPPER_TYPE.containsKey(type.getComponentType()));
+	}
+	
 	/**
 	 * Returns the corresponding wrapper type of {@code type} if it is a primitive type; otherwise
 	 * returns {@code type} itself. Idempotent.

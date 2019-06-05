@@ -67,9 +67,51 @@ public class JavaToProto2Test {
 				.toDomain(Request.class, requestProto);
 		
 		// both objects must be equals
-		Assert.assertEquals(requestDomain, requestDomainConverted);
+		boolean comparisonResult = compareRequests(requestDomain, requestDomainConverted);
+		Assert.assertTrue("Both request must contain same data.", comparisonResult);
 	}
 	
+	private boolean compareRequests(Request req1, Request req2) {
+		if (!req1.getCorpus().equals(req2.getCorpus())) {
+			return false;
+		}
+		if (req1.getI1() != req2.getI1()) {
+			return false;
+		}
+		if (!req1.getI2().equals(req2.getI2())) {
+			return false;
+		}
+		if (req1.getL1() != req2.getL1()) {
+			return false;
+		}
+		if (!req1.getL2().equals(req2.getL2())) {
+			return false;
+		}
+		if (!req1.getS().equals(req2.getS())) {
+			return false;
+		}
+		if (req1.getD1() != req2.getD1()) {
+			return false;
+		}
+		if (!req1.getD2().equals(req2.getD2())) {
+			return false;
+		}
+		if (req1.getF1() != req2.getF1()) {
+			return false;
+		}
+		if (!req1.getF2().equals(req2.getF2())) {
+			return false;
+		}
+		if (req1.isB1() != req2.isB1()) {
+			return false;
+		}
+		if (!req1.getB2().equals(req2.getB2())) {
+			return false;
+		}
+		
+		return true;
+	}
+
 	private Map<String, TestMap> createMapForTestMap() {
 		TestMap testMap1 = TestMap.from(111, "mapName111");
 		TestMap testMap2 = TestMap.from(222, "mapName222");

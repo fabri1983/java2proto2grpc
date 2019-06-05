@@ -75,57 +75,5 @@ public class Request2 {
 	public void setResps(List<Response> resps) {
 		this.resps = resps;
 	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + id;
-		result = prime * result + ((integer == null) ? 0 : integer.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((req == null) ? 0 : req.hashCode());
-		result = prime * result + ((req2Inner == null) ? 0 : req2Inner.hashCode());
-		result = prime * result + ((resps == null) ? 0 : resps.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Request2 other = (Request2) obj;
-		if (id != other.id)
-			return false;
-		if (integer == null) {
-			if (other.integer != null)
-				return false;
-		} else if (!integer.equals(other.integer))
-			return false;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		if (req == null) {
-			if (other.req != null)
-				return false;
-		} else if (!req.equals(other.req))
-			return false;
-		if (req2Inner == null) {
-			if (other.req2Inner != null)
-				return false;
-		} else if (!req2Inner.equals(other.req2Inner))
-			return false;
-		if (resps == null) {
-			if (other.resps != null)
-				return false;
-		} else if (!resps.equals(other.resps))
-			return false;
-		return true;
-	}
 	
 }

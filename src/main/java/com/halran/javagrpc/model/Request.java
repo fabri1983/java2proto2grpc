@@ -2,7 +2,6 @@ package com.halran.javagrpc.model;
 
 import com.halran.javagrpc.model.converter.CorpusEnumStringConverter;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -189,108 +188,6 @@ public class Request {
 
 	public void setIntArray(int[] intArray) {
 		this.intArray = intArray;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + (b1 ? 1231 : 1237);
-		result = prime * result + ((b2 == null) ? 0 : b2.hashCode());
-		result = prime * result + ((corpus == null) ? 0 : corpus.hashCode());
-		long temp;
-		temp = Double.doubleToLongBits(d1);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
-		result = prime * result + ((d2 == null) ? 0 : d2.hashCode());
-		result = prime * result + Float.floatToIntBits(f1);
-		result = prime * result + ((f2 == null) ? 0 : f2.hashCode());
-		result = prime * result + i1;
-		result = prime * result + ((i2 == null) ? 0 : i2.hashCode());
-		result = prime * result + Arrays.hashCode(intArray);
-		result = prime * result + (int) (l1 ^ (l1 >>> 32));
-		result = prime * result + ((l2 == null) ? 0 : l2.hashCode());
-		result = prime * result + ((list1 == null) ? 0 : list1.hashCode());
-		result = prime * result + ((list2 == null) ? 0 : list2.hashCode());
-		result = prime * result + ((map == null) ? 0 : map.hashCode());
-		result = prime * result + ((req2 == null) ? 0 : req2.hashCode());
-		result = prime * result + ((s == null) ? 0 : s.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Request other = (Request) obj;
-		if (b1 != other.b1)
-			return false;
-		if (b2 == null) {
-			if (other.b2 != null)
-				return false;
-		} else if (!b2.equals(other.b2))
-			return false;
-		if (corpus != other.corpus)
-			return false;
-		if (Double.doubleToLongBits(d1) != Double.doubleToLongBits(other.d1))
-			return false;
-		if (d2 == null) {
-			if (other.d2 != null)
-				return false;
-		} else if (!d2.equals(other.d2))
-			return false;
-		if (Float.floatToIntBits(f1) != Float.floatToIntBits(other.f1))
-			return false;
-		if (f2 == null) {
-			if (other.f2 != null)
-				return false;
-		} else if (!f2.equals(other.f2))
-			return false;
-		if (i1 != other.i1)
-			return false;
-		if (i2 == null) {
-			if (other.i2 != null)
-				return false;
-		} else if (!i2.equals(other.i2))
-			return false;
-		if (!Arrays.equals(intArray, other.intArray))
-			return false;
-		if (l1 != other.l1)
-			return false;
-		if (l2 == null) {
-			if (other.l2 != null)
-				return false;
-		} else if (!l2.equals(other.l2))
-			return false;
-		if (list1 == null) {
-			if (other.list1 != null)
-				return false;
-		} else if (!list1.equals(other.list1))
-			return false;
-		if (list2 == null) {
-			if (other.list2 != null)
-				return false;
-		} else if (!list2.equals(other.list2))
-			return false;
-		if (map == null) {
-			if (other.map != null)
-				return false;
-		} else if (!map.equals(other.map))
-			return false;
-		if (req2 == null) {
-			if (other.req2 != null)
-				return false;
-		} else if (!req2.equals(other.req2))
-			return false;
-		if (s == null) {
-			if (other.s != null)
-				return false;
-		} else if (!s.equals(other.s))
-			return false;
-		return true;
 	}
 
 }

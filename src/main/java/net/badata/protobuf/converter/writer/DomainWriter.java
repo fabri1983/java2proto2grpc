@@ -11,6 +11,7 @@ import net.badata.protobuf.converter.inspection.NullValueInspector;
 import net.badata.protobuf.converter.resolver.FieldResolver;
 import net.badata.protobuf.converter.type.TypeConverter;
 import net.badata.protobuf.converter.utils.FieldUtils;
+import net.badata.protobuf.converter.utils.ProtobufInnerTypes;
 
 /**
  * Writes data to the domain instance.
@@ -69,19 +70,18 @@ public class DomainWriter extends AbstractWriter {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private Object convertToArray(Object value) {
 		String simpleName = value.getClass().getSimpleName();
-		if ("BooleanArrayList".equals(simpleName)) {
-			AbstractList<Boolean> list = (AbstractList<Boolean>) value;
+		if (ProtobufInnerTypes.BooleanArrayList.name().equals(simpleName)) {
+			AbstractList<Boolean> list = ProtobufInnerTypes.castToAbstractList(value);
 			boolean[] array = new boolean[list.size()];
 			for (int i=0, c=list.size(); i < c; ++i) {
 				array[i] = list.get(i);
 			}
 			return array;
 		}
-		if ("ByteStringListView".equals(simpleName)) {
-			AbstractList<ByteString> list = (AbstractList<ByteString>) value;
+		if (ProtobufInnerTypes.ByteStringListView.name().equals(simpleName)) {
+			AbstractList<ByteString> list = ProtobufInnerTypes.castToAbstractList(value);
 			byte[] array = new byte[list.size()];
 			for (int i=0, c=list.size(); i < c; ++i) {
 				ByteString byteString = list.get(i);
@@ -91,40 +91,41 @@ public class DomainWriter extends AbstractWriter {
 			}
 			return array;
 		}
-		if ("DoubleArrayList".equals(simpleName)) {
-			AbstractList<Double> list = (AbstractList<Double>) value;
+		if (ProtobufInnerTypes.DoubleArrayList.name().equals(simpleName)) {
+			AbstractList<Double> list = ProtobufInnerTypes.castToAbstractList(value);
 			double[] array = new double[list.size()];
 			for (int i=0, c=list.size(); i < c; ++i) {
 				array[i] = list.get(i);
 			}
 			return array;
 		}
-		if ("FloatArrayList".equals(simpleName)) {
-			AbstractList<Float> list = (AbstractList<Float>) value;
+		if (ProtobufInnerTypes.FloatArrayList.name().equals(simpleName)) {
+			AbstractList<Float> list = ProtobufInnerTypes.castToAbstractList(value);
 			float[] array = new float[list.size()];
 			for (int i=0, c=list.size(); i < c; ++i) {
 				array[i] = list.get(i);
 			}
 			return array;
 		}
-		if ("IntArrayList".equals(simpleName)) {
-			AbstractList<Integer> list = (AbstractList<Integer>) value;
+		if (ProtobufInnerTypes.IntArrayList.name().equals(simpleName)) {
+			AbstractList<Integer> list = ProtobufInnerTypes.castToAbstractList(value);
 			int[] array = new int[list.size()];
 			for (int i=0, c=list.size(); i < c; ++i) {
 				array[i] = list.get(i);
 			}
 			return array;
 		}
-		if ("LongArrayList".equals(simpleName)) {
-			AbstractList<Long> list = (AbstractList<Long>) value;
+		if (ProtobufInnerTypes.LongArrayList.name().equals(simpleName)) {
+			AbstractList<Long> list = ProtobufInnerTypes.castToAbstractList(value);
 			long[] array = new long[list.size()];
 			for (int i=0, c=list.size(); i < c; ++i) {
 				array[i] = list.get(i);
 			}
 			return array;
 		}
-		
-		AbstractList<?> list = (AbstractList<?>) value;
-		return list.toArray();
+		else {
+			AbstractList<?> list = (AbstractList<?>) value;
+			return list.toArray();
+		}
 	}
 }

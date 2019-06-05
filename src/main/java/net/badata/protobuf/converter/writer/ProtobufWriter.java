@@ -3,7 +3,9 @@ package net.badata.protobuf.converter.writer;
 import com.google.protobuf.MessageLite;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import net.badata.protobuf.converter.exception.WriteException;
@@ -50,7 +52,12 @@ public class ProtobufWriter extends AbstractWriter {
 		while (valueClass != null) {
 			String setterName = FieldUtils.createProtobufSetterName(fieldResolver);
 			try {
-				destinationClass.getMethod(setterName, valueClass).invoke(destination, value);
+				Object finalValue = value;
+				// does destination setter method expects an array?
+				if (FieldUtils.doesSetterExpectsArray(fieldResolver)) {
+					finalValue = convertArrayToIterable(value);
+				}
+				destinationClass.getMethod(setterName, valueClass).invoke(destination, finalValue);
 				break;
 			} catch (IllegalAccessException e) {
 				throw new WriteException(
@@ -74,6 +81,9 @@ public class ProtobufWriter extends AbstractWriter {
 		if (Primitives.isWrapperType(valueClass)) {
 			return Primitives.unwrap(valueClass);
 		}
+		if (Primitives.isArrayOfWrapperType(valueClass)) {
+			return Iterable.class;
+		}
 		if (Collection.class.isAssignableFrom(valueClass)) {
 			return Iterable.class;
 		}
@@ -81,5 +91,81 @@ public class ProtobufWriter extends AbstractWriter {
 			return Map.class;
 		}
 		return valueClass;
+	}
+
+	private Iterable<?> convertArrayToIterable(final Object value) {
+		Class<?> valueClass = value.getClass().getComponentType();
+		if (boolean.class.isAssignableFrom(valueClass)) {
+			boolean[] array = (boolean[]) value;
+			List<Boolean> list = new ArrayList<>(array.length);
+			for (int i=0, c=array.length; i < c; ++i) {
+				list.add(i, array[i]);
+			}
+			return list;
+		}
+		else if (byte.class.isAssignableFrom(valueClass)) {
+			byte[] array = (byte[]) value;
+			List<Byte> list = new ArrayList<>(array.length);
+			for (int i=0, c=array.length; i < c; ++i) {
+				list.add(i, array[i]);
+			}
+			return list;
+		}
+		else if (char.class.isAssignableFrom(valueClass)) {
+			char[] array = (char[]) value;
+			List<Character> list = new ArrayList<>(array.length);
+			for (int i=0, c=array.length; i < c; ++i) {
+				list.add(i, array[i]);
+			}
+			return list;
+		}
+		else if (double.class.isAssignableFrom(valueClass)) {
+			double[] array = (double[]) value;
+			List<Double> list = new ArrayList<>(array.length);
+			for (int i=0, c=array.length; i < c; ++i) {
+				list.add(i, array[i]);
+			}
+			return list;
+		}
+		else if (float.class.isAssignableFrom(valueClass)) {
+			float[] array = (float[]) value;
+			List<Float> list = new ArrayList<>(array.length);
+			for (int i=0, c=array.length; i < c; ++i) {
+				list.add(i, array[i]);
+			}
+			return list;
+		}
+		else if (int.class.isAssignableFrom(valueClass)) {
+			int[] array = (int[]) value;
+			List<Integer> list = new ArrayList<>(array.length);
+			for (int i=0, c=array.length; i < c; ++i) {
+				list.add(i, array[i]);
+			}
+			return list;
+		}
+		else if (long.class.isAssignableFrom(valueClass)) {
+			long[] array = (long[]) value;
+			List<Long> list = new ArrayList<>(array.length);
+			for (int i=0, c=array.length; i < c; ++i) {
+				list.add(i, array[i]);
+			}
+			return list;
+		}
+		else if (short.class.isAssignableFrom(valueClass)) {
+			short[] array = (short[]) value;
+			List<Short> list = new ArrayList<>(array.length);
+			for (int i=0, c=array.length; i < c; ++i) {
+				list.add(i, array[i]);
+			}
+			return list;
+		}
+		else {
+			Object[] array = (Object[]) value;
+			List<Object> list = new ArrayList<>(array.length);
+			for (int i=0, c=array.length; i < c; ++i) {
+				list.add(i, array[i]);
+			}
+			return list;
+		}
 	}
 }
