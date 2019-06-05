@@ -69,6 +69,7 @@ public class DomainWriter extends AbstractWriter {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private Object convertToArray(Object value) {
 		String simpleName = value.getClass().getSimpleName();
 		if ("BooleanArrayList".equals(simpleName)) {

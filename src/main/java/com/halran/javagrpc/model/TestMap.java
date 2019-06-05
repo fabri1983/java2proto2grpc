@@ -11,6 +11,13 @@ public class TestMap {
 	@ProtoField
 	private String mapName;
 
+	public static TestMap from(int mapId, String mapName) {
+		TestMap newObj = new TestMap();
+		newObj.mapId = mapId;
+		newObj.mapName = mapName;
+		return newObj;
+	}
+	
 	public int getMapId() {
 		return mapId;
 	}

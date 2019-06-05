@@ -44,8 +44,8 @@ public final class Primitives {
 	// Sad that we can't use a BiMap. :(
 
 	static {
-		Map<Class<?>, Class<?>> primToWrap = new HashMap<Class<?>, Class<?>>(16);
-		Map<Class<?>, Class<?>> wrapToPrim = new HashMap<Class<?>, Class<?>>(16);
+		Map<Class<?>, Class<?>> primToWrap = new HashMap<Class<?>, Class<?>>((int)(10 / 0.75) + 1);
+		Map<Class<?>, Class<?>> wrapToPrim = new HashMap<Class<?>, Class<?>>((int)(10 / 0.75) + 1);
 
 		add(primToWrap, wrapToPrim, boolean.class, Boolean.class);
 		add(primToWrap, wrapToPrim, byte.class, Byte.class);

@@ -3,6 +3,7 @@
 #################
 !src/main/proto/donotremove
 src/main/proto/
+/out
 
 ###############
 # Intellij IDEA

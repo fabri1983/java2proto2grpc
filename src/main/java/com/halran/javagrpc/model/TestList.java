@@ -11,6 +11,13 @@ public class TestList {
 	@ProtoField
 	private String listName;
 
+	public static TestList from(int listId, String listName) {
+		TestList newObj = new TestList();
+		newObj.listId = listId;
+		newObj.listName = listName;
+		return newObj;
+	}
+	
 	public int getListId() {
 		return listId;
 	}

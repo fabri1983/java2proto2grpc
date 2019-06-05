@@ -67,7 +67,11 @@ public class MappingResult {
 		/**
 		 * Collection field is mapped.
 		 */
-		COLLECTION_MAPPING;
+		COLLECTION_MAPPING,
+		/**
+		 * Map field is mapped.
+		 */
+		MAP_MAPPING;
 	}
 }
 

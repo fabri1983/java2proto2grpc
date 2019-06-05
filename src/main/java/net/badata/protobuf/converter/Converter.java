@@ -7,8 +7,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import net.badata.protobuf.converter.annotation.ProtoClass;
 import net.badata.protobuf.converter.exception.ConverterException;
@@ -48,7 +52,7 @@ public final class Converter {
 	 * Create converter with map of ignored fields.
 	 *
 	 * @param fieldsIgnore Map of fields that has to be ignored by this converter instance.
-	 * @return Converter instance.
+	 * @return new Converter instance.
 	 * @deprecated use {@code create(Configuration)} instead.
 	 */
 	@Deprecated
@@ -62,7 +66,7 @@ public final class Converter {
 	 * Create configured converter.
 	 *
 	 * @param configuration Parameters for conversion.
-	 * @return Converter instance.
+	 * @return new Converter instance.
 	 */
 	public static Converter create(final Configuration configuration) {
 		return new Converter(configuration);
@@ -192,6 +196,13 @@ public final class Converter {
 				if (FieldUtils.isComplexType(collectionType)) {
 					mappedValue = createDomainValueList(collectionType, mappedValue);
 				}
+				fieldWriter.write(fieldResolver, mappedValue);
+				break;
+			case MAP_MAPPING:
+				Class<?>[] mapTypes = FieldUtils.extractMapTypes(fieldResolver.getField());
+				mappedValue = createDomainValueMap(mapTypes[0], mapTypes[1], mappedValue);
+				fieldWriter.write(fieldResolver, mappedValue);
+				break;
 			case MAPPED:
 			default:
 				fieldWriter.write(fieldResolver, mappedValue);
@@ -205,6 +216,31 @@ public final class Converter {
 	@SuppressWarnings("unchecked")
 	private <T> List<T> createDomainValueList(final Class<T> type, final Object protobufCollection) {
 		return createNestedConverter().toDomain(type, (List<? extends MessageLite>) protobufCollection);
+	}
+
+	@SuppressWarnings("unchecked")
+	private <K, V> Map<K, V> createDomainValueMap(final Class<K> keyClass, final Class<V> valueClass, final Object mappedValue) {
+		final Map<? extends MessageLite, ? extends MessageLite> protobufMap = 
+				(Map<? extends MessageLite, ? extends MessageLite>) mappedValue;
+//		boolean isKeyProto = false;
+//		boolean isValueProto = false;
+//		if (FieldUtils.isComplexType(keyClass)) {
+//			isKeyProto = true;
+//		}
+//		if (FieldUtils.isComplexType(valueClass)) {
+//			isValueProto = true;
+//		}
+		if (protobufMap != null) {
+			Map<K, V> domainMap = new HashMap<>((int)(protobufMap.entrySet().size() / 0.75) + 1);
+			for (Iterator<?> it = protobufMap.entrySet().iterator(); it.hasNext();) {
+				Map.Entry<? extends MessageLite, ? extends MessageLite> entry = 
+						(Entry<? extends MessageLite, ? extends MessageLite>) it.next();
+				K domainKey = toDomain(keyClass, entry.getKey());
+				V domainValue = toDomain(valueClass, entry.getValue());
+				domainMap.put(domainKey, domainValue);
+			}
+		}
+		return new HashMap<>(1);
 	}
 
 	/**
@@ -225,8 +261,8 @@ public final class Converter {
 	@SuppressWarnings("unchecked")
 	private <T, E extends MessageLite, K extends Collection<?>> K toProtobuf(final Class<K> collectionClass,
 			final Class<E> protobufClass, final Collection<T> domainCollection) {
-		Collection<E> protobufCollection = List.class.isAssignableFrom(collectionClass) ? new ArrayList<E>() : new
-				HashSet<E>();
+		Collection<E> protobufCollection = List.class.isAssignableFrom(collectionClass) ? 
+				new ArrayList<E>() : new HashSet<E>();
 		if (domainCollection != null) {
 			for (T domain : domainCollection) {
 				protobufCollection.add(toProtobuf(protobufClass, domain));
@@ -287,6 +323,7 @@ public final class Converter {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void fillProtobufField(final FieldResolver fieldResolver, final MappingResult mappingResult)
 			throws WriteException {
 		ProtobufWriter fieldWriter = new ProtobufWriter((MessageLite.Builder) mappingResult.getDestination());
@@ -305,6 +342,36 @@ public final class Converter {
 					mappedValue = createProtobufValueList(protobufCollectionClass, fieldResolver.getDomainType(),
 							(Collection<?>) mappedValue);
 				}
+				fieldWriter.write(fieldResolver, mappedValue);
+				break;
+			case MAP_MAPPING:
+				Class<?>[] mapTypes = MessageUtils.getMessageMapTypes(mappingResult.getDestination(), 
+						FieldUtils.createProtobufGetterName(fieldResolver));
+				boolean isKeyProto = FieldUtils.isComplexType(mapTypes[0]);
+				boolean isValueProto = FieldUtils.isComplexType(mapTypes[1]);
+				// process 4 types of combination between key and value classes
+				if (isKeyProto && isValueProto) {
+					Class<? extends MessageLite> keyClass = (Class<? extends MessageLite>) mapTypes[0];
+					Class<? extends MessageLite> valueClass = (Class<? extends MessageLite>) mapTypes[1];
+					mappedValue = createProtobufValueMap1(keyClass, valueClass, (Map<?, ?>) mappedValue);
+				}
+				else if (isKeyProto && !isValueProto) {
+					Class<? extends MessageLite> keyClass = (Class<? extends MessageLite>) mapTypes[0];
+					Class<?> valueClass = mapTypes[1];
+					mappedValue = createProtobufValueMap2(keyClass, valueClass, (Map<?, ?>) mappedValue);
+				}
+				else if (!isKeyProto && isValueProto) {
+					Class<?> keyClass = mapTypes[0];
+					Class<? extends MessageLite> valueClass = (Class<? extends MessageLite>) mapTypes[1];
+					mappedValue = createProtobufValueMap3(keyClass, valueClass, (Map<?, ?>) mappedValue);
+				}
+				else if (!isKeyProto && !isValueProto) {
+					Class<?> keyClass = mapTypes[0];
+					Class<?> valueClass = mapTypes[1];
+					mappedValue = createProtobufValueMap4(keyClass, valueClass, (Map<?, ?>) mappedValue);
+				}
+				fieldWriter.write(fieldResolver, mappedValue);
+				break;
 			case MAPPED:
 			default:
 				fieldWriter.write(fieldResolver, mappedValue);
@@ -318,4 +385,61 @@ public final class Converter {
 				.toProtobuf((Class<? extends Collection<?>>) domainCollectionClass, type, domainCollection);
 	}
 
+	private <K extends MessageLite, V extends MessageLite> Map<K, V> createProtobufValueMap1(
+			final Class<K> keyClass, final Class<V> valueClass, final Map<?, ?> domainMappedValue) {
+		if (domainMappedValue != null) {
+			Map<K, V> protobufMap = new HashMap<>((int)(domainMappedValue.entrySet().size() / 0.75) + 1);
+			for (Iterator<?> it = domainMappedValue.entrySet().iterator(); it.hasNext();) {
+				Map.Entry<?, ?> entry = (Map.Entry<?, ?>) it.next();
+				K keyAsProto = toProtobuf(keyClass, entry.getKey());
+				V valueAsProto = toProtobuf(valueClass, entry.getValue());
+				protobufMap.put(keyAsProto, valueAsProto);
+			}
+		}
+		return new HashMap<>(1);
+	}
+
+	@SuppressWarnings("unchecked")
+	private <K extends MessageLite, V> Map<K, V> createProtobufValueMap2(
+			final Class<K> keyClass, final Class<?> valueClass, final Map<?, ?> domainMappedValue) {
+		if (domainMappedValue != null) {
+			Map<K, V> protobufMap = new HashMap<>((int)(domainMappedValue.entrySet().size() / 0.75) + 1);
+			for (Iterator<?> it = domainMappedValue.entrySet().iterator(); it.hasNext();) {
+				Map.Entry<?, V> entry = (Map.Entry<?, V>) it.next();
+				K keyAsProto = toProtobuf(keyClass, entry.getKey());
+				V value = entry.getValue();
+				protobufMap.put(keyAsProto, value);
+			}
+		}
+		return new HashMap<>(1);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private <K, V extends MessageLite> Map<K, V> createProtobufValueMap3(
+			final Class<?> keyClass, final Class<V> valueClass, final Map<?, ?> domainMappedValue) {
+		if (domainMappedValue != null) {
+			Map<K, V> protobufMap = new HashMap<>((int)(domainMappedValue.entrySet().size() / 0.75) + 1);
+			for (Iterator<?> it = domainMappedValue.entrySet().iterator(); it.hasNext();) {
+				Map.Entry<K, ?> entry = (Map.Entry<K, ?>) it.next();
+				K key = entry.getKey();
+				V valueAsProto = toProtobuf(valueClass, entry.getValue());
+				protobufMap.put(key, valueAsProto);
+			}
+		}
+		return new HashMap<>(1);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private <K, V> Map<K, V> createProtobufValueMap4(final Class<?> keyClass, final Class<?> valueClass, final Map<?, ?> domainMappedValue) {
+		if (domainMappedValue != null) {
+			Map<K, V> protobufMap = new HashMap<>((int)(domainMappedValue.entrySet().size() / 0.75) + 1);
+			for (Iterator<?> it = domainMappedValue.entrySet().iterator(); it.hasNext();) {
+				Map.Entry<K, V> entry = (Map.Entry<K, V>) it.next();
+				K key = entry.getKey();
+				V value = entry.getValue();
+				protobufMap.put(key, value);
+			}
+		}
+		return new HashMap<>(1);
+	}
 }

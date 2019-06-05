@@ -42,6 +42,9 @@ public class DefaultMapperImpl implements Mapper {
 		if (FieldUtils.isCollectionType(fieldResolver.getField())) {
 			return new MappingResult(MappingResult.Result.COLLECTION_MAPPING, protobufFieldValue, domain);
 		}
+		if (FieldUtils.isMapType(fieldResolver.getField())) {
+			return new MappingResult(MappingResult.Result.MAP_MAPPING, protobufFieldValue, domain);
+		}
 		return new MappingResult(MappingResult.Result.MAPPED, protobufFieldValue, domain);
 	}
 
@@ -90,6 +93,9 @@ public class DefaultMapperImpl implements Mapper {
 		}
 		if (FieldUtils.isCollectionType(fieldResolver.getField())) {
 			return new MappingResult(MappingResult.Result.COLLECTION_MAPPING, domainFieldValue, protobufBuilder);
+		}
+		if (FieldUtils.isMapType(fieldResolver.getField())) {
+			return new MappingResult(MappingResult.Result.MAP_MAPPING, domainFieldValue, protobufBuilder);
 		}
 		return new MappingResult(MappingResult.Result.MAPPED, domainFieldValue, protobufBuilder);
 	}
