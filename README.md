@@ -10,8 +10,8 @@ created LoginService client and server, and more.
 #### Features:
 
 - Depends on Maven.
-- Java 8 only (and minor versions too). See the **TODO** section for Java 9+.
-- Generates *.proto* files out of Java classes/interfaces existing in the classpath and decorated by *@RemoteAccessEnabled*.
+- Java 8 (and minor versions too). See the **TODO** section for Java 9+.
+- Generates *.proto* files (syntax v3) out of Java classes/interfaces existing in the classpath and decorated by *@RemoteAccessEnabled*.
 - Generates gRPC stubs out of *.proto files*.
 - Provides two gRPC examples: *Helloworld* and *LoginService*.
 - *java.lang.Enum* is defined as *string* when generating proto file. So when using *@net.badata.protobuf.converter.annotation.ProtoField* 
