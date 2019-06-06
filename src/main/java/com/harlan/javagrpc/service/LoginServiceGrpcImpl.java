@@ -31,8 +31,7 @@ public class LoginServiceGrpcImpl extends LoginServiceImplBase implements GrpcSe
 		
 		loginBusiness.loginVoid();
 		
-		Empty response = Empty.newBuilder()
-				.build();
+		Empty response = Empty.newBuilder().build();
 		
 		// send it to the client
 		responseObserver.onNext(response);

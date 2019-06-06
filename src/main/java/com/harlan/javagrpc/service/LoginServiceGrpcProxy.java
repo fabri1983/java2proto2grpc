@@ -1,5 +1,6 @@
 package com.harlan.javagrpc.service;
 
+import com.google.protobuf.Empty;
 import com.halran.javagrpc.model.Request;
 import com.halran.javagrpc.model.Request2;
 import com.halran.javagrpc.model.Response;
@@ -25,7 +26,9 @@ public class LoginServiceGrpcProxy implements LoginService {
 
 	@Override
 	public void loginVoid() {
-		
+		Empty request = Empty.newBuilder().build();
+		// use the grpc client to call loginVoid()
+		blockingStub.loginVoid(request);
 	}
 
 	@Override
