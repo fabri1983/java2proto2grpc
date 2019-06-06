@@ -96,7 +96,7 @@ public class ConverterTest {
 		primitiveTestItem.setIntValue(-1001);
 		testDomain.setComplexListValue(Arrays.asList(primitiveTestItem));
 		ConverterDomain.PrimitiveTest primitiveTestSItem = new ConverterDomain.PrimitiveTest();
-		primitiveTestItem.setIntValue(-1002);
+		primitiveTestSItem.setIntValue(-1002);
 		testDomain.setComplexSetValue(new HashSet<ConverterDomain.PrimitiveTest>(Arrays.asList(primitiveTestSItem)));
 		testDomain.setComplexNullableCollectionValue(null);
 
@@ -230,7 +230,8 @@ public class ConverterTest {
 		Assert.assertEquals((Object) testDomain.getRecursiveValue().getIntValue(), result.getRecursiveValue().getIntValue());
 		
 		Assert.assertEquals(testDomain.getSimpleMapValue(), result.getSimpleMapValueMap());
-		Assert.assertEquals(testDomain.getComplexMapValue(), result.getComplexMapValueMap());
+		Assert.assertEquals(testDomain.getComplexMapValue().get("key").getIntValue(), 
+				result.getComplexMapValueMap().get("key").getIntValue());
 	}
 
 	@Test

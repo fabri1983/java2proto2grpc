@@ -199,26 +199,27 @@ public final class Converter {
 				fieldWriter.write(fieldResolver, mappedValue);
 				break;
 			case MAP_MAPPING:
-//				Class<?>[] mapTypes = FieldUtils.extractMapTypes(fieldResolver.getField());
-//				boolean isKeyComplex = FieldUtils.isComplexType(mapTypes[0]);
-//				boolean isValueComplex = FieldUtils.isComplexType(mapTypes[1]);
-//				// process 4 types of combination between key and value classes
-//				if (isKeyComplex && isValueComplex) {
-//					Class<?> keyClass = mapTypes[0];
-//					Class<?> valueClass = mapTypes[1];
-//					mappedValue = createDomainValueMap1(keyClass, valueClass, mappedValue);
-//				}
-//				else if (isKeyComplex && !isValueComplex) {
-//					Class<?> keyClass = mapTypes[0];
-//					mappedValue = createDomainValueMap2(keyClass, mappedValue);
-//				}
-//				else if (!isKeyComplex && isValueComplex) {
-//					Class<?> valueClass = mapTypes[1];
-//					mappedValue = createDomainValueMap3(valueClass, mappedValue);
-//				}
-//				if (!isKeyComplex && !isValueComplex) {
+				// get processing field's declaring classes for Map<>
+				Class<?>[] domainTypes = FieldUtils.extractMapTypes(fieldResolver.getField());
+				boolean isKeyComplex = FieldUtils.isComplexType(domainTypes[0]);
+				boolean isValueComplex = FieldUtils.isComplexType(domainTypes[1]);
+				// process 4 types of combination between key and value classes
+				if (isKeyComplex && isValueComplex) {
+					Class<?> keyClass = domainTypes[0];
+					Class<?> valueClass = domainTypes[1];
+					mappedValue = createDomainValueMap1(keyClass, valueClass, mappedValue);
+				}
+				else if (isKeyComplex && !isValueComplex) {
+					Class<?> keyClass = domainTypes[0];
+					mappedValue = createDomainValueMap2(keyClass, mappedValue);
+				}
+				else if (!isKeyComplex && isValueComplex) {
+					Class<?> valueClass = domainTypes[1];
+					mappedValue = createDomainValueMap3(valueClass, mappedValue);
+				}
+				else if (!isKeyComplex && !isValueComplex) {
 					mappedValue = createDomainValueMap4(mappedValue);
-//				}
+				}
 				fieldWriter.write(fieldResolver, mappedValue);
 				break;
 			case MAPPED:
@@ -421,22 +422,25 @@ public final class Converter {
 				fieldWriter.write(fieldResolver, mappedValue);
 				break;
 			case MAP_MAPPING:
-				Class<?>[] mapTypes = MessageUtils.getMessageMapTypes(mappingResult.getDestination(), 
+				// get processing field's declaring classes for Map<>
+				Class<?>[] domainTypes = FieldUtils.extractMapTypes(fieldResolver.getField());
+				boolean isKeyComplex = FieldUtils.isComplexType(domainTypes[0]);
+				boolean isValueComplex = FieldUtils.isComplexType(domainTypes[1]);
+				// get destination field's declaring classes for Map<>
+				Class<?>[] destinationTypes = MessageUtils.getMessageMapTypes(mappingResult.getDestination(), 
 						FieldUtils.createProtobufGetterName(fieldResolver));
-				boolean isKeyComplex = FieldUtils.isComplexType(mapTypes[0]);
-				boolean isValueComplex = FieldUtils.isComplexType(mapTypes[1]);
 				// process 4 types of combination between key and value classes
 				if (isKeyComplex && isValueComplex) {
-					Class<? extends MessageLite> keyClass = (Class<? extends MessageLite>) mapTypes[0];
-					Class<? extends MessageLite> valueClass = (Class<? extends MessageLite>) mapTypes[1];
+					Class<? extends MessageLite> keyClass = (Class<? extends MessageLite>) destinationTypes[0];
+					Class<? extends MessageLite> valueClass = (Class<? extends MessageLite>) destinationTypes[1];
 					mappedValue = createProtobufValueMap1(keyClass, valueClass, (Map<?, ?>) mappedValue);
 				}
 				else if (isKeyComplex && !isValueComplex) {
-					Class<? extends MessageLite> keyClass = (Class<? extends MessageLite>) mapTypes[0];
+					Class<? extends MessageLite> keyClass = (Class<? extends MessageLite>) destinationTypes[0];
 					mappedValue = createProtobufValueMap2(keyClass, (Map<?, ?>) mappedValue);
 				}
 				else if (!isKeyComplex && isValueComplex) {
-					Class<? extends MessageLite> valueClass = (Class<? extends MessageLite>) mapTypes[1];
+					Class<? extends MessageLite> valueClass = (Class<? extends MessageLite>) destinationTypes[1];
 					mappedValue = createProtobufValueMap3(valueClass, (Map<?, ?>) mappedValue);
 				}
 				else if (!isKeyComplex && !isValueComplex) {
