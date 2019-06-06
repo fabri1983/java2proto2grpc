@@ -15,6 +15,10 @@ import java.util.TreeMap;
 
 public class JavaToProto2 {
 
+	private static final String PROTO_SUFFIX = "Proto";
+	private static final String PROTO_IN_SUFFIX = "ProtoIn";
+	private static final String PROTO_OUT_SUFFIX = "ProtoOut";
+	
 	private Map<String,TreeMap<Integer,String>> map;
 	
 	public String getProtobuf(Class<?> clazz) {
@@ -37,6 +41,21 @@ public class JavaToProto2 {
 		sb.append("package " + name + ";\r\n");
 		sb.append("\r\n");
 		
+		Method[] methods = getDeclaredMethods(clazz);
+		
+		generateRpcMethods(sb, name, methods);
+		
+		generateMessages(sb, methods);
+		
+		// process all messages accumulated in the map
+		sb.append(Map2StringBuffer(map));
+		
+		map.clear();
+		
+		return sb.toString();
+	}
+
+	private Method[] getDeclaredMethods(Class<?> clazz) {
 		//服务
 		Method[] methods = clazz.getDeclaredMethods(); // excludes inherited methods
 		
@@ -61,16 +80,7 @@ public class JavaToProto2 {
 			}
 		});
 		
-		generateRpcMethods(sb, name, methods);
-		
-		generateMessages(sb, methods);
-		
-		// process all messages accumulated in the map
-		sb.append(Map2StringBuffer(map));
-		
-		map.clear();
-		
-		return sb.toString();
+		return methods;
 	}
 
 	private void generateRpcMethods(StringBuffer sb, String serviceName, Method[] methods) {
@@ -97,19 +107,18 @@ public class JavaToProto2 {
 			// parameter type
 			String methodParameterType = "google.protobuf.Empty";
 			if (method.getParameterCount() > 0) {
-				methodParameterType = baseMessageName + "MessageIn";
+				methodParameterType = baseMessageName + PROTO_IN_SUFFIX;
 			}
-			
 			sb.append("(" + methodParameterType + ") returns ");
 			
 			// return type
 			String methodReturnType = "google.protobuf.Empty";
 			if (!method.getReturnType().equals(Void.TYPE)) {
-				methodReturnType = baseMessageName + "MessageOut";
+				methodReturnType = baseMessageName + PROTO_OUT_SUFFIX;
 			}
-			
 			sb.append("(" + methodReturnType + ") {};\r\n");
 		}
+		
 		sb.append("}\r\n");
 		sb.append("\r\n");
 	}
@@ -133,7 +142,7 @@ public class JavaToProto2 {
 			// has any parameter?
 			if (method.getParameterCount() > 0) {
 			
-				sb.append("message " + baseMessageName + "MessageIn {\r\n");
+				sb.append("message " + baseMessageName + PROTO_IN_SUFFIX + " {\r\n");
 			
 				Parameter[] parameters = method.getParameters();
 				if (parameters.length > 0) {
@@ -150,7 +159,7 @@ public class JavaToProto2 {
 			// has return type?
 			if (!method.getReturnType().equals(Void.TYPE)) {
 			
-				sb.append("message " + baseMessageName + "MessageOut {\r\n");
+				sb.append("message " + baseMessageName + PROTO_OUT_SUFFIX + " {\r\n");
 				
 				handleReturnType(sb, method.getReturnType(), method.getGenericReturnType());
 				
@@ -184,7 +193,7 @@ public class JavaToProto2 {
 		return methodNameWithCounterMap;
 	}
 	
-	private boolean isAbstractOrTransientOrStatic(Field field) {
+	private boolean skipField(Field field) {
 		int mod = field.getModifiers();
 		return Modifier.isAbstract(mod) || Modifier.isTransient(mod) || Modifier.isStatic(mod);
 	}
@@ -230,7 +239,7 @@ public class JavaToProto2 {
 	 * @return
 	 */
 	private boolean isJavaClass(Class<?> clz) {
-		return clz != null && !"".equals(getProtobufFieldType(clz));
+		return clz != null && getProtobufFieldType(clz) != null;
 //		return clz != null && clz.getClassLoader() == null;
 	}
 	
@@ -265,8 +274,8 @@ public class JavaToProto2 {
 			// build up a param name because at this level Java does not return the real param name
 			String paramFinalName = lowerCaseFirstChar(classSimpleName) + capitalizeFirstChar(parameter.getName());
 			
-			sb.append("\tmap<" + getGenericByTypeName(typeName0) + ", " + 
-						getGenericByTypeName(typeName1) + "> " + paramFinalName + " = "+ protoFieldIndex + ";\r\n");
+			sb.append("\tmap<" + getGenericByTypeNameWithSuffix(typeName0) + ", " + 
+						getGenericByTypeNameWithSuffix(typeName1) + "> " + paramFinalName + " = "+ protoFieldIndex + ";\r\n");
 		}
 		else if (Collection.class.isAssignableFrom(processingClass)) {
 			
@@ -283,7 +292,8 @@ public class JavaToProto2 {
 					return; // we now is a Java class so it has no fields to process
 				}
 				
-				sb.append("\trepeated " + removeArraySymbol(clazz.getSimpleName()) + " " + paramFinalName + " = " + protoFieldIndex + ";\r\n");
+				String paramFinalType = removeArraySymbol(clazz.getSimpleName()) + PROTO_SUFFIX;
+				sb.append("\trepeated " + paramFinalType + " " + paramFinalName + " = " + protoFieldIndex + ";\r\n");
 				
 				if (!map.containsKey(clazz.getName())) {
 					
@@ -297,7 +307,7 @@ public class JavaToProto2 {
 						int j = 1;
 						Field[] fields = clazz.getDeclaredFields();
 						for (Field f : fields) {
-							if (isAbstractOrTransientOrStatic(f)) {
+							if (skipField(f)) {
 								continue;
 							}
 							handleField(f, j, listTm);
@@ -322,9 +332,10 @@ public class JavaToProto2 {
 //			handleEnum(parameter.getType());
 //		}
 		else {
+			String paramFinalType = classSimpleName + PROTO_SUFFIX;
 			// build up a param name because at this level Java does not return the real param name
 			String paramFinalName = lowerCaseFirstChar(classSimpleName) + capitalizeFirstChar(parameter.getName());
-			sb.append("\t" + classSimpleName + " " + paramFinalName + " = " + protoFieldIndex +";\r\n");
+			sb.append("\t" + paramFinalType + " " + paramFinalName + " = " + protoFieldIndex +";\r\n");
 			
 			if (!map.containsKey(processingClass.getName())) {
 				
@@ -337,7 +348,7 @@ public class JavaToProto2 {
 					int j = 1;
 					Field[] fields = processingClass.getDeclaredFields();
 					for(Field f : fields) {
-						if (isAbstractOrTransientOrStatic(f)) {
+						if (skipField(f)) {
 							continue;
 						}
 						handleField(f, j, ObjTm);
@@ -361,8 +372,8 @@ public class JavaToProto2 {
 			handleGeneric(typeName0);
 			handleGeneric(typeName1);
 			
-			sb.append("\tmap<" + getGenericByTypeName(typeName0) + ", " + 
-						getGenericByTypeName(typeName1) + "> " + returnName + " = 1;\r\n");
+			sb.append("\tmap<" + getGenericByTypeNameWithSuffix(typeName0) + ", " + 
+						getGenericByTypeNameWithSuffix(typeName1) + "> " + returnName + " = 1;\r\n");
 		}
 		else if (Collection.class.isAssignableFrom(processingClass)) {
 			
@@ -376,7 +387,8 @@ public class JavaToProto2 {
 					return; // we now is a Java class so it has no fields to process
 				}
 				
-				sb.append("\trepeated " + removeArraySymbol(clazz.getSimpleName()) + " " + returnName + " = 1;\r\n");
+				String finalReturnType = removeArraySymbol(clazz.getSimpleName()) + PROTO_SUFFIX;
+				sb.append("\trepeated " + finalReturnType + " " + returnName + " = 1;\r\n");
 				
 				if (!map.containsKey(clazz.getName())) {
 					
@@ -390,7 +402,7 @@ public class JavaToProto2 {
 						int j = 1;
 						Field[] fields = clazz.getDeclaredFields();
 						for (Field f : fields) {
-							if (isAbstractOrTransientOrStatic(f)) {
+							if (skipField(f)) {
 								continue;
 							}
 							handleField(f, j, listTm);
@@ -413,7 +425,8 @@ public class JavaToProto2 {
 //			handleEnum(field.getType());
 //		}
 		else {
-			sb.append("\t" + classSimpleName + " " + returnName + " = 1;\r\n");
+			String finalReturnType = classSimpleName + PROTO_SUFFIX;
+			sb.append("\t" + finalReturnType + " " + returnName + " = 1;\r\n");
 			
 			if (!map.containsKey(processingClass.getName())) {
 				
@@ -426,7 +439,7 @@ public class JavaToProto2 {
 					int j = 1;
 					Field[] fields = processingClass.getDeclaredFields();
 					for(Field f : fields) {
-						if (isAbstractOrTransientOrStatic(f)) {
+						if (skipField(f)) {
 							continue;
 						}
 						handleField(f, j, ObjTm);
@@ -450,8 +463,8 @@ public class JavaToProto2 {
 			handleGeneric(typeName0);
 			handleGeneric(typeName1);
 			
-			tm.put(i, "\tmap<" + getGenericByTypeName(typeName0) + ", " + 
-					getGenericByTypeName(typeName1) + "> " + field.getName() + " = "+ i + ";\r\n");
+			tm.put(i, "\tmap<" + getGenericByTypeNameWithSuffix(typeName0) + ", " + 
+					getGenericByTypeNameWithSuffix(typeName1) + "> " + field.getName() + " = "+ i + ";\r\n");
 		}
 		else if (Collection.class.isAssignableFrom(processingClass)) {
 			
@@ -465,7 +478,8 @@ public class JavaToProto2 {
 					return; // we now is a Java class so it has no fields to process
 				}
 
-				tm.put(i, "\trepeated " + removeArraySymbol(clazz.getSimpleName()) + " " + field.getName() + " = " + i + ";\r\n");
+				String finalTypeName = removeArraySymbol(clazz.getSimpleName()) + PROTO_SUFFIX;
+				tm.put(i, "\trepeated " + finalTypeName + " " + field.getName() + " = " + i + ";\r\n");
 				
 				if (!map.containsKey(clazz.getName())) {
 					
@@ -479,7 +493,7 @@ public class JavaToProto2 {
 						int j = 1;
 						Field[] fields = clazz.getDeclaredFields();
 						for (Field f : fields) {
-							if (isAbstractOrTransientOrStatic(f)) {
+							if (skipField(f)) {
 								continue;
 							}
 							handleField(f, j, listTm);
@@ -502,7 +516,8 @@ public class JavaToProto2 {
 //			handleEnum(field.getType());
 //		}
 		else {
-			tm.put(i, "\t" + classSimpleName + " " + field.getName() + " = " + i +";\r\n");
+			String finalTypeName = classSimpleName + PROTO_SUFFIX;
+			tm.put(i, "\t" + finalTypeName + " " + field.getName() + " = " + i +";\r\n");
 			
 			if (!map.containsKey(processingClass.getName())) {
 				
@@ -515,7 +530,7 @@ public class JavaToProto2 {
 					int j = 1;
 					Field[] fields = processingClass.getDeclaredFields();
 					for(Field f : fields) {
-						if (isAbstractOrTransientOrStatic(f)) {
+						if (skipField(f)) {
 							continue;
 						}
 						handleField(f, j, ObjTm);
@@ -546,7 +561,7 @@ public class JavaToProto2 {
 					Field[] fields = clazz.getDeclaredFields();
 					int i = 1;
 					for(Field f : fields) {
-						if (isAbstractOrTransientOrStatic(f)) {
+						if (skipField(f)) {
 							continue;
 						}
 						handleField(f, i, ObjTm);
@@ -561,18 +576,18 @@ public class JavaToProto2 {
 		}
 	}
 
-	private String getGenericByTypeName(String typeName) {
+	private String getGenericByTypeNameWithSuffix(String typeName) {
 		try {
 			Class<?> clazz = Class.forName(typeName);
 			if (isJavaClass(clazz)) {
 				return getProtobufFieldType(clazz);
 			} else {
-				return removeArraySymbol(clazz.getSimpleName());
+				return removeArraySymbol(clazz.getSimpleName()) + PROTO_SUFFIX;
 			}
 		} catch (ClassNotFoundException e) {
 //			e.printStackTrace();
 		}
-		return null;
+		return "null";
 	}
 	
 	private StringBuffer Map2StringBuffer(Map<String, TreeMap<Integer, String>> map) {
@@ -580,8 +595,8 @@ public class JavaToProto2 {
 			for (Map.Entry<String, TreeMap<Integer, String>> entry : map.entrySet()) {
 				
 				String className = entry.getKey();
-				
 				TreeMap<Integer, String> fieldMap = entry.getValue();
+				
 				try {
 					Class<?> clazz = Class.forName(className);
 					if (clazz.isEnum()) {
@@ -593,7 +608,11 @@ public class JavaToProto2 {
 //						}
 //						sb.append("}\r\n");
 					} else {
-						sb.append("message " + removeArraySymbol(clazz.getSimpleName()) + " {\r\n");
+						String finalTypeName = removeArraySymbol(clazz.getSimpleName());
+						if (!isJavaClass(clazz)) {
+							finalTypeName += PROTO_SUFFIX;
+						}
+						sb.append("message " + finalTypeName + " {\r\n");
 						for (Integer key : fieldMap.keySet()) {
 							String field = fieldMap.get(key);
 							sb.append(field);
@@ -662,7 +681,7 @@ public class JavaToProto2 {
 			return "string";
 		}
 		
-		return "";
+		return null;
 	}
 	
 }

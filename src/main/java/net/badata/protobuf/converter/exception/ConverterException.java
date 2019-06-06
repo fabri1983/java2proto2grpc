@@ -8,6 +8,8 @@ package net.badata.protobuf.converter.exception;
  */
 public class ConverterException extends RuntimeException {
 
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Constructs a new ConverterException with the specified detail message and
 	 * cause.  <p>Note that the detail message associated with

@@ -8,6 +8,8 @@ package net.badata.protobuf.converter.exception;
  */
 public class MappingException extends Exception {
 
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Constructs a new MappingException with {@code null} as its detail message.
 	 * The cause is not initialized.

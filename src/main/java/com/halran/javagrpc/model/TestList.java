@@ -1,9 +1,11 @@
 package com.halran.javagrpc.model;
 
+import com.harlan.javagrpc.service.contract.protobuf.TestListProto;
+
 import net.badata.protobuf.converter.annotation.ProtoClass;
 import net.badata.protobuf.converter.annotation.ProtoField;
 
-@ProtoClass(com.harlan.javagrpc.service.contract.protobuf.TestList.class)
+@ProtoClass(TestListProto.class)
 public class TestList {
 	
 	@ProtoField

@@ -5,6 +5,7 @@ import com.halran.javagrpc.model.Request;
 import com.halran.javagrpc.model.Request2;
 import com.halran.javagrpc.model.TestList;
 import com.halran.javagrpc.model.TestMap;
+import com.harlan.javagrpc.service.contract.protobuf.RequestProto;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -59,8 +60,7 @@ public class JavaToProto2Test {
 		requestDomain.setIntArray(intArray);
 		
 		// convert domain model into protobuf object
-		com.harlan.javagrpc.service.contract.protobuf.Request requestProto = Converter.create()
-				.toProtobuf(com.harlan.javagrpc.service.contract.protobuf.Request.class, requestDomain);
+		RequestProto requestProto = Converter.create().toProtobuf(RequestProto.class, requestDomain);
 		
 		// convert proto to domain model
 		Request requestDomainConverted = Converter.create()

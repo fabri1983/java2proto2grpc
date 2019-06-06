@@ -1,9 +1,11 @@
 package com.halran.javagrpc.model;
 
+import com.harlan.javagrpc.service.contract.protobuf.TestMapProto;
+
 import net.badata.protobuf.converter.annotation.ProtoClass;
 import net.badata.protobuf.converter.annotation.ProtoField;
 
-@ProtoClass(com.harlan.javagrpc.service.contract.protobuf.TestMap.class)
+@ProtoClass(TestMapProto.class)
 public class TestMap {
 
 	@ProtoField

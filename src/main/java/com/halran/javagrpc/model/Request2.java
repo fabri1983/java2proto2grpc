@@ -1,11 +1,13 @@
 package com.halran.javagrpc.model;
 
+import com.harlan.javagrpc.service.contract.protobuf.Request2Proto;
+
 import java.util.List;
 
 import net.badata.protobuf.converter.annotation.ProtoClass;
 import net.badata.protobuf.converter.annotation.ProtoField;
 
-@ProtoClass(com.harlan.javagrpc.service.contract.protobuf.Request2.class)
+@ProtoClass(Request2Proto.class)
 public class Request2 {
 
 	@ProtoField

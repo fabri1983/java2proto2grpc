@@ -1,12 +1,14 @@
 package com.halran.javagrpc.model;
 
+import com.harlan.javagrpc.service.contract.protobuf.Request2InnerProto;
+
 import java.util.List;
 import java.util.Map;
 
 import net.badata.protobuf.converter.annotation.ProtoClass;
 import net.badata.protobuf.converter.annotation.ProtoField;
 
-@ProtoClass(com.harlan.javagrpc.service.contract.protobuf.Request2Inner.class)
+@ProtoClass(Request2InnerProto.class)
 public class Request2Inner {
 
 	@ProtoField

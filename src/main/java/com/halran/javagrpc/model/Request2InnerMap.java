@@ -1,9 +1,11 @@
 package com.halran.javagrpc.model;
 
+import com.harlan.javagrpc.service.contract.protobuf.Request2InnerMapProto;
+
 import net.badata.protobuf.converter.annotation.ProtoClass;
 import net.badata.protobuf.converter.annotation.ProtoField;
 
-@ProtoClass(com.harlan.javagrpc.service.contract.protobuf.Request2InnerMap.class)
+@ProtoClass(Request2InnerMapProto.class)
 public class Request2InnerMap {
 
 	@ProtoField

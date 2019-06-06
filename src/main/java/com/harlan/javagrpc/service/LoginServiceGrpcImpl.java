@@ -1,12 +1,17 @@
 package com.harlan.javagrpc.service;
 
 import com.google.protobuf.Empty;
+import com.halran.javagrpc.model.Request;
+import com.halran.javagrpc.model.Request2;
 import com.harlan.javagrpc.business.contract.LoginBusiness;
-import com.harlan.javagrpc.service.contract.protobuf.GetResMessageIn;
-import com.harlan.javagrpc.service.contract.protobuf.GetResMessageOut;
-import com.harlan.javagrpc.service.contract.protobuf.LoginMessageIn;
-import com.harlan.javagrpc.service.contract.protobuf.LoginMessageOut;
+import com.harlan.javagrpc.service.contract.protobuf.GetResProtoIn;
+import com.harlan.javagrpc.service.contract.protobuf.GetResProtoOut;
+import com.harlan.javagrpc.service.contract.protobuf.LoginProtoIn;
+import com.harlan.javagrpc.service.contract.protobuf.LoginProtoOut;
 import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc.LoginServiceImplBase;
+import com.harlan.javagrpc.service.contract.protobuf.Request2Proto;
+import com.harlan.javagrpc.service.contract.protobuf.RequestProto;
+import com.harlan.javagrpc.service.contract.protobuf.ResponseProto;
 
 import io.grpc.stub.StreamObserver;
 
@@ -36,18 +41,17 @@ public class LoginServiceGrpcImpl extends LoginServiceImplBase {
 	}
 	
 	@Override
-	public void login(LoginMessageIn request, StreamObserver<LoginMessageOut> responseObserver) {
+	public void login(LoginProtoIn request, StreamObserver<LoginProtoOut> responseObserver) {
 		
 		// convert protobuf type to domain model object
-		com.harlan.javagrpc.service.contract.protobuf.Request requestProto = request.getRequestArg0();
-		com.halran.javagrpc.model.Request modelRequest = Converter.create()
-				.toDomain(com.halran.javagrpc.model.Request.class, requestProto);
+		RequestProto requestProto = request.getRequestArg0();
+		Request modelRequest = Converter.create().toDomain(Request.class, requestProto);
 		
 		// Here you can use your domain model objects and call your business layer
 		int loginId = loginBusiness.login(modelRequest);
 		
 		// there is no domain model to protobuf conversion because LoginService.login() returns just an int
-		LoginMessageOut response = LoginMessageOut.newBuilder()
+		LoginProtoOut response = LoginProtoOut.newBuilder()
 				.setInt(loginId)
 				.build();
 		
@@ -58,27 +62,24 @@ public class LoginServiceGrpcImpl extends LoginServiceImplBase {
 	}
 
 	@Override
-	public void getRes(GetResMessageIn request, StreamObserver<GetResMessageOut> responseObserver) {
+	public void getRes(GetResProtoIn request, StreamObserver<GetResProtoOut> responseObserver) {
 		
 		// convert protobuf type to domain model object
-		com.harlan.javagrpc.service.contract.protobuf.Request requestProto = request.getRequestArg0();
-		com.halran.javagrpc.model.Request requestModel = Converter.create()
-				.toDomain(com.halran.javagrpc.model.Request.class, requestProto);
+		RequestProto requestProto = request.getRequestArg0();
+		Request requestModel = Converter.create().toDomain(Request.class, requestProto);
 		
 		// convert protobuf type to domain model object
-		com.harlan.javagrpc.service.contract.protobuf.Request2 request2Proto = request.getRequest2Arg1();
-		com.halran.javagrpc.model.Request2 request2Model = Converter.create()
-				.toDomain(com.halran.javagrpc.model.Request2.class, request2Proto);
+		Request2Proto request2Proto = request.getRequest2Arg1();
+		Request2 request2Model = Converter.create().toDomain(Request2.class, request2Proto);
 		
 		// Here you can use your domain model objects and call your business layer
 		com.halran.javagrpc.model.Response responseModel = loginBusiness.getRes(requestModel, request2Model);
 		
 		// convert domain model into protobuf object
-		com.harlan.javagrpc.service.contract.protobuf.Response responseProto = Converter.create()
-				.toProtobuf(com.harlan.javagrpc.service.contract.protobuf.Response.class, responseModel);
+		ResponseProto responseProto = Converter.create().toProtobuf(ResponseProto.class, responseModel);
 		
 		// wrap the protobuf object
-		GetResMessageOut response = GetResMessageOut.newBuilder()
+		GetResProtoOut response = GetResProtoOut.newBuilder()
 				.setResponse(responseProto)
 				.build();
 		

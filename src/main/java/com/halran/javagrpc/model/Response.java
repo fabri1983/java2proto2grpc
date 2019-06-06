@@ -1,11 +1,12 @@
 package com.halran.javagrpc.model;
 
 import com.halran.javagrpc.model.converter.CorpusEnumStringConverter;
+import com.harlan.javagrpc.service.contract.protobuf.ResponseProto;
 
 import net.badata.protobuf.converter.annotation.ProtoClass;
 import net.badata.protobuf.converter.annotation.ProtoField;
 
-@ProtoClass(com.harlan.javagrpc.service.contract.protobuf.Response.class)
+@ProtoClass(ResponseProto.class)
 public class Response {
 
 	@ProtoField(converter = CorpusEnumStringConverter.class)

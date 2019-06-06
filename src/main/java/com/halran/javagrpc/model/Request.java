@@ -1,6 +1,7 @@
 package com.halran.javagrpc.model;
 
 import com.halran.javagrpc.model.converter.CorpusEnumStringConverter;
+import com.harlan.javagrpc.service.contract.protobuf.RequestProto;
 
 import java.util.List;
 import java.util.Map;
@@ -8,7 +9,7 @@ import java.util.Map;
 import net.badata.protobuf.converter.annotation.ProtoClass;
 import net.badata.protobuf.converter.annotation.ProtoField;
 
-@ProtoClass(value = com.harlan.javagrpc.service.contract.protobuf.Request.class)
+@ProtoClass(RequestProto.class)
 public class Request {
 	
 	@ProtoField(converter = CorpusEnumStringConverter.class)
