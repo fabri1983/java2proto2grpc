@@ -165,7 +165,8 @@ public class ConverterTest {
 		Assert.assertTrue(result.getComplexNullableCollectionValue().isEmpty());
 
 		Assert.assertEquals(testProtobuf.getBytesValue(), result.getBytesValue());
-		Assert.assertEquals((Object) testProtobuf.getRecursiveValue().getIntValue(), result.getRecursiveValue().getIntValue());
+		Assert.assertEquals((Object) testProtobuf.getRecursiveValue().getIntValue(), 
+				result.getRecursiveValue().getIntValue());
 		
 		Assert.assertEquals(testProtobuf.getSimpleMapValueMap(), result.getSimpleMapValue());
 		Assert.assertEquals(testProtobuf.getComplexMapValueMap().get("key").getIntValue(),

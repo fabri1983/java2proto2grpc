@@ -232,22 +232,22 @@ public final class Converter {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> List<T> createDomainValueList(final Class<T> type, final Object protobufCollection) {
-		return createNestedConverter().toDomain(type, (List<? extends MessageLite>) protobufCollection);
+	private <T> List<T> createDomainValueList(final Class<T> type, final Object mappedValue) {
+		return createNestedConverter().toDomain(type, (List<? extends MessageLite>) mappedValue);
 	}
 
 	@SuppressWarnings("unchecked")
 	private <K extends MessageLite, V extends MessageLite> Map<?, ?> createDomainValueMap1(
-			final Class<?> keyClass, final Class<?> valueClass, final Object mappedValue) {
+			final Class<?> keyClass, final Class<?> valueClass, final Object mappedValueObj) {
 		
-		final Map<K, V> protobufMap = (Map<K, V>) mappedValue;
-		if (protobufMap == null) {
+		final Map<K, V> mappedValue = (Map<K, V>) mappedValueObj;
+		if (mappedValue == null) {
 			return new HashMap<>(1);
 		}
 		
-		Map<Object, Object> domainMap = new HashMap<>((int)(protobufMap.entrySet().size() / 0.75) + 1);
+		Map<Object, Object> domainMap = new HashMap<>((int)(mappedValue.entrySet().size() / 0.75) + 1);
 		
-		for (Iterator<?> it = protobufMap.entrySet().iterator(); it.hasNext();) {
+		for (Iterator<?> it = mappedValue.entrySet().iterator(); it.hasNext();) {
 			Map.Entry<K, V> entry = (Entry<K, V>) it.next();
 			Object domainKey = toDomain(keyClass, entry.getKey());
 			Object domainValue = toDomain(valueClass, entry.getValue());
@@ -259,16 +259,16 @@ public final class Converter {
 
 	@SuppressWarnings("unchecked")
 	private <K extends MessageLite, V> Map<?, V> createDomainValueMap2(final Class<?> keyClass, 
-			final Object mappedValue) {
+			final Object mappedValueObj) {
 		
-		final Map<K, V> protobufMap = (Map<K, V>) mappedValue;
-		if (protobufMap == null) {
+		final Map<K, V> mappedValue = (Map<K, V>) mappedValueObj;
+		if (mappedValue == null) {
 			return new HashMap<>(1);
 		}
 		
-		Map<Object, V> domainMap = new HashMap<>((int)(protobufMap.entrySet().size() / 0.75) + 1);
+		Map<Object, V> domainMap = new HashMap<>((int)(mappedValue.entrySet().size() / 0.75) + 1);
 		
-		for (Iterator<?> it = protobufMap.entrySet().iterator(); it.hasNext();) {
+		for (Iterator<?> it = mappedValue.entrySet().iterator(); it.hasNext();) {
 			Map.Entry<K, V> entry = (Entry<K, V>) it.next();
 			Object domainKey = toDomain(keyClass, entry.getKey());
 			V domainValue = entry.getValue();
@@ -280,16 +280,16 @@ public final class Converter {
 	
 	@SuppressWarnings("unchecked")
 	private <K, V extends MessageLite> Map<K, ?> createDomainValueMap3(final Class<?> valueClass, 
-			final Object mappedValue) {
+			final Object mappedValueObj) {
 		
-		final Map<K, V> protobufMap = (Map<K, V>) mappedValue;
-		if (protobufMap == null) {
+		final Map<K, V> mappedValue = (Map<K, V>) mappedValueObj;
+		if (mappedValue == null) {
 			return new HashMap<>(1);
 		}
 		
-		Map<K, Object> domainMap = new HashMap<>((int)(protobufMap.entrySet().size() / 0.75) + 1);
+		Map<K, Object> domainMap = new HashMap<>((int)(mappedValue.entrySet().size() / 0.75) + 1);
 		
-		for (Iterator<?> it = protobufMap.entrySet().iterator(); it.hasNext();) {
+		for (Iterator<?> it = mappedValue.entrySet().iterator(); it.hasNext();) {
 			Map.Entry<K, V> entry = (Entry<K, V>) it.next();
 			K domainKey = entry.getKey();
 			Object domainValue = toDomain(valueClass, entry.getValue());
@@ -300,16 +300,16 @@ public final class Converter {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private <K, V> Map<K, V> createDomainValueMap4(final Object mappedValue) {
+	private <K, V> Map<K, V> createDomainValueMap4(final Object mappedValueObj) {
 		
-		final Map<K, V> protobufMap = (Map<K, V>) mappedValue;
-		if (protobufMap == null) {
+		final Map<K, V> mappedValue = (Map<K, V>) mappedValueObj;
+		if (mappedValue == null) {
 			return new HashMap<>(1);
 		}
 		
-		Map<K, V> domainMap = new HashMap<>((int)(protobufMap.entrySet().size() / 0.75) + 1);
+		Map<K, V> domainMap = new HashMap<>((int)(mappedValue.entrySet().size() / 0.75) + 1);
 		
-		for (Iterator<?> it = protobufMap.entrySet().iterator(); it.hasNext();) {
+		for (Iterator<?> it = mappedValue.entrySet().iterator(); it.hasNext();) {
 			Map.Entry<K, V> entry = (Entry<K, V>) it.next();
 			K domainKey = entry.getKey();
 			V domainValue = entry.getValue();
