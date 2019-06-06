@@ -7,7 +7,7 @@ import io.grpc.examples.helloworld.protobuf.SearchResponse.HelloReply.Builder;
 import io.grpc.stub.StreamObserver;
 
 // 实现 定义一个实现服务接口的类 
-public class GreeterServiceGrpcImpl extends GreeterGrpc.GreeterImplBase {
+public class GreeterServiceGrpcImpl extends GreeterGrpc.GreeterImplBase implements GrpcServiceMarker {
 	
 	@Override
 	public void sayHello(SearchRequest request, StreamObserver<SearchResponse> responseObserver) {

@@ -14,11 +14,11 @@ import com.harlan.javagrpc.service.contract.protobuf.RequestProto;
 
 import net.badata.protobuf.converter.Converter;
 
-public class LoginServiceRemoteProxy implements LoginService {
+public class LoginServiceGrpcProxy implements LoginService {
 
 	private LoginServiceBlockingStub blockingStub;
 	
-	public LoginServiceRemoteProxy(LoginServiceBlockingStub blockingStub) {
+	public LoginServiceGrpcProxy(LoginServiceBlockingStub blockingStub) {
 		super();
 		this.blockingStub = blockingStub;
 	}

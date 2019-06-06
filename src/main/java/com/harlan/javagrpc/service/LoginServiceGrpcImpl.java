@@ -17,7 +17,7 @@ import io.grpc.stub.StreamObserver;
 
 import net.badata.protobuf.converter.Converter;
 
-public class LoginServiceGrpcImpl extends LoginServiceImplBase {
+public class LoginServiceGrpcImpl extends LoginServiceImplBase implements GrpcServiceMarker {
 
 	private LoginBusiness loginBusiness;
 	
