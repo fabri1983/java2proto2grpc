@@ -64,7 +64,7 @@ public class JavaToProto2 {
 			@Override
 			public int compare(Method o1, Method o2) {
 				String nameM1 = o1.getName() + appendParameterTypes(o1);
-				String nameM2 = o2.getName() + appendParameterTypes(o1);
+				String nameM2 = o2.getName() + appendParameterTypes(o2);
 				return nameM1.compareTo(nameM2);
 			}
 
@@ -93,7 +93,8 @@ public class JavaToProto2 {
 		
 		// generate rpc methods
 		for (Method method : methods) {
-			if (Modifier.isPrivate(method.getModifiers())) {
+			// skip the method?
+			if (skipMethod(method)) {
 				continue;
 			}
 			
@@ -131,7 +132,8 @@ public class JavaToProto2 {
 		
 		// process messages for each method's parameters and return types
 		for (Method method : methods) {
-			if (Modifier.isPrivate(method.getModifiers())) {
+			// skip the method?
+			if (skipMethod(method)) {
 				continue;
 			}
 			
@@ -174,7 +176,8 @@ public class JavaToProto2 {
 		Integer two = Integer.valueOf(2);
 		
 		for (Method method : methods) {
-			if (Modifier.isPrivate(method.getModifiers())) {
+			// skip the method?
+			if (skipMethod(method)) {
 				continue;
 			}
 			String key = method.getName();
@@ -198,6 +201,11 @@ public class JavaToProto2 {
 		return Modifier.isAbstract(mod) || Modifier.isTransient(mod) || Modifier.isStatic(mod);
 	}
 
+	private boolean skipMethod(Method method) {
+		int mod = method.getModifiers();
+		return Modifier.isPrivate(mod) || Modifier.isStatic(mod);
+	}
+	
 	/**
 	 * If method name exists and has counter greater than 0 then returns the actual counter as String.
 	 * Otherwise returns empty String.

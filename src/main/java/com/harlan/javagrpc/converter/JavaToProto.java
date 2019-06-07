@@ -9,7 +9,9 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -153,9 +155,39 @@ public class JavaToProto {
 		// syntax, options, and package
 		appendHeader();
 		
-		generateServiceWithRpcs();
+		Method[] methods = getDeclaredMethods(currentClass());
 		
-		generateMessagesFromMethods();
+		generateServiceWithRpcs(methods);
+		
+		generateMessagesFromMethods(methods);
+	}
+	
+	private Method[] getDeclaredMethods(Class<?> clazz) {
+		//服务
+		Method[] methods = clazz.getDeclaredMethods(); // excludes inherited methods
+		
+		// sort methods by name and parameters type (in the declared order)
+		Arrays.sort(methods, new Comparator<Method>() {
+			@Override
+			public int compare(Method o1, Method o2) {
+				String nameM1 = o1.getName() + appendParameterTypes(o1);
+				String nameM2 = o2.getName() + appendParameterTypes(o2);
+				return nameM1.compareTo(nameM2);
+			}
+
+			private String appendParameterTypes(Method o1) {
+				if (o1.getParameterCount() == 0) {
+					return "";
+				}
+				StringBuilder paramStrBuilder = new StringBuilder(64);
+				for (Class<?> clazz : o1.getParameterTypes()) {
+					paramStrBuilder.append(clazz.getSimpleName());
+				}
+				return paramStrBuilder.toString();
+			}
+		});
+		
+		return methods;
 	}
 	
 	private void appendHeader() {
@@ -186,7 +218,7 @@ public class JavaToProto {
 		builder.append(NEWLINE);
 	}
 
-	private void generateServiceWithRpcs() {
+	private void generateServiceWithRpcs(Method[] methods) {
 		String simpleName = currentClass().getSimpleName();
 		
 		// define the service as the class name
@@ -195,11 +227,12 @@ public class JavaToProto {
 		tabDepth++;
 		
 		// define rpc methods
-		Method[] methods = currentClass().getDeclaredMethods(); // excludes inherited methods
 		for (Method method : methods) {
-			if (Modifier.isPrivate(method.getModifiers())) {
+			// skip the method?
+			if (skipMethod(method)) {
 				continue;
 			}
+			
 			builder.append(getTabs());
 			
 			String methodNameCapitalized = capitalizeFirstChar(method.getName());
@@ -226,11 +259,11 @@ public class JavaToProto {
 		builder.append(NEWLINE);
 	}
 
-	private void generateMessagesFromMethods() {
+	private void generateMessagesFromMethods(Method[] methods) {
 		
-		Method[] methods = currentClass().getDeclaredMethods(); // excludes inherited methods
 		for (Method method : methods) {
-			if (Modifier.isPrivate(method.getModifiers())) {
+			// skip the method?
+			if (skipMethod(method)) {
 				continue;
 			}
 			
@@ -310,8 +343,7 @@ public class JavaToProto {
 			i++; // protobuf indexing starts with 1
 			
 			// Skip this field?
-			int mod = f.getModifiers();
-			if (Modifier.isAbstract(mod) || Modifier.isTransient(mod) || Modifier.isStatic(mod)){
+			if (skipField(f)) {
 				continue;
 			}
 			
@@ -437,6 +469,16 @@ public class JavaToProto {
 		return s.substring(0, 1).toUpperCase() + s.substring(1);
 	}
 	
+	private boolean skipField(Field field) {
+		int mod = field.getModifiers();
+		return Modifier.isAbstract(mod) || Modifier.isTransient(mod) || Modifier.isStatic(mod);
+	}
+	
+	private boolean skipMethod(Method method) {
+		int mod = method.getModifiers();
+		return Modifier.isPrivate(mod) || Modifier.isStatic(mod);
+	}
+
 	/**
 	 * If the Proto file has not been generated, generate it. Then return it in string format.
 	 * @return String - a String representing the proto file representing this class.
