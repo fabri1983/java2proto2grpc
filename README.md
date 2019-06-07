@@ -11,7 +11,7 @@ created LoginService client and server, and more.
 
 - Depends on Maven.
 - Java 8 (and minor versions too). See the **TODO** section for Java 9+.
-- Generates *.proto* files (syntax v3) out of Java classes/interfaces existing in the classpath and decorated by *@RemoteAccessEnabled*.
+- Generates *.proto* files (syntax v3) out of Java classes/interfaces existing in the classpath and decorated by *@GrpcEnabled*.
 - Generates gRPC stubs out of *.proto files*.
 - Provides two gRPC examples: *Helloworld* and *LoginService*.
 - *java.lang.Enum* is defined as *string* when generating proto file. So when using *@net.badata.protobuf.converter.annotation.ProtoField* 
@@ -22,7 +22,7 @@ you need to extend *net.badata.protobuf.converter.type.EnumStringConverter* and 
 #### Usage:
 
 First you need to generate **.proto** files out of your java **classes/interfaces** located at your classpath 
-and which are decorated with annotation *@RemoteAccessEnabled*.
+and which are decorated with annotation *@GrpcEnabled*.
 - **JavaToProto2Main**: generates *.proto* files from a class/package at specific folder:  
 	```sh
 	mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.JavaToProto2Main -Dexec.args="com.harlan.javagrpc.service.contract src/main/proto"

@@ -1,7 +1,7 @@
 package com.harlan.javagrpc.main;
 
 import com.harlan.javagrpc.converter.JavaToProto2;
-import com.harlan.javagrpc.converter.annotation.RemoteAccessEnabled;
+import com.harlan.javagrpc.converter.annotation.GrpcEnabled;
 import com.harlan.javagrpc.util.ClassGrabberUtil;
 
 import java.io.BufferedWriter;
@@ -72,7 +72,7 @@ public class JavaToProto2Main {
 		List<Class<?>> classes = Collections.emptyList();
 		
 		try {
-			classes = ClassGrabberUtil.getClassesOrSingleClass(classnameOrPackage, RemoteAccessEnabled.class);
+			classes = ClassGrabberUtil.getClassesOrSingleClass(classnameOrPackage, GrpcEnabled.class);
 		} catch (Exception e) {
 			System.err.println("Could not load class. Make sure it is in the classpath!");
 			e.printStackTrace();
