@@ -9,7 +9,7 @@ created LoginService client and server, and more.
 
 #### Features:
 
-- Depends on Maven.
+- Depends on Maven (uses plugins to generate grpc stubs).
 - Java 8 (and minor versions too). See the **TODO** section for Java 9+.
 - Generates *.proto* files (syntax v3) out of Java classes/interfaces existing in the classpath and decorated by *@GrpcEnabled*.
 - Generates gRPC stubs out of *.proto files*.
