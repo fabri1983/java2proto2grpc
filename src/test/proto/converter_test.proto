@@ -18,9 +18,11 @@ message PrimitiveTest {
 
 message FieldConverterTest {
     string enumString = 1;
-    int64 dateLong = 2;
-    repeated string stringSetValue = 3;
-    google.protobuf.Timestamp localDateTimeTimestamp = 4;
+    int64 dateToLong = 2;
+    int64 localDateTimeToLong = 3;
+    google.protobuf.Timestamp dateToTimestamp = 4;
+    google.protobuf.Timestamp localDateTimeToTimestamp = 5;
+    repeated string stringSetValue = 6;
 }
 
 message NullDefaultTest {

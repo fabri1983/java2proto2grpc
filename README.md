@@ -56,9 +56,9 @@ and grpc stubs to make some testing running *com.harlan.javagrpc.main.login.Logi
 
 #### TODO
 - Modularize JavaToProto2. Code is written in a very imperative way, and hard to mantain.
-- Add converters similar to *net.badata.protobuf.converter.type.DateLongConverter* for fields with type: LocalTime, LocalDate, Date. 
+- Add converters similar to *net.badata.protobuf.converter.type.DateLongConverter* for fields with types: LocalTime, LocalDate. 
 Use *google.protobuf.Timestamp* in the converter implementation.
-- Add converters similar to *net.badata.protobuf.converter.type.DateLongConverter* for fields with type: Duration. 
+- Add converters similar to *net.badata.protobuf.converter.type.DateLongConverter* for fields with types: Duration. 
 Use *google.protobuf.Duration* in the converter implementation.
 - Add custom Java *Annotations* to classes and/or fields in order to collect reserved field tags and names for the .proto definition file.
 - Support *@java.lang.Deprecated* on classes. It translates to *option deprecated = true;* after message declaration on the .proto file.

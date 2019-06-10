@@ -22,7 +22,9 @@ import net.badata.protobuf.converter.resolver.AnnotatedFieldResolverFactoryImpl;
 import net.badata.protobuf.converter.resolver.DefaultFieldResolverImpl;
 import net.badata.protobuf.converter.resolver.FieldResolver;
 import net.badata.protobuf.converter.type.DateLongConverterImpl;
+import net.badata.protobuf.converter.type.DateTimestampConverterImpl;
 import net.badata.protobuf.converter.type.EnumStringConverter;
+import net.badata.protobuf.converter.type.LocalDateTimeLongConverterImpl;
 import net.badata.protobuf.converter.type.LocalDateTimeTimestampConverterImpl;
 import net.badata.protobuf.converter.type.SetListConverterImpl;
 
@@ -270,12 +272,15 @@ public class ConverterDomain {
 		@ProtoField(converter = TestEnumConverter.class)
 		private TestEnumConverter.TestEnum enumString;
 		@ProtoField(converter = DateLongConverterImpl.class)
-		private Date dateLong;
+		private Date dateToLong;
+		@ProtoField(converter = LocalDateTimeLongConverterImpl.class)
+		private LocalDateTime localDateTimeToLong;
+		@ProtoField(converter = DateTimestampConverterImpl.class)
+		private Date dateToTimestamp;
 		@ProtoField(converter = LocalDateTimeTimestampConverterImpl.class)
-		private LocalDateTime localDateTimeTimestamp;
+		private LocalDateTime localDateTimeToTimestamp;
 		@ProtoField(converter = SetListConverterImpl.class)
 		private Set<String> stringSetValue;
-
 
 		public TestEnumConverter.TestEnum getEnumString() {
 			return enumString;
@@ -285,20 +290,36 @@ public class ConverterDomain {
 			this.enumString = enumString;
 		}
 
-		public Date getDateLong() {
-			return dateLong;
+		public Date getDateToLong() {
+			return dateToLong;
 		}
 
-		public void setDateLong(final Date dateLong) {
-			this.dateLong = dateLong;
+		public void setDateToLong(Date dateToLong) {
+			this.dateToLong = dateToLong;
 		}
 
-		public LocalDateTime getLocalDateTimeTimestamp() {
-			return localDateTimeTimestamp;
+		public LocalDateTime getLocalDateTimeToLong() {
+			return localDateTimeToLong;
 		}
 
-		public void setLocalDateTimeTimestamp(LocalDateTime localDateTimeTimestamp) {
-			this.localDateTimeTimestamp = localDateTimeTimestamp;
+		public void setLocalDateTimeToLong(LocalDateTime localDateTimeToLong) {
+			this.localDateTimeToLong = localDateTimeToLong;
+		}
+
+		public Date getDateToTimestamp() {
+			return dateToTimestamp;
+		}
+
+		public void setDateToTimestamp(Date dateToTimestamp) {
+			this.dateToTimestamp = dateToTimestamp;
+		}
+
+		public LocalDateTime getLocalDateTimeToTimestamp() {
+			return localDateTimeToTimestamp;
+		}
+
+		public void setLocalDateTimeToTimestamp(LocalDateTime localDateTimeToTimestamp) {
+			this.localDateTimeToTimestamp = localDateTimeToTimestamp;
 		}
 
 		public Set<String> getStringSetValue() {
