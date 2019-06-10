@@ -14,9 +14,10 @@ created LoginService client and server, and more.
 - Generates *.proto* files (syntax v3) out of Java classes/interfaces existing in the classpath and decorated by *@GrpcEnabled*.
 - Generates gRPC stubs out of *.proto files*.
 - Provides two gRPC examples: *Helloworld* and *LoginService*.
+- Conversion api between protobuf objects and DTOs or Domain Model Objects, and viceversa. Fixed version of api *protobuf-converter* from *BAData*.
 - *java.lang.Enum* is defined as *string* when generating proto file. So when using *@net.badata.protobuf.converter.annotation.ProtoField* 
-you need to extend *net.badata.protobuf.converter.type.EnumStringConverter* and set it as *converter* attribute. See **Request** and **Response** examples classes.
-- Conversion api between protobuf objects and DTOs or Domain Model Objects, and viceversa.
+you need to extend *net.badata.protobuf.converter.type.EnumStringConverter* and set it as *converter* attribute. See **Request** and **Response** 
+example classes.
 
 
 #### Usage:
@@ -33,9 +34,9 @@ and which are decorated with annotation *@GrpcEnabled*.
 	mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.JavaToProtoMain -Dexec.args="com.harlan.javagrpc.service.contract src/main/proto"
 	```
 
-Then you can build the project (*mvn compile* or *Build command* in your IDE) which uses plugin *org.xolstice.maven.plugins:protobuf-maven-plugin* 
+Then you can build the project (*mvn compile* or *Build command* in your IDE) which triggers plugin *org.xolstice.maven.plugins:protobuf-maven-plugin* 
 in order to generate the protobuf java classes and gRPC stubs for client and server out of your *.proto* files.    
-Generated code is located at *target/generated-sources/protobuf/*.
+Generated code is located at *target/generated-sources/protobuf/* and *target/generated-test-sources/protobuf/*.
 
 
 #### Helloworld and LoginService correct build:
