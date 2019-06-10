@@ -44,7 +44,7 @@ import java.util.Stack;
  *   String protoFile = jpt.toString();	
  * </pre>
  * @author Lloyd Sparkes
- * @author Pablo Fabricio Lettieri <fabri1983@gmail.com>
+ * @author Pablo Fabricio Lettieri &lt;fabri1983@gmail.com&gt;
  */
 
 public class JavaToProto {

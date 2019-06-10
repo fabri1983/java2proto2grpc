@@ -4,6 +4,7 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.MessageLite;
 
 import java.lang.reflect.Field;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ import net.badata.protobuf.converter.resolver.DefaultFieldResolverImpl;
 import net.badata.protobuf.converter.resolver.FieldResolver;
 import net.badata.protobuf.converter.type.DateLongConverterImpl;
 import net.badata.protobuf.converter.type.EnumStringConverter;
+import net.badata.protobuf.converter.type.LocalDateTimeTimestampConverterImpl;
 import net.badata.protobuf.converter.type.SetListConverterImpl;
 
 /**
@@ -269,6 +271,8 @@ public class ConverterDomain {
 		private TestEnumConverter.TestEnum enumString;
 		@ProtoField(converter = DateLongConverterImpl.class)
 		private Date dateLong;
+		@ProtoField(converter = LocalDateTimeTimestampConverterImpl.class)
+		private LocalDateTime localDateTimeTimestamp;
 		@ProtoField(converter = SetListConverterImpl.class)
 		private Set<String> stringSetValue;
 
@@ -287,6 +291,14 @@ public class ConverterDomain {
 
 		public void setDateLong(final Date dateLong) {
 			this.dateLong = dateLong;
+		}
+
+		public LocalDateTime getLocalDateTimeTimestamp() {
+			return localDateTimeTimestamp;
+		}
+
+		public void setLocalDateTimeTimestamp(LocalDateTime localDateTimeTimestamp) {
+			this.localDateTimeTimestamp = localDateTimeTimestamp;
 		}
 
 		public Set<String> getStringSetValue() {

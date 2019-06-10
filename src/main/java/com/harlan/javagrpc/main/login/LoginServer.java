@@ -25,6 +25,7 @@ public class LoginServer {
 
 		System.out.println("Login Server started. Listening on port " + port);
 
+		// register server shutdown hook in case this server is executed as a standalone process.
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {

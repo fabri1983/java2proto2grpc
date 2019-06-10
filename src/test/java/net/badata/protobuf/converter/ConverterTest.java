@@ -1,7 +1,10 @@
 package net.badata.protobuf.converter;
 
 import com.google.protobuf.ByteString;
+import com.google.protobuf.Timestamp;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -15,6 +18,7 @@ import org.junit.Test;
 import net.badata.protobuf.converter.domain.ConverterDomain;
 import net.badata.protobuf.converter.domain.ConverterDomain.TestEnumConverter.TestEnum;
 import net.badata.protobuf.converter.proto.ConverterProto;
+import net.badata.protobuf.converter.type.LocalDateTimeTimestampConverterImpl;
 
 /**
  * @author jsjem
@@ -77,6 +81,7 @@ public class ConverterTest {
 		ConverterDomain.FieldConverterTest fieldConverterTest = new ConverterDomain.FieldConverterTest();
 		fieldConverterTest.setEnumString(TestEnum.TWO);
 		fieldConverterTest.setDateLong(new Date());
+		fieldConverterTest.setLocalDateTimeTimestamp(LocalDateTime.now(ZoneOffset.UTC));
 		Set<String> stringSet = new HashSet<String>();
 		stringSet.add("111");
 		fieldConverterTest.setStringSetValue(stringSet);
@@ -144,6 +149,7 @@ public class ConverterTest {
 		ConverterDomain.FieldConverterTest conversionDomain = result.getFieldConversionValue();
 
 		Assert.assertEquals(conversionProto.getDateLong(), conversionDomain.getDateLong().getTime());
+		Assert.assertEquals(conversionProto.getLocalDateTimeTimestamp(), toTimestamp(conversionDomain.getLocalDateTimeTimestamp()));
 		Assert.assertEquals(conversionProto.getEnumString(), conversionDomain.getEnumString().name());
 		Assert.assertTrue(conversionDomain.getStringSetValue().remove(conversionProto.getStringSetValue(0)));
 
@@ -215,6 +221,7 @@ public class ConverterTest {
 		ConverterDomain.FieldConverterTest conversionDomain = testDomain.getFieldConversionValue();
 
 		Assert.assertEquals(conversionDomain.getDateLong().getTime(), conversionProto.getDateLong());
+		Assert.assertEquals(conversionDomain.getLocalDateTimeTimestamp(), toLocalDateTime(conversionProto.getLocalDateTimeTimestamp()));
 		Assert.assertEquals(conversionDomain.getEnumString().name(), conversionProto.getEnumString());
 		Assert.assertTrue(conversionDomain.getStringSetValue().remove(conversionProto.getStringSetValue(0)));
 
@@ -246,6 +253,16 @@ public class ConverterTest {
 		Assert.assertFalse(result.hasPrimitiveValue());
 		Assert.assertEquals("", result.getFieldConversionValue().getEnumString());
 		Assert.assertTrue(result.getComplexListValueList().isEmpty());
+	}
+
+	private Timestamp toTimestamp(LocalDateTime localDateTime) {
+		LocalDateTimeTimestampConverterImpl converter = new LocalDateTimeTimestampConverterImpl();
+		return converter.toProtobufValue(localDateTime);
+	}
+
+	private LocalDateTime toLocalDateTime(Timestamp timestamp) {
+		LocalDateTimeTimestampConverterImpl converter = new LocalDateTimeTimestampConverterImpl();
+		return converter.toDomainValue(timestamp);
 	}
 
 }
