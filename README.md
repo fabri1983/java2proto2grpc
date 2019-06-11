@@ -29,11 +29,13 @@ First you need to generate **.proto** files out of your java **classes/interface
 and which are decorated with annotation *@GrpcEnabled*.
 - **JavaToProto2Main**: generates *.proto* files from a class/package at specific folder:  
 	```sh
+	mvn compile
 	mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.JavaToProto2Main -Dexec.args="com.harlan.javagrpc.service.contract src/main/proto"
 	```
 - JavaToProtoMain: generates *.proto* files from a class/package at specific folder:  
 	**Currently work in progress. Messages are being nested and it ends up with lot of repeated messages.**
 	```sh
+	mvn compile
 	mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.JavaToProtoMain -Dexec.args="com.harlan.javagrpc.service.contract src/main/proto"
 	```
 
