@@ -1,12 +1,5 @@
 # java 2 proto 2 grpc
 
-This project is a modification from original projects https://github.com/jhrgitgit/java2proto and https://github.com/lloydsparkes/java-proto-generator.  
-Credits belong to the creators of the mentioned projects.  
-I just made it compatible with Windows, renamed some packages, fixed some bugs, added usage of *protobuf-converter* 
-(https://github.com/BAData/protobuf-converter) with custom modifications to transform domain model objects to protobuf messages and viceversa, 
-created LoginService client and server, and more.
-
-
 [![Build Status](https://travis-ci.org/fabri1983/java2proto2grpc.svg?branch=master)](https://travis-ci.org/fabri1983/java2proto2grpc?branch=master)
 &nbsp;&nbsp;&nbsp;&nbsp;
 [![Coverage Status](https://coveralls.io/repos/github/fabri1983/java2proto2grpc/badge.svg)](https://coveralls.io/github/fabri1983/java2proto2grpc?branch=master)
@@ -14,6 +7,13 @@ created LoginService client and server, and more.
 [![Code Climate](https://codeclimate.com/github/fabri1983/java2proto2grpc/badges/gpa.svg)](https://codeclimate.com/github/fabri1983/java2proto2grpc)
 &nbsp;&nbsp;&nbsp;&nbsp;
 [![Libraries.io for GitHub](https://badgen.net/badge/libraries.io/fabri1983/blue)](https://libraries.io/github/fabri1983/java2proto2grpc)
+
+
+This project is a modification from original projects https://github.com/jhrgitgit/java2proto and https://github.com/lloydsparkes/java-proto-generator.  
+Credits belong to the creators of the mentioned projects.  
+I just made it compatible with Windows, renamed some packages, fixed some bugs, added usage of *protobuf-converter* 
+(https://github.com/BAData/protobuf-converter) with custom modifications to transform domain model objects to protobuf messages and viceversa, 
+created LoginService client and server, and more.
 
 
 Features:
