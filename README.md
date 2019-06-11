@@ -63,10 +63,10 @@ git update-index --assume-unchanged src/main/proto/LoginService.proto
 ```
 
 The file *helloworld.proto* is used to generated grpc-java example classes as per https://github.com/grpc/grpc-java/tree/master/examples, 
-so you can make some testing running *com.harlan.javagrpc.main.helloworld.HelloWorldClient* and *com.harlan.javagrpc.main.helloworld.HelloWorldServer*.
+so you can make some testing running *com.harlan.javagrpc.main.helloworld.HelloWorldClientMain* and *com.harlan.javagrpc.main.helloworld.HelloWorldServerMain*.
 
 The file *LoginService.proto* is the one you can generate running *com.harlan.javagrpc.main.JavaToProtoMain2*, and it generates protobuf classes 
-and grpc stubs to make some testing running *com.harlan.javagrpc.main.login.LoginClient* and *com.harlan.javagrpc.main.login.LoginServer*.
+and grpc stubs to make some testing running *com.harlan.javagrpc.main.login.LoginClientMain* and *com.harlan.javagrpc.main.login.LoginServerMain*.
 
 
 TODO

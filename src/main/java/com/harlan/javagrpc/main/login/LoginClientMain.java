@@ -14,12 +14,12 @@ import io.grpc.ManagedChannelBuilder;
 
 import java.util.concurrent.TimeUnit;
 
-public class LoginClient {
+public class LoginClientMain {
 	
 	private final ManagedChannel channel;
 	private final LoginService loginService;
 	
-	public LoginClient(String host, int port) {
+	public LoginClientMain(String host, int port) {
 		channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
 		LoginServiceBlockingStub blockingStub = LoginServiceGrpc.newBlockingStub(channel);
 		loginService = new LoginServiceGrpcProxy(blockingStub);
@@ -39,7 +39,7 @@ public class LoginClient {
 	}
 
 	public static void main(String[] args) throws InterruptedException {
-		LoginClient client = new LoginClient("127.0.0.1", 50051);
+		LoginClientMain client = new LoginClientMain("127.0.0.1", 50051);
 		User[] users = new User[] { 
 				User.from(11, "pepito"),
 				User.from(22, "martita"),

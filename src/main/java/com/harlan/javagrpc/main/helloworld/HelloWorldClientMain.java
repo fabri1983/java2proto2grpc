@@ -8,12 +8,12 @@ import io.grpc.examples.helloworld.protobuf.SearchResponse;
 
 import java.util.concurrent.TimeUnit;
 
-public class HelloWorldClient {
+public class HelloWorldClientMain {
 
 	private final ManagedChannel channel;
 	private final GreeterGrpc.GreeterBlockingStub blockingGreeterStub;
 
-	public HelloWorldClient(String host, int port) {
+	public HelloWorldClientMain(String host, int port) {
 		channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
 		blockingGreeterStub = GreeterGrpc.newBlockingStub(channel);
 	}
@@ -34,7 +34,7 @@ public class HelloWorldClient {
 	}
 
 	public static void main(String[] args) throws InterruptedException {
-		HelloWorldClient client = new HelloWorldClient("127.0.0.1", 50051);
+		HelloWorldClientMain client = new HelloWorldClientMain("127.0.0.1", 50051);
 		for (int i = 0; i < 5; i++) {
 			client.greet("world:" + i);
 		}
