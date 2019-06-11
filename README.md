@@ -22,7 +22,7 @@ Features:
 - Java 8 and higher. 
 	- note the use of pedendency *javax.annotation:javax.annotation-api* which solves the issue on generated grpc stubs due to Java internal relocation of *@javax.annotation.Generated*.
 - Java 6, 7: requires some changes since the code uses *java.time* package.
-- Generates *.proto* files (syntax v3) out of Java classes/interfaces existing in the classpath and decorated by *@GrpcEnabled*.
+- Generates *.proto* files (**syntax v3**) out of Java classes/interfaces existing in the classpath and decorated by *@GrpcEnabled*.
 - Generates gRPC stubs out of *.proto files*.
 - Provides two gRPC examples: *Helloworld* and *LoginService*.
 - Conversion api between protobuf objects and DTOs or Domain Model Objects, and viceversa:
@@ -36,12 +36,12 @@ Usage:
 ---
 First you need to generate **.proto** files out of your java **classes/interfaces** located at your classpath 
 and which are decorated with annotation *@GrpcEnabled*.
-- **JavaToProto2Main**: generates *.proto* files from a class/package at specific folder:  
+- **JavaToProto2Main**: generates *.proto* files (**syntax v3**) from a class/package at specific folder:  
 	```sh
 	mvn compile
 	mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.JavaToProto2Main -Dexec.args="com.harlan.javagrpc.service.contract src/main/proto"
 	```
-- JavaToProtoMain: generates *.proto* files from a class/package at specific folder:  
+- JavaToProtoMain: generates *.proto* files (**syntax v3**) from a class/package at specific folder:  
 	**Currently work in progress. Messages are being nested and it ends up with lot of repeated messages.**
 	```sh
 	mvn compile
