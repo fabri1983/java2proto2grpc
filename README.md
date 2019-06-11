@@ -10,7 +10,9 @@ created LoginService client and server, and more.
 Features:
 ---
 - Depends on Maven (uses plugins to generate grpc stubs).
-- Java 8 (minor versions required some changes). See the **TODO** section for Java 9+.
+- Java 8 and higher. 
+	- note the use of pedendency *javax.annotation:javax.annotation-api* which solves the issue on generated grpc stubs due to Java internal relocation of *@javax.annotation.Generated*.
+- Java 6, 7: requires some changes since the code uses *java.time* package.
 - Generates *.proto* files (syntax v3) out of Java classes/interfaces existing in the classpath and decorated by *@GrpcEnabled*.
 - Generates gRPC stubs out of *.proto files*.
 - Provides two gRPC examples: *Helloworld* and *LoginService*.
@@ -66,11 +68,6 @@ Use *google.protobuf.Duration* in the converter implementation.
 - Add custom Java *Annotations* to classes and/or fields in order to collect reserved field tags and names for the .proto definition file.
 - Support *@java.lang.Deprecated* on classes. It translates to *option deprecated = true;* after message declaration on the .proto file.
 - Support *@java.lang.Deprecated* on java fields. It translates to *[deprecated = true];* after field declaration on the .proto file.
-- Java 9+: I had some building errors when generating gRPC stubs due to Java internal relocation of *@javax.annotation.Generated*.
-	- See https://github.com/protocolbuffers/protobuf/issues/42.
-	- Custom fix: add to your project classpath next dependency: *javax.annotation:javax.annotation-api*.
-- Java9+: In Java 8 when gathering parameter name we get Arg0, Arg1, etc. Java9+ might return the real parameter name so probably I need to 
-make an adjustment in protobuf message generation. 
 
 
 License

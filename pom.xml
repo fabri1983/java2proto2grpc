@@ -9,6 +9,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<javax.annotation.api.version>1.3.2</javax.annotation.api.version>
 		<os.maven.version>1.6.1</os.maven.version>
 		<protobuf.maven.version>0.6.1</protobuf.maven.version>
 		<io.grpc.version>1.21.0</io.grpc.version>
@@ -26,6 +27,12 @@
 	</repositories>
 	
 	<dependencies>
+		<!-- Java 9+ compatibility -->
+		<dependency>
+			<groupId>javax.annotation</groupId>
+			<artifactId>javax.annotation-api</artifactId>
+			<version>${javax.annotation.api.version}</version>
+		</dependency>
 		<!-- Protocol Buffers compiler to be used by plugin protobuf-maven-plugin -->
 		<dependency>
 		    <groupId>com.google.protobuf</groupId>
@@ -120,6 +127,7 @@
 				<configuration>
 					<source>8</source>
 					<target>8</target>
+					<!--release>11</release-->
 				</configuration>
 				<executions>
 					<execution>

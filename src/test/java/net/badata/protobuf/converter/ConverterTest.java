@@ -3,6 +3,7 @@ package net.badata.protobuf.converter;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Timestamp;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Arrays;
@@ -93,9 +94,9 @@ public class ConverterTest {
 		ConverterDomain.FieldConverterTest fieldConverterTest = new ConverterDomain.FieldConverterTest();
 		fieldConverterTest.setEnumString(TestEnum.TWO);
 		fieldConverterTest.setDateToLong(new Date());
-		fieldConverterTest.setLocalDateTimeToLong(LocalDateTime.now(ZoneOffset.UTC));
+		fieldConverterTest.setLocalDateTimeToLong(nowLocalDateTime());
 		fieldConverterTest.setDateToTimestamp(new Date());
-		fieldConverterTest.setLocalDateTimeToTimestamp(LocalDateTime.now(ZoneOffset.UTC));
+		fieldConverterTest.setLocalDateTimeToTimestamp(nowLocalDateTime());
 		Set<String> stringSet = new HashSet<String>();
 		stringSet.add("111");
 		fieldConverterTest.setStringSetValue(stringSet);
@@ -127,6 +128,18 @@ public class ConverterTest {
 		
 		testDomain.setSimpleMapValue(Collections.singletonMap("key", "value"));
 		testDomain.setComplexMapValue(Collections.singletonMap("key", primitiveTestItem));
+	}
+
+	/**
+	 * Use System.currentTimeMillis() to avoid the extra microseconds added on Java9+ when using Instant.now().
+	 * See https://stackoverflow.com/questions/39586311/java-8-localdatetime-now-only-giving-precision-of-milliseconds
+	 * 
+	 * @return
+	 */
+	private LocalDateTime nowLocalDateTime() {
+		Instant instantNow = Instant.ofEpochMilli( System.currentTimeMillis() );
+		LocalDateTime nowLocalDateTime = instantNow.atOffset(ZoneOffset.UTC).toLocalDateTime();
+		return nowLocalDateTime;
 	}
 
 	private void createIgnoredFieldsMap() {
