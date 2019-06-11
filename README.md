@@ -7,6 +7,15 @@ I just made it compatible with Windows, renamed some packages, fixed some bugs, 
 created LoginService client and server, and more.
 
 
+[![Build Status](https://travis-ci.org/fabri1983/java2proto2grpc.svg?branch=master)](https://travis-ci.org/fabri1983/java2proto2grpc?branch=master)
+&nbsp;&nbsp;&nbsp;&nbsp;
+[![Coverage Status](https://coveralls.io/repos/github/fabri1983/java2proto2grpc/badge.svg)](https://coveralls.io/github/fabri1983/java2proto2grpc?branch=master)
+&nbsp;&nbsp;&nbsp;&nbsp;
+[![Code Climate](https://codeclimate.com/github/fabri1983/java2proto2grpc/badges/gpa.svg)](https://codeclimate.com/github/fabri1983/java2proto2grpc)
+&nbsp;&nbsp;&nbsp;&nbsp;
+[![Libraries.io for GitHub](https://badgen.net/badge/libraries.io/fabri1983/blue)](https://libraries.io/github/fabri1983/java2proto2grpc)
+
+
 Features:
 ---
 - Depends on Maven (uses plugins to generate grpc stubs).
