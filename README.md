@@ -1,4 +1,4 @@
-## java 2 proto 2 grpc
+# java 2 proto 2 grpc
 
 This project is a modification from original projects https://github.com/jhrgitgit/java2proto and https://github.com/lloydsparkes/java-proto-generator.  
 Credits belong to the creators of the mentioned projects.  
@@ -7,21 +7,22 @@ I just made it compatible with Windows, renamed some packages, fixed some bugs, 
 created LoginService client and server, and more.
 
 
-#### Features:
-
+Features:
+---
 - Depends on Maven (uses plugins to generate grpc stubs).
-- Java 8 (and minor versions too). See the **TODO** section for Java 9+.
+- Java 8 (minor versions required some changes). See the **TODO** section for Java 9+.
 - Generates *.proto* files (syntax v3) out of Java classes/interfaces existing in the classpath and decorated by *@GrpcEnabled*.
 - Generates gRPC stubs out of *.proto files*.
 - Provides two gRPC examples: *Helloworld* and *LoginService*.
-- Conversion api between protobuf objects and DTOs or Domain Model Objects, and viceversa. Fixed version of api *protobuf-converter* from *BAData*.
-- *java.lang.Enum* is defined as *string* when generating proto file. So when using *@net.badata.protobuf.converter.annotation.ProtoField* 
-you need to extend *net.badata.protobuf.converter.type.EnumStringConverter* and set it as *converter* attribute. See **Request** and **Response** 
-example classes.
+- Conversion api between protobuf objects and DTOs or Domain Model Objects, and viceversa:
+	- Fixed and extended version of api *protobuf-converter* from [BAData](https://github.com/BAData/protobuf-converter "protobuf-converter").
+	- *java.lang.Enum* is defined as *string* when generating proto file. 
+	So when using *@net.badata.protobuf.converter.annotation.ProtoField* you need to extend *net.badata.protobuf.converter.type.EnumStringConverter* 
+	and set it as *converter* attribute. See **Request** and **Response** example classes.
 
 
-#### Usage:
-
+Usage:
+---
 First you need to generate **.proto** files out of your java **classes/interfaces** located at your classpath 
 and which are decorated with annotation *@GrpcEnabled*.
 - **JavaToProto2Main**: generates *.proto* files from a class/package at specific folder:  
@@ -39,8 +40,8 @@ in order to generate the protobuf java classes and gRPC stubs for client and ser
 Generated code is located at *target/generated-sources/protobuf/* and *target/generated-test-sources/protobuf/*.
 
 
-#### Helloworld and LoginService correct build:
-
+Helloworld and LoginService correct build:
+---
 Folder **src/main/proto** contains two commited files named *helloworld.proto* and *LoginService.proto*. If you plan to make modificaitons on them you 
 can use next commands in order to ignore track any change:
 ```sh
@@ -55,7 +56,8 @@ The file *LoginService.proto* is the one you can generate running *com.harlan.ja
 and grpc stubs to make some testing running *com.harlan.javagrpc.main.login.LoginClient* and *com.harlan.javagrpc.main.login.LoginServer*.
 
 
-#### TODO
+TODO
+---
 - Modularize JavaToProto2. Code is written in a very imperative way, and hard to mantain.
 - Add converters similar to *net.badata.protobuf.converter.type.DateLongConverter* for fields with types: LocalTime, LocalDate. 
 Use *google.protobuf.Timestamp* in the converter implementation.
@@ -71,14 +73,16 @@ Use *google.protobuf.Duration* in the converter implementation.
 make an adjustment in protobuf message generation. 
 
 
-#### License
+License
+---
 Licenses corresponds to projects:
 - https://github.com/jhrgitgit/java2proto
 - https://github.com/lloydsparkes/java-proto-generator
 - https://github.com/BAData/protobuf-converter#license
 
 
-#### Useful tips
+Useful tips
+---
 - I have some tracked files which potentially can be modified.  
 I don't want to untrack them, I just don't want them to appear as modified and I don't want them to be staged when I git add.  
 Solution:
