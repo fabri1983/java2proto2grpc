@@ -14,7 +14,10 @@ public class HelloWorldClientMain {
 	private final GreeterGrpc.GreeterBlockingStub blockingGreeterStub;
 
 	public HelloWorldClientMain(String host, int port) {
-		channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
+		channel = ManagedChannelBuilder
+				.forAddress(host, port)
+				.usePlaintext()
+				.build();
 		blockingGreeterStub = GreeterGrpc.newBlockingStub(channel);
 	}
 

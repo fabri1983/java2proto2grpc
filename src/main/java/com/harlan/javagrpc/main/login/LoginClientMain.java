@@ -7,7 +7,7 @@ import com.halran.javagrpc.model.Response;
 import com.harlan.javagrpc.service.LoginServiceGrpcProxy;
 import com.harlan.javagrpc.service.contract.LoginService;
 import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc;
-import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc.LoginServiceBlockingStub;
+import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc.LoginServiceFutureStub;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -20,9 +20,12 @@ public class LoginClientMain {
 	private final LoginService loginService;
 	
 	public LoginClientMain(String host, int port) {
-		channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
-		LoginServiceBlockingStub blockingStub = LoginServiceGrpc.newBlockingStub(channel);
-		loginService = new LoginServiceGrpcProxy(blockingStub);
+		channel = ManagedChannelBuilder
+				.forAddress(host, port)
+				.usePlaintext()
+				.build();
+		LoginServiceFutureStub futureStub = LoginServiceGrpc.newFutureStub(channel);
+		loginService = new LoginServiceGrpcProxy(futureStub);
 	}
 
 	public void shutdown() throws InterruptedException {

@@ -8,6 +8,9 @@ import io.grpc.ServerBuilder;
 
 import java.io.IOException;
 
+/**
+ * Register gRPC's {@link BindableService} objects implementing {@link GrpcServiceMarker} to be exposed by a gRPC Server.
+ */
 public class GrpcServerStarter {
 
 	private int port;
