@@ -1,6 +1,6 @@
 package com.harlan.javagrpc.main.helloworld;
 
-import com.halran.javagrpc.grpc.server.GrpcServerStarter;
+import com.halran.javagrpc.grpc.artifact.GrpcServerStarter;
 import com.harlan.javagrpc.service.GreeterServiceGrpcImpl;
 
 import java.io.IOException;

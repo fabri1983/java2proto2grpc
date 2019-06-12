@@ -1,6 +1,6 @@
 package com.harlan.javagrpc.main.login;
 
-import com.halran.javagrpc.grpc.server.GrpcServerStarter;
+import com.halran.javagrpc.grpc.artifact.GrpcServerStarter;
 import com.harlan.javagrpc.business.LoginBusinessImpl;
 import com.harlan.javagrpc.business.contract.LoginBusiness;
 import com.harlan.javagrpc.service.LoginServiceGrpcImpl;

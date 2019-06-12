@@ -1,5 +1,6 @@
 package com.harlan.javagrpc.main.login;
 
+import com.halran.javagrpc.grpc.artifact.GrpcManagedChannel;
 import com.halran.javagrpc.model.Corpus;
 import com.halran.javagrpc.model.Request;
 import com.halran.javagrpc.model.Request2;
@@ -9,51 +10,41 @@ import com.harlan.javagrpc.service.contract.LoginService;
 import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc;
 import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc.LoginServiceFutureStub;
 
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
-
-import java.util.concurrent.TimeUnit;
-
 public class LoginClientMain {
 	
-	private final ManagedChannel channel;
-	private final LoginService loginService;
-	
-	public LoginClientMain(String host, int port) {
-		channel = ManagedChannelBuilder
-				.forAddress(host, port)
-				.usePlaintext()
-				.build();
-		LoginServiceFutureStub futureStub = LoginServiceGrpc.newFutureStub(channel);
-		loginService = new LoginServiceGrpcProxy(futureStub);
-	}
-
-	public void shutdown() throws InterruptedException {
-		System.out.println("Client shutdown.");
-		channel.shutdown().awaitTermination(2, TimeUnit.SECONDS);
-	}
-
-	public void login(User user, Corpus corpus) {
-		Request request = Request.from(user.getId(), user.getName(), corpus);
-		Request2 request2 = Request2.from(user.getId(), user.getName());
-		int loginId = loginService.login(request);
-		Response response = loginService.getRes(request, request2);
-		System.out.println("login id: " + loginId + ". Corpus: " + response.getCorpus().toString());
-	}
-
 	public static void main(String[] args) throws InterruptedException {
-		LoginClientMain client = new LoginClientMain("127.0.0.1", 50051);
+		
+		// create managed channel
+		GrpcManagedChannel managedChannel = new GrpcManagedChannel("127.0.0.1", 50051);
+		
+		// create login service proxy (stub)
+		LoginServiceFutureStub futureStub = LoginServiceGrpc.newFutureStub(managedChannel.getChannel());
+		LoginService loginService = new LoginServiceGrpcProxy(futureStub);
+		
+		// create some testing data
 		User[] users = new User[] { 
 				User.from(11, "pepito"),
 				User.from(22, "martita"),
 				User.from(33, "robertito")};
 		Corpus[] corpusValues = Corpus.values();
+		
+		// call grpc stub
 		for (int i = 0; i < users.length; i++) {
-			client.login(users[i], corpusValues[i % corpusValues.length]);
+			testCall(loginService, users[i], corpusValues[i % corpusValues.length]);
 		}
-		client.shutdown();
+		
+		managedChannel.shutdown();
 	}
 	
+	private static void testCall(LoginService loginService, User user, Corpus corpus) {
+		Request request = Request.from(user.getId(), user.getName(), corpus);
+		Request2 request2 = Request2.from(user.getId(), user.getName());
+		
+		int loginId = loginService.login(request);
+		Response response = loginService.getRes(request, request2);
+		System.out.println("login id: " + loginId + ". Corpus: " + response.getCorpus().toString());
+	}
+
 	private static class User {
 
 		private int id;

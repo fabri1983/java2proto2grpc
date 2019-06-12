@@ -1,4 +1,4 @@
-package com.halran.javagrpc.grpc.server;
+package com.halran.javagrpc.grpc.artifact;
 
 import com.harlan.javagrpc.service.GrpcServiceMarker;
 
