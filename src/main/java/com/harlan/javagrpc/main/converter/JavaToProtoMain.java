@@ -1,4 +1,4 @@
-package com.harlan.javagrpc.main;
+package com.harlan.javagrpc.main.converter;
 
 import com.harlan.javagrpc.converter.JavaToProto;
 import com.harlan.javagrpc.converter.annotation.GrpcEnabled;
@@ -37,7 +37,7 @@ import java.util.List;
  *   Arrays with more than one Dimension
  *   
  * Usage - CLI:
- *   mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.JavaToProtoMain <classname/package> [<output folder name>]
+ *   mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.converter.JavaToProtoMain <classname/package> [<output folder name>]
  * 
  *   If output file name is not specified the output will be to the console.
  * 
@@ -58,7 +58,7 @@ public class JavaToProtoMain {
 		// no arguments?
 		if (args.length == 0) {
 			System.err.println("Usage:");
-			System.err.println("\t mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.JavaToProtoMain <classname/package> [<output folder name>]");
+			System.err.println("\t mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.converter.JavaToProtoMain <classname/package> [<output folder name>]");
 			System.err.println("");
 			return;
 		}

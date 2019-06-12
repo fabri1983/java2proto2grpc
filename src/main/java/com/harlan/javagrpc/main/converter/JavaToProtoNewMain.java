@@ -1,6 +1,6 @@
-package com.harlan.javagrpc.main;
+package com.harlan.javagrpc.main.converter;
 
-import com.harlan.javagrpc.converter.JavaToProto2;
+import com.harlan.javagrpc.converter.JavaToProtoNew;
 import com.harlan.javagrpc.converter.annotation.GrpcEnabled;
 import com.harlan.javagrpc.util.ClassGrabberUtil;
 
@@ -13,14 +13,14 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 
-public class JavaToProto2Main {
+public class JavaToProtoNewMain {
 	
 	public static void main(String[] args) throws IOException {
 
 		// no arguments?
 		if (args.length == 0) {
 			System.err.println("Usage:");
-			System.err.println("\t mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.JavaToProto2Main <classname/package> [<output folder name>]");
+			System.err.println("\t mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.converter.JavaToProtoNewMain <classname/package> [<output folder name>]");
 			System.err.println("");
 			return;
 		}
@@ -38,7 +38,7 @@ public class JavaToProto2Main {
 		
 		for (Class<?> clazz : classes) {
 			
-			JavaToProto2 javaToProto2 = new JavaToProto2();
+			JavaToProtoNew javaToProto2 = new JavaToProtoNew();
 			String protobuf = javaToProto2.getProtobuf(clazz);
 			
 			// Write to file in output folder?

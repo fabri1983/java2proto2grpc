@@ -1,6 +1,6 @@
 package com.harlan.javagrpc.main.login;
 
-import com.halran.javagrpc.server.GrpcServer;
+import com.halran.javagrpc.grpc.server.GrpcServerStarter;
 import com.harlan.javagrpc.business.LoginBusinessImpl;
 import com.harlan.javagrpc.business.contract.LoginBusiness;
 import com.harlan.javagrpc.service.LoginServiceGrpcImpl;
@@ -11,7 +11,7 @@ public class LoginServerMain {
 	
 	public static void main(String[] args) throws IOException {
 		int port = 50051;
-		GrpcServer server = new GrpcServer(port);
+		GrpcServerStarter server = new GrpcServerStarter(port);
 		
 		// register login service
 		LoginBusiness loginBusiness = new LoginBusinessImpl();

@@ -36,16 +36,16 @@ Usage:
 ---
 First you need to generate **.proto** files out of your java **classes/interfaces** located at your classpath 
 and which are decorated with annotation *@GrpcEnabled*.
-- **JavaToProto2Main**: generates *.proto* files (**syntax v3**) from a class/package at specific folder:  
+- **JavaToProtoNewMain**: generates *.proto* files (**syntax v3**) from a class/package at specific folder:  
 	```sh
 	mvn compile
-	mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.JavaToProto2Main -Dexec.args="com.harlan.javagrpc.service.contract src/main/proto"
+	mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.converter.JavaToProtoNewMain -Dexec.args="com.harlan.javagrpc.service.contract src/main/proto"
 	```
 - JavaToProtoMain: generates *.proto* files (**syntax v3**) from a class/package at specific folder:  
 	**Currently work in progress. Messages are being nested and it ends up with lot of repeated messages.**
 	```sh
 	mvn compile
-	mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.JavaToProtoMain -Dexec.args="com.harlan.javagrpc.service.contract src/main/proto"
+	mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.converter.JavaToProtoMain -Dexec.args="com.harlan.javagrpc.service.contract src/main/proto"
 	```
 
 Then you can build the project (*mvn compile* or *Build command* in your IDE) which triggers plugin *org.xolstice.maven.plugins:protobuf-maven-plugin* 
@@ -65,13 +65,13 @@ git update-index --assume-unchanged src/main/proto/LoginService.proto
 The file *helloworld.proto* is used to generated grpc-java example classes as per https://github.com/grpc/grpc-java/tree/master/examples, 
 so you can make some testing running *com.harlan.javagrpc.main.helloworld.HelloWorldClientMain* and *com.harlan.javagrpc.main.helloworld.HelloWorldServerMain*.
 
-The file *LoginService.proto* is the one you can generate running *com.harlan.javagrpc.main.JavaToProtoMain2*, and it generates protobuf classes 
+The file *LoginService.proto* is the one you can generate running *com.harlan.javagrpc.main.converter.JavaToProtoMainNew*, and it generates protobuf classes 
 and grpc stubs to make some testing running *com.harlan.javagrpc.main.login.LoginClientMain* and *com.harlan.javagrpc.main.login.LoginServerMain*.
 
 
 TODO
 ---
-- Modularize JavaToProto2. Code is written in a very imperative way, and hard to mantain.
+- Modularize JavaToProtoNew. Code is written in a very imperative way, and hard to mantain.
 - Add converters similar to *net.badata.protobuf.converter.type.DateLongConverter* for fields with types: LocalTime, LocalDate. 
 Use *google.protobuf.Timestamp* in the converter implementation.
 - Add converters similar to *net.badata.protobuf.converter.type.DateLongConverter* for fields with types: Duration. 

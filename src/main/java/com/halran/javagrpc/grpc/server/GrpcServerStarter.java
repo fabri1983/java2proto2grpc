@@ -1,4 +1,4 @@
-package com.halran.javagrpc.server;
+package com.halran.javagrpc.grpc.server;
 
 import com.harlan.javagrpc.service.GrpcServiceMarker;
 
@@ -8,22 +8,22 @@ import io.grpc.ServerBuilder;
 
 import java.io.IOException;
 
-public class GrpcServer {
+public class GrpcServerStarter {
 
 	private int port;
 	private Server server;
 	private ServerBuilder<?> serverBuilder;
 	
-	public GrpcServer(int port) {
+	public GrpcServerStarter(int port) {
 		this.port = port;
 		serverBuilder = ServerBuilder.forPort(port);
 	}
 	
-	public GrpcServer register(GrpcServiceMarker grpcService) {
+	public GrpcServerStarter register(GrpcServiceMarker grpcService) {
 		if (!(grpcService instanceof BindableService)) {
             String simpleName = grpcService.getClass().getSimpleName();
-			String message = "GrpcBusinessMarker should only used for grpc BindableService. "
-            		+ "Found wrong usage of GrpcBusinessMarker for service: " + simpleName;
+			String message = "GrpcServiceMarker should only used for grpc BindableService. "
+            		+ "Found wrong usage of GrpcServiceMarker for service: " + simpleName;
 			throw new RuntimeException(message);
         }
         serverBuilder.addService((BindableService) grpcService);
@@ -48,7 +48,7 @@ public class GrpcServer {
 			@Override
 			public void run() {
 				System.err.println("*** shutting down gRPC server since JVM is shutting down.");
-				GrpcServer.this.stop();
+				GrpcServerStarter.this.stop();
 				System.err.println("*** server shut down.");
 			}
 		});

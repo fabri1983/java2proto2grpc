@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class JavaToProto2 {
+public class JavaToProtoNew {
 
 	private static final String PROTO_SUFFIX = "Proto";
 	private static final String PROTO_IN_SUFFIX = "ProtoIn";
