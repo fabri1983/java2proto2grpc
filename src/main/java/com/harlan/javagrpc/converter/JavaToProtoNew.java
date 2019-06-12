@@ -22,7 +22,12 @@ public class JavaToProtoNew {
 	private Map<String,TreeMap<Integer,String>> map;
 	
 	public String getProtobuf(Class<?> clazz) {
-
+		
+		Method[] methods = getDeclaredMethods(clazz);
+		if (methods == null || methods.length == 0) {
+			return null;
+		}
+		
 		map = new HashMap<>();
 		
 		String name = clazz.getSimpleName();
@@ -40,8 +45,6 @@ public class JavaToProtoNew {
 		sb.append("\r\n");
 		sb.append("package " + name + ";\r\n");
 		sb.append("\r\n");
-		
-		Method[] methods = getDeclaredMethods(clazz);
 		
 		generateRpcMethods(sb, name, methods);
 		

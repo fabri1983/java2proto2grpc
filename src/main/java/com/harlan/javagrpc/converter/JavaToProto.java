@@ -149,13 +149,16 @@ public class JavaToProto {
 			.append("=").append(SPACE).append(index).append(LINE_END).append(NEWLINE);
 	}
 	
-	private void generateProtoFile(){
+	private void generateProto(){
 		builder = new StringBuilder();
+		
+		Method[] methods = getDeclaredMethods(currentClass());
+		if (methods == null || methods.length == 0) {
+			return;
+		}
 		
 		// syntax, options, and package
 		appendHeader();
-		
-		Method[] methods = getDeclaredMethods(currentClass());
 		
 		generateServiceWithRpcs(methods);
 		
@@ -486,8 +489,8 @@ public class JavaToProto {
 	@Override
 	public String toString()
 	{
-		if(builder == null){
-			generateProtoFile();
+		if (builder == null){
+			generateProto();
 		}
 		return builder.toString();
 	}

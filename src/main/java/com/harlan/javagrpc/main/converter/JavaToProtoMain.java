@@ -79,6 +79,11 @@ public class JavaToProtoMain {
 			JavaToProto jtp = new JavaToProto(clazz);
 			String protobuf = jtp.toString();
 			
+			if (protobuf == null) {
+				System.out.println(clazz.getSimpleName() + " has no declared methods.");
+				continue;
+			}
+			
 			// Write to file in output folder?
 			if (args.length == 2){
 				BufferedWriter out = null;

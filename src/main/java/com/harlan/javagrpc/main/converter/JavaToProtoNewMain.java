@@ -41,6 +41,11 @@ public class JavaToProtoNewMain {
 			JavaToProtoNew javaToProto2 = new JavaToProtoNew();
 			String protobuf = javaToProto2.getProtobuf(clazz);
 			
+			if (protobuf == null) {
+				System.out.println(clazz.getSimpleName() + " has no declared methods.");
+				continue;
+			}
+			
 			// Write to file in output folder?
 			if (args.length == 2){
 				BufferedWriter out = null;
