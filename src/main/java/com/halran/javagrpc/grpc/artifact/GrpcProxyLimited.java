@@ -1,11 +1,10 @@
-package com.harlan.javagrpc.service;
+package com.halran.javagrpc.grpc.artifact;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Semaphore;
 import java.util.function.Supplier;
 
@@ -22,7 +21,7 @@ public class GrpcProxyLimited {
 			Futures.addCallback(future, callback(), MoreExecutors.directExecutor());
 			return future.get();
 		}
-		catch (InterruptedException | ExecutionException ex) {
+		catch (Exception ex) {
 			throw new RuntimeException(ex);
 		}
 	}

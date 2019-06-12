@@ -1,7 +1,5 @@
 package com.halran.javagrpc.grpc.artifact;
 
-import com.harlan.javagrpc.service.GrpcServiceMarker;
-
 import io.grpc.BindableService;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;

@@ -1,4 +1,4 @@
-package com.harlan.javagrpc.service;
+package com.halran.javagrpc.grpc.artifact;
 
 import io.grpc.stub.StreamObserver;
 

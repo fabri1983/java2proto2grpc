@@ -1,6 +1,7 @@
 package com.harlan.javagrpc.service;
 
 import com.google.protobuf.Empty;
+import com.halran.javagrpc.grpc.artifact.GrpcProxyLimited;
 import com.halran.javagrpc.model.Request;
 import com.halran.javagrpc.model.Request2;
 import com.halran.javagrpc.model.Response;
