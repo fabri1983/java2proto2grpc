@@ -8,7 +8,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 import java.util.concurrent.Semaphore;
 import java.util.function.Supplier;
 
-public class GrpcProxyLimited {
+public class GrpcClientProxyLimited {
 
 	// limit rpc calls made to the stub
 	protected final Semaphore limiter = new Semaphore(100);

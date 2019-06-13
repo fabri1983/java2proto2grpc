@@ -1,7 +1,7 @@
 package com.harlan.javagrpc.service;
 
 import com.google.protobuf.Empty;
-import com.halran.javagrpc.grpc.artifact.GrpcProxyLimited;
+import com.halran.javagrpc.grpc.artifact.GrpcClientProxyLimited;
 import com.halran.javagrpc.model.Request;
 import com.halran.javagrpc.model.Request2;
 import com.halran.javagrpc.model.Response;
@@ -16,7 +16,7 @@ import com.harlan.javagrpc.service.contract.protobuf.RequestProto;
 
 import net.badata.protobuf.converter.Converter;
 
-public class LoginServiceGrpcProxy extends GrpcProxyLimited implements LoginService {
+public class LoginServiceGrpcProxy extends GrpcClientProxyLimited implements LoginService {
 
 	private LoginServiceFutureStub futureStub;
 	
