@@ -9,19 +9,6 @@ import io.grpc.examples.helloworld.protobuf.SearchResponse;
 
 public class HelloWorldClientMain {
 
-	private static void greet(GreeterGrpc.GreeterBlockingStub blockingGreeterStub, String name) {
-		SearchRequest request = SearchRequest.newBuilder()
-				.addHelloRequest(SearchRequest.HelloRequest.newBuilder()
-				.setName(name))
-				.build();
-		
-		SearchResponse response = blockingGreeterStub.sayHello(request);
-		System.out.println("hello" + response.getHelloReply(0).getMessage());
-		
-//		HelloReply response2 = blockingStub.sayWorld(request);
-//		System.out.println("world" + response2.getMessage());
-	}
-
 	public static void main(String[] args) throws InterruptedException {
 		
 		// create managed channel
@@ -37,6 +24,19 @@ public class HelloWorldClientMain {
 		}
 		
 		managedChannel.shutdown();
+	}
+
+	private static void greet(GreeterGrpc.GreeterBlockingStub blockingGreeterStub, String name) {
+		SearchRequest request = SearchRequest.newBuilder()
+				.addHelloRequest(SearchRequest.HelloRequest.newBuilder()
+				.setName(name))
+				.build();
+		
+		SearchResponse response = blockingGreeterStub.sayHello(request);
+		System.out.println("hello" + response.getHelloReply(0).getMessage());
+		
+//		HelloReply response2 = blockingStub.sayWorld(request);
+//		System.out.println("world" + response2.getMessage());
 	}
 	
 }
