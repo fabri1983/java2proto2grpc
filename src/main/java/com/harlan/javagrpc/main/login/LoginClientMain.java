@@ -1,6 +1,7 @@
 package com.harlan.javagrpc.main.login;
 
 import com.halran.javagrpc.grpc.artifact.GrpcManagedChannel;
+import com.halran.javagrpc.grpc.artifact.IGrpcManagedChannel;
 import com.halran.javagrpc.model.Corpus;
 import com.halran.javagrpc.model.Request;
 import com.halran.javagrpc.model.Request2;
@@ -15,7 +16,7 @@ public class LoginClientMain {
 	public static void main(String[] args) throws InterruptedException {
 		
 		// create managed channel
-		GrpcManagedChannel managedChannel = new GrpcManagedChannel("127.0.0.1", 50051);
+		IGrpcManagedChannel managedChannel = new GrpcManagedChannel("127.0.0.1", 50051);
 		
 		// create login service proxy (stub)
 		LoginServiceFutureStub futureStub = LoginServiceGrpc.newFutureStub(managedChannel.getChannel());

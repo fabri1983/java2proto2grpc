@@ -9,7 +9,7 @@ import java.io.IOException;
 /**
  * Register gRPC's {@link BindableService} objects implementing {@link GrpcServiceMarker} to be exposed by a gRPC Server.
  */
-public class GrpcServerStarter {
+public class GrpcServerStarter implements IGrpcServerStarter {
 
 	private int port;
 	private Server server;
@@ -17,9 +17,14 @@ public class GrpcServerStarter {
 	
 	public GrpcServerStarter(int port) {
 		this.port = port;
-		serverBuilder = ServerBuilder.forPort(port);
+		serverBuilder = createBuilder(port);
+	}
+
+	protected ServerBuilder<?> createBuilder(int port) {
+		return ServerBuilder.forPort(port);
 	}
 	
+	@Override
 	public GrpcServerStarter register(GrpcServiceMarker grpcService) {
 		if (!(grpcService instanceof BindableService)) {
             String simpleName = grpcService.getClass().getSimpleName();
@@ -31,6 +36,7 @@ public class GrpcServerStarter {
 		return this;
 	}
 	
+	@Override
 	public void start() throws IOException {
 		
 		try {
@@ -55,12 +61,14 @@ public class GrpcServerStarter {
 		});
 	}
 
+	@Override
 	public void stop() {
 		if (server != null) {
 			server.shutdown();
 		}
 	}
 
+	@Override
 	public void blockUntilShutdown(boolean blockInOtherThread) {
 		if (server != null) {
 			if (blockInOtherThread) {

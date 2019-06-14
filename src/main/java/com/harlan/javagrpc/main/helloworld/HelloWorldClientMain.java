@@ -1,6 +1,7 @@
 package com.harlan.javagrpc.main.helloworld;
 
 import com.halran.javagrpc.grpc.artifact.GrpcManagedChannel;
+import com.halran.javagrpc.grpc.artifact.IGrpcManagedChannel;
 
 import io.grpc.examples.helloworld.protobuf.GreeterGrpc;
 import io.grpc.examples.helloworld.protobuf.SearchRequest;
@@ -24,7 +25,7 @@ public class HelloWorldClientMain {
 	public static void main(String[] args) throws InterruptedException {
 		
 		// create managed channel
-		GrpcManagedChannel managedChannel = new GrpcManagedChannel("127.0.0.1", 50051);
+		IGrpcManagedChannel managedChannel = new GrpcManagedChannel("127.0.0.1", 50051);
 		
 		// create greeter proxy (stub)
 		GreeterGrpc.GreeterBlockingStub blockingGreeterStub = 

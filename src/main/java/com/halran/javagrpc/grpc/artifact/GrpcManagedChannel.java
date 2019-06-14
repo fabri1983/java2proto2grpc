@@ -5,7 +5,7 @@ import io.grpc.ManagedChannelBuilder;
 
 import java.util.concurrent.TimeUnit;
 
-public class GrpcManagedChannel {
+public class GrpcManagedChannel implements IGrpcManagedChannel {
 
 	private final ManagedChannel channel;
 
@@ -13,7 +13,7 @@ public class GrpcManagedChannel {
 		channel = createManagedChannel(host, port);
 	}
 	
-	private ManagedChannel createManagedChannel(String host, int port) {
+	protected ManagedChannel createManagedChannel(String host, int port) {
 		return ManagedChannelBuilder
 				.forAddress(host, port)
 				// use plain text if your entire microservice ecosystem is inside a controlled network, 
@@ -22,10 +22,12 @@ public class GrpcManagedChannel {
 				.build();
 	}
 	
+	@Override
 	public ManagedChannel getChannel() {
 		return channel;
 	}
 
+	@Override
 	public void shutdown() {
 		try {
 			System.out.println("*** Client shutdown.");

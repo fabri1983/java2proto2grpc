@@ -48,7 +48,7 @@
 		<!-- gRPC Client and Server -->
 		<dependency>
 			<groupId>io.grpc</groupId>
-			<artifactId>grpc-netty-shaded</artifactId>
+			<artifactId>grpc-netty</artifactId>
 			<version>${io.grpc.version}</version>
 		</dependency>
 		<dependency>
