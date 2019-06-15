@@ -48,17 +48,24 @@
 		<!-- gRPC Client and Server -->
 		<dependency>
 			<groupId>io.grpc</groupId>
-			<artifactId>grpc-netty</artifactId>
-			<version>${io.grpc.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>io.grpc</groupId>
 			<artifactId>grpc-protobuf</artifactId>
 			<version>${io.grpc.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-stub</artifactId>
+			<version>${io.grpc.version}</version>
+		</dependency>
+		<!-- Use just grpc-netty-shaded if not using TLS -->
+		<dependency>
+			<groupId>io.grpc</groupId>
+			<artifactId>grpc-netty-shaded</artifactId>
+			<version>${io.grpc.version}</version>
+		</dependency>
+		<!-- For gRPC TLS: must see https://github.com/grpc/grpc-java/blob/master/SECURITY.md#netty -->
+		<dependency>
+			<groupId>io.grpc</groupId>
+			<artifactId>grpc-netty</artifactId>
 			<version>${io.grpc.version}</version>
 		</dependency>
 		<!-- JUnit -->

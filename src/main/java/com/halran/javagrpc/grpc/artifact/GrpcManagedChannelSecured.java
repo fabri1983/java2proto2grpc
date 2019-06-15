@@ -1,10 +1,10 @@
 package com.halran.javagrpc.grpc.artifact;
 
 import io.grpc.ManagedChannel;
-import io.grpc.netty.GrpcSslContexts;
-import io.grpc.netty.NettyChannelBuilder;
-import io.netty.handler.ssl.SslContext;
-import io.netty.handler.ssl.SslContextBuilder;
+import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
+import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
+import io.grpc.netty.shaded.io.netty.handler.ssl.SslContext;
+import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder;
 
 import java.io.InputStream;
 
@@ -19,7 +19,8 @@ public class GrpcManagedChannelSecured extends GrpcManagedChannel {
 	@Override
 	protected ManagedChannel createManagedChannel(String host, int port) {
 		try {
-			SslContext sslContext = buildSslContext();
+			boolean mutualAuth = false;
+			SslContext sslContext = buildSslContext(mutualAuth);
 			return NettyChannelBuilder
 					.forAddress(host, port)
 					// Only for using provided test certs to match the Subject Alternative Names in the test certificates. 
@@ -33,12 +34,10 @@ public class GrpcManagedChannelSecured extends GrpcManagedChannel {
 		}
 	}
 	
-	private SslContext buildSslContext() throws SSLException {
-		// No Mutual authentication: provides only the ca.pem
-		// Mutual authentication: provides all files
+	private SslContext buildSslContext(boolean mutualAuth) throws SSLException {
+		// No Mutual authentication: provide only the ca.pem
+		// Mutual authentication (client side authentication): provide all files
 		InputStream trustCertCollectionFile = getInputStreamFromResource("certs/ca.pem");
-		InputStream clientCertChainFile = getInputStreamFromResource("certs/client.pem");
-		InputStream clientPrivateKeyFile = getInputStreamFromResource("certs/client.key");
 		
 		SslContextBuilder builder = GrpcSslContexts.forClient();
 		
@@ -46,8 +45,14 @@ public class GrpcManagedChannelSecured extends GrpcManagedChannel {
 			builder.trustManager(trustCertCollectionFile);
 		}
 		
-		if (clientCertChainFile != null && clientPrivateKeyFile != null) {
-			builder.keyManager(clientCertChainFile, clientPrivateKeyFile);
+		// authenticate client?
+		if (mutualAuth) {
+			InputStream clientCertChainFile = getInputStreamFromResource("certs/client.pem");
+			InputStream clientPrivateKeyFile = getInputStreamFromResource("certs/client.key");
+			
+			if (clientCertChainFile != null && clientPrivateKeyFile != null) {
+				builder.keyManager(clientCertChainFile, clientPrivateKeyFile);
+			}
 		}
 		
 		return builder.build();
