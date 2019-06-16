@@ -17,7 +17,7 @@ import org.junit.Test;
 
 import net.badata.protobuf.converter.Converter;
 
-public class JavaToProto2Test {
+public class JavaToProtoNewTest {
 
 	@Test
 	public void domainModelToProtoAndViceversaTest() {

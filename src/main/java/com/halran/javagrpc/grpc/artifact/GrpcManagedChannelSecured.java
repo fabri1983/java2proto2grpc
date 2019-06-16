@@ -1,6 +1,6 @@
 package com.halran.javagrpc.grpc.artifact;
 
-import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
 import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
 import io.grpc.netty.shaded.io.netty.handler.ssl.SslContext;
@@ -17,7 +17,7 @@ public class GrpcManagedChannelSecured extends GrpcManagedChannel {
 	}
 	
 	@Override
-	protected ManagedChannel createManagedChannel(String host, int port) {
+	protected ManagedChannelBuilder<?> createManagedChannel(String host, int port) {
 		try {
 			boolean mutualAuth = false;
 			SslContext sslContext = buildSslContext(mutualAuth);
@@ -26,8 +26,7 @@ public class GrpcManagedChannelSecured extends GrpcManagedChannel {
 					// Only for using provided test certs to match the Subject Alternative Names in the test certificates. 
 					// You can generate your own self-signed certificates with commands in the certs README.
 					.overrideAuthority("foo.test.google.fr")
-					.sslContext(sslContext)
-					.build();
+					.sslContext(sslContext);
 		} catch (SSLException ex) {
 			System.err.println(ex);
 			throw new RuntimeException(ex);

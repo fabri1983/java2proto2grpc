@@ -48,12 +48,12 @@ and which are decorated with annotation *@GrpcEnabled*.
 	mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.converter.JavaToProtoMain -Dexec.args="com.harlan.javagrpc.service.contract src/main/proto"
 	```
 
-Then you can build the project (*mvn compile* or *Build command* in your IDE) which triggers plugin *org.xolstice.maven.plugins:protobuf-maven-plugin* 
+**Then you build the project** (*mvn compile* or *Build command* in your IDE) which triggers plugin *org.xolstice.maven.plugins:protobuf-maven-plugin* 
 in order to generate the protobuf java classes and gRPC stubs for client and server out of your *.proto* files.    
 Generated code is located at *target/generated-sources/protobuf/* and *target/generated-test-sources/protobuf/*.
 
 
-Helloworld and LoginService correct build:
+Helloworld and LoginService examples:
 ---
 Folder **src/main/proto** contains two commited files named *helloworld.proto* and *LoginService.proto*. If you plan to make modificaitons on them you 
 can use next commands in order to ignore track any change:

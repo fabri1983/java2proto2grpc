@@ -17,7 +17,7 @@ public class LoginServerMain {
 		// register login service
 		LoginBusiness loginBusiness = new LoginBusinessImpl();
 		LoginServiceGrpcImpl loginServiceGrpc = new LoginServiceGrpcImpl(loginBusiness);
-		server.register(loginServiceGrpc);
+		server.registerBeforeStart(loginServiceGrpc);
 		
 		server.start();
 		server.blockUntilShutdown(false);

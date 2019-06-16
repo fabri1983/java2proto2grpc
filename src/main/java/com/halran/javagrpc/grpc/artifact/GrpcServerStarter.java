@@ -3,8 +3,10 @@ package com.halran.javagrpc.grpc.artifact;
 import io.grpc.BindableService;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import io.grpc.util.MutableHandlerRegistry;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Register gRPC's {@link BindableService} objects implementing {@link GrpcServiceMarker} to be exposed by a gRPC Server.
@@ -14,25 +16,44 @@ public class GrpcServerStarter implements IGrpcServerStarter {
 	private int port;
 	private Server server;
 	private ServerBuilder<?> serverBuilder;
+	private MutableHandlerRegistry serviceRegistry;
 	
 	public GrpcServerStarter(int port) {
 		this.port = port;
-		serverBuilder = createBuilder(port);
+		serviceRegistry = new MutableHandlerRegistry();
+		serverBuilder = createBuilder(port)
+				// substantialperformance improvements. However, it also requires the application to not block under any circumstances.
+				.directExecutor()
+				// allow to register services once the server has started
+				.fallbackHandlerRegistry(serviceRegistry);
 	}
 
 	protected ServerBuilder<?> createBuilder(int port) {
-		return ServerBuilder.forPort(port);
+		return ServerBuilder
+				.forPort(port)
+				// substantialperformance improvements. However, it also requires the application to not block under any circumstances.
+				.directExecutor();
 	}
 	
 	@Override
-	public GrpcServerStarter register(GrpcServiceMarker grpcService) {
-		if (!(grpcService instanceof BindableService)) {
-            String simpleName = grpcService.getClass().getSimpleName();
-			String message = "GrpcServiceMarker should only used for grpc BindableService. "
-            		+ "Found wrong usage of GrpcServiceMarker for service: " + simpleName;
-			throw new RuntimeException(message);
-        }
+	public GrpcServerStarter registerBeforeStart(List<GrpcServiceMarker> grpcServices) {
+		for (GrpcServiceMarker grpcService : grpcServices) {
+			registerBeforeStart(grpcService);
+		}
+		return this;
+	}
+	
+	@Override
+	public GrpcServerStarter registerBeforeStart(GrpcServiceMarker grpcService) {
+		checkIsBindableService(grpcService);
         serverBuilder.addService((BindableService) grpcService);
+		return this;
+	}
+
+	@Override
+	public GrpcServerStarter register(GrpcServiceMarker grpcService) {
+		checkIsBindableService(grpcService);
+		serviceRegistry.addService((BindableService) grpcService);
 		return this;
 	}
 	
@@ -69,6 +90,13 @@ public class GrpcServerStarter implements IGrpcServerStarter {
 	}
 
 	@Override
+	public void forceStop() {
+		if (server != null) {
+			server.shutdownNow();
+		}
+	}
+	
+	@Override
 	public void blockUntilShutdown(boolean blockInOtherThread) {
 		if (server != null) {
 			if (blockInOtherThread) {
@@ -91,6 +119,15 @@ public class GrpcServerStarter implements IGrpcServerStarter {
 		} catch (InterruptedException ex) {
 			System.err.println(ex);
 		}
+	}
+
+	private void checkIsBindableService(GrpcServiceMarker grpcService) {
+		if (!(grpcService instanceof BindableService)) {
+	        String simpleName = grpcService.getClass().getSimpleName();
+			String message = "GrpcServiceMarker should only used for grpc BindableService. "
+	        		+ "Found wrong usage of GrpcServiceMarker for service: " + simpleName;
+			throw new RuntimeException(message);
+	    }
 	}
 	
 }

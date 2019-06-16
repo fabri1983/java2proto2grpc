@@ -14,7 +14,7 @@ public class HelloWorldServerMain {
 		
 		// register greeter service
 		GreeterServiceGrpcImpl greeterService = new GreeterServiceGrpcImpl();
-		server.register(greeterService);
+		server.registerBeforeStart(greeterService);
 		
 		server.start();
 		server.blockUntilShutdown(false);

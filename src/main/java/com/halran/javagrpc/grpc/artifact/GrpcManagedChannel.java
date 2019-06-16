@@ -10,16 +10,21 @@ public class GrpcManagedChannel implements IGrpcManagedChannel {
 	private final ManagedChannel channel;
 
 	public GrpcManagedChannel(String host, int port) {
-		channel = createManagedChannel(host, port);
+		ManagedChannelBuilder<?> channelBuilder = createManagedChannel(host, port);
+		channel = channelBuilder
+				// substantialperformance improvements. However, it also requires the application to not block under any circumstances.
+				.directExecutor()
+				.build();
 	}
 	
-	protected ManagedChannel createManagedChannel(String host, int port) {
+	protected ManagedChannelBuilder<?> createManagedChannel(String host, int port) {
 		return ManagedChannelBuilder
 				.forAddress(host, port)
 				// use plain text if your entire microservice ecosystem is inside a controlled network, 
 				// otherwise setup your security artifacts such as key/trust stores
-				.usePlaintext() 
-				.build();
+				.usePlaintext()
+				// substantialperformance improvements. However, it also requires the application to not block under any circumstances.
+				.directExecutor();
 	}
 	
 	@Override
