@@ -14,12 +14,14 @@ import java.util.List;
 public class GrpcServerStarter implements IGrpcServerStarter {
 
 	private int port;
+	private boolean withShutdownHook;
 	private Server server;
 	private ServerBuilder<?> serverBuilder;
 	private MutableHandlerRegistry serviceRegistry;
 	
-	public GrpcServerStarter(int port) {
+	public GrpcServerStarter(int port, boolean withShutdownHook) {
 		this.port = port;
+		this.withShutdownHook = withShutdownHook;
 		serviceRegistry = new MutableHandlerRegistry();
 		serverBuilder = createBuilder(port)
 				// substantialperformance improvements. However, it also requires the application to not block under any circumstances.
@@ -72,14 +74,16 @@ public class GrpcServerStarter implements IGrpcServerStarter {
 		}
 
 		// register server shutdown hook in case this server is executed as a standalone process.
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			@Override
-			public void run() {
-				System.err.println("*** shutting down gRPC server since JVM is shutting down.");
-				GrpcServerStarter.this.stop();
-				System.err.println("*** server shut down.");
-			}
-		});
+		if (withShutdownHook) {
+			Runtime.getRuntime().addShutdownHook(new Thread() {
+				@Override
+				public void run() {
+					System.err.println("*** shutting down gRPC server since JVM is shutting down.");
+					GrpcServerStarter.this.stop();
+					System.err.println("*** server shut down.");
+				}
+			});
+		}
 	}
 
 	@Override
@@ -128,6 +132,11 @@ public class GrpcServerStarter implements IGrpcServerStarter {
 	        		+ "Found wrong usage of GrpcServiceMarker for service: " + simpleName;
 			throw new RuntimeException(message);
 	    }
+	}
+
+	@Override
+	public Server getServer() {
+		return server;
 	}
 	
 }

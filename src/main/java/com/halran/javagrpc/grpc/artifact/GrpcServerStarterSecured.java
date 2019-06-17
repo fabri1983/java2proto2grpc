@@ -15,10 +15,10 @@ import javax.net.ssl.SSLException;
 /**
  * Register gRPC's {@link BindableService} objects implementing {@link GrpcServiceMarker} to be exposed by a gRPC Server.
  */
-public class GrpcServerSecuredStarter extends GrpcServerStarter {
+public class GrpcServerStarterSecured extends GrpcServerStarter {
 	
-	public GrpcServerSecuredStarter(int port) {
-		super(port);
+	public GrpcServerStarterSecured(int port, boolean withShutdownHook) {
+		super(port, withShutdownHook);
 	}
 
 	@Override
@@ -56,7 +56,7 @@ public class GrpcServerSecuredStarter extends GrpcServerStarter {
 	}
 
 	private InputStream getInputStreamFromResource(final String filePath) {
-		return GrpcServerSecuredStarter.class.getClassLoader().getResourceAsStream(filePath);
+		return GrpcServerStarterSecured.class.getClassLoader().getResourceAsStream(filePath);
 	}
 	
 }

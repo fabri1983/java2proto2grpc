@@ -1,27 +1,42 @@
-package com.harlan.javagrpc.main.login;
+package com.harlan.javagrpc.service;
 
-import com.halran.javagrpc.grpc.artifact.GrpcManagedChannelSecured;
-import com.halran.javagrpc.grpc.artifact.IGrpcManagedChannel;
 import com.halran.javagrpc.model.Corpus;
 import com.halran.javagrpc.model.Request;
 import com.halran.javagrpc.model.Request2;
 import com.halran.javagrpc.model.Response;
-import com.harlan.javagrpc.service.LoginServiceGrpcProxy;
+import com.harlan.javagrpc.business.LoginBusinessImpl;
+import com.harlan.javagrpc.business.contract.LoginBusiness;
 import com.harlan.javagrpc.service.contract.LoginService;
 import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc;
 import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc.LoginServiceFutureStub;
+import com.harlan.javagrpc.testutil.GrpcManagedChannelRule;
+import com.harlan.javagrpc.testutil.GrpcServerStarterRule;
 
-public class LoginClientMain {
+import org.junit.Assert;
+import org.junit.Rule;
+import org.junit.Test;
+
+/**
+ * Test Grpc Server and Client (non secured connection). 
+ */
+public class LoginServiceGrpcTest {
 	
-	public static void main(String[] args) throws InterruptedException {
+	@Rule
+	public GrpcServerStarterRule serverStarterRule = new GrpcServerStarterRule(50051);
+	
+	@Rule
+	public GrpcManagedChannelRule mangedChannelRule = new GrpcManagedChannelRule("127.0.0.1", 50051);
+	
+	@Test
+	public void testNonSecured() {
 		
-		// create managed channel
-		String host = "127.0.0.1";
-		int port = 50051;
-		IGrpcManagedChannel managedChannel = new GrpcManagedChannelSecured(host, port);
+		// register login service
+		LoginBusiness loginBusiness = new LoginBusinessImpl();
+		LoginServiceGrpcImpl loginServiceGrpc = new LoginServiceGrpcImpl(loginBusiness);
+		serverStarterRule.getServerStarter().register(loginServiceGrpc);
 		
 		// create login service proxy (stub)
-		LoginServiceFutureStub futureStub = LoginServiceGrpc.newFutureStub(managedChannel.getChannel());
+		LoginServiceFutureStub futureStub = LoginServiceGrpc.newFutureStub(mangedChannelRule.getChannel());
 		LoginService loginService = new LoginServiceGrpcProxy(futureStub);
 		
 		// create some testing data
@@ -32,19 +47,19 @@ public class LoginClientMain {
 		
 		// call grpc stub
 		for (int i = 0; i < users.length; i++) {
-			testCall(loginService, users[i]);
+			callAndAssert(loginService, users[i]);
 		}
-		
-		managedChannel.shutdown();
 	}
 	
-	private static void testCall(LoginService loginService, User user) {
+	private void callAndAssert(LoginService loginService, User user) {
 		Request request = Request.from(user.getId(), user.getName(), user.getCorpus());
 		Request2 request2 = Request2.from(user.getId(), user.getName());
 		
-		int loginId = loginService.login(request);
 		Response response = loginService.getRes(request, request2);
-		System.out.println("login id: " + loginId + ". Corpus: " + response.getCorpus().toString());
+
+		Assert.assertEquals(user.getId(), response.getId());
+		Assert.assertEquals(user.getName(), response.getName());
+		Assert.assertEquals(user.getCorpus(), response.getCorpus());
 	}
 
 	private static class User {

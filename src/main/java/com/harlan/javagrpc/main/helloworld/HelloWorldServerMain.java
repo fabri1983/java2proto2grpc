@@ -10,14 +10,16 @@ public class HelloWorldServerMain {
 
 	public static void main(String[] args) throws IOException {
 		int port = 50051;
-		IGrpcServerStarter server = new GrpcServerStarter(port);
+		boolean withShutdownHook = true;
+		IGrpcServerStarter server = new GrpcServerStarter(port, withShutdownHook);
 		
 		// register greeter service
 		GreeterServiceGrpcImpl greeterService = new GreeterServiceGrpcImpl();
 		server.registerBeforeStart(greeterService);
 		
 		server.start();
-		server.blockUntilShutdown(false);
+		boolean blockInOtherThread = false;
+		server.blockUntilShutdown(blockInOtherThread);
 	}
 
 }

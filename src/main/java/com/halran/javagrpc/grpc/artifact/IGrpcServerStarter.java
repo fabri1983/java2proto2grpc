@@ -1,5 +1,7 @@
 package com.halran.javagrpc.grpc.artifact;
 
+import io.grpc.Server;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -18,5 +20,7 @@ public interface IGrpcServerStarter {
 	void forceStop();
 
 	void blockUntilShutdown(boolean blockInOtherThread);
+
+	Server getServer();
 
 }

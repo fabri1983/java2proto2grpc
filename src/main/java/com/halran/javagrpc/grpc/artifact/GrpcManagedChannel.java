@@ -22,9 +22,7 @@ public class GrpcManagedChannel implements IGrpcManagedChannel {
 				.forAddress(host, port)
 				// use plain text if your entire microservice ecosystem is inside a controlled network, 
 				// otherwise setup your security artifacts such as key/trust stores
-				.usePlaintext()
-				// substantialperformance improvements. However, it also requires the application to not block under any circumstances.
-				.directExecutor();
+				.usePlaintext();
 	}
 	
 	@Override

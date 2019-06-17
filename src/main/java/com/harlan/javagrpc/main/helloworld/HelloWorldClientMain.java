@@ -12,7 +12,9 @@ public class HelloWorldClientMain {
 	public static void main(String[] args) throws InterruptedException {
 		
 		// create managed channel
-		IGrpcManagedChannel managedChannel = new GrpcManagedChannel("127.0.0.1", 50051);
+		String host = "127.0.0.1";
+		int port = 50051;
+		IGrpcManagedChannel managedChannel = new GrpcManagedChannel(host, port);
 		
 		// create greeter proxy (stub)
 		GreeterGrpc.GreeterBlockingStub blockingGreeterStub = 

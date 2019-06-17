@@ -1,6 +1,6 @@
 package com.harlan.javagrpc.main.login;
 
-import com.halran.javagrpc.grpc.artifact.GrpcServerSecuredStarter;
+import com.halran.javagrpc.grpc.artifact.GrpcServerStarterSecured;
 import com.halran.javagrpc.grpc.artifact.IGrpcServerStarter;
 import com.harlan.javagrpc.business.LoginBusinessImpl;
 import com.harlan.javagrpc.business.contract.LoginBusiness;
@@ -12,15 +12,20 @@ public class LoginServerMain {
 	
 	public static void main(String[] args) throws IOException {
 		int port = 50051;
-		IGrpcServerStarter server = new GrpcServerSecuredStarter(port);
+		boolean withShutdownHook = true;
+		IGrpcServerStarter serverStarter = new GrpcServerStarterSecured(port, withShutdownHook);
 		
 		// register login service
 		LoginBusiness loginBusiness = new LoginBusinessImpl();
 		LoginServiceGrpcImpl loginServiceGrpc = new LoginServiceGrpcImpl(loginBusiness);
-		server.registerBeforeStart(loginServiceGrpc);
+		serverStarter.registerBeforeStart(loginServiceGrpc);
 		
-		server.start();
-		server.blockUntilShutdown(false);
+		serverStarter.start();
+		
+		// you can register additional bindable services using serverStarter.register()
+		
+		boolean blockInOtherThread = false;
+		serverStarter.blockUntilShutdown(blockInOtherThread);
 	}
 	
 }
