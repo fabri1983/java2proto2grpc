@@ -24,7 +24,7 @@ public class GrpcServerStarter implements IGrpcServerStarter {
 		this.withShutdownHook = withShutdownHook;
 		serviceRegistry = new MutableHandlerRegistry();
 		serverBuilder = createBuilder(port)
-				// substantialperformance improvements. However, it also requires the application to not block under any circumstances.
+				// substantial performance improvements. However, it also requires the application to not block under any circumstances.
 				.directExecutor()
 				// allow to register services once the server has started
 				.fallbackHandlerRegistry(serviceRegistry);
@@ -32,9 +32,7 @@ public class GrpcServerStarter implements IGrpcServerStarter {
 
 	protected ServerBuilder<?> createBuilder(int port) {
 		return ServerBuilder
-				.forPort(port)
-				// substantialperformance improvements. However, it also requires the application to not block under any circumstances.
-				.directExecutor();
+				.forPort(port);
 	}
 	
 	@Override
@@ -117,6 +115,11 @@ public class GrpcServerStarter implements IGrpcServerStarter {
 		}
 	}
 
+	@Override
+	public Server getServer() {
+		return server;
+	}
+
 	private void awaitTermination() {
 		try {
 			server.awaitTermination();
@@ -128,15 +131,10 @@ public class GrpcServerStarter implements IGrpcServerStarter {
 	private void checkIsBindableService(GrpcServiceMarker grpcService) {
 		if (!(grpcService instanceof BindableService)) {
 	        String simpleName = grpcService.getClass().getSimpleName();
-			String message = "GrpcServiceMarker should only used for grpc BindableService. "
+			String message = GrpcServiceMarker.class.getSimpleName() + " should only used for grpc BindableService. "
 	        		+ "Found wrong usage of GrpcServiceMarker for service: " + simpleName;
 			throw new RuntimeException(message);
 	    }
-	}
-
-	@Override
-	public Server getServer() {
-		return server;
 	}
 	
 }
