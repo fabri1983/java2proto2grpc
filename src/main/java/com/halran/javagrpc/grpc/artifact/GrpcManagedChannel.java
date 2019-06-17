@@ -12,7 +12,7 @@ public class GrpcManagedChannel implements IGrpcManagedChannel {
 	public GrpcManagedChannel(String host, int port) {
 		ManagedChannelBuilder<?> channelBuilder = createManagedChannel(host, port);
 		channel = channelBuilder
-				// substantialperformance improvements. However, it also requires the application to not block under any circumstances.
+				// substantial performance improvements. However, it also requires the application to not block under any circumstances.
 				.directExecutor()
 				.build();
 	}
