@@ -18,13 +18,13 @@ model objects to protobuf messages and viceversa, and more.
 
 Features:
 ---
-- Depends on Maven (uses plugins to generate grpc stubs).
-- Java 8+. 
+- Depends on **Maven** (uses plugins to generate grpc stubs).
+- **Java 8+**. 
 	- note the use of dependency *javax.annotation:javax.annotation-api* which solves the issue on generated grpc stubs due to Java internal relocation of *@javax.annotation.Generated* on newer java versions.
 - Java 6, 7: requires some changes since the code uses *java.time* package.
-- Generates *.proto* files (**IDL syntax v3**) out of Java classes/interfaces existing in the classpath and decorated by *@GrpcEnabled*.
-- Generates gRPC stubs out of *.proto files*.
-- Conversion api between protobuf objects and DTOs or Domain Model Objects, and viceversa:
+- Generates **.proto** files (**IDL syntax v3**) out of Java classes/interfaces existing in the classpath and decorated by *@GrpcEnabled*.
+- Generates **gRPC stubs** out of *.proto files*.
+- Conversion api between protobuf objects and DTOs and/or Domain Model Objects, and viceversa:
 	- Fixed and extended version of api *protobuf-converter* from [BAData](https://github.com/BAData/protobuf-converter "protobuf-converter").
 	- *java.lang.Enum* is defined as *string* when generating proto file. 
 	So when using *@net.badata.protobuf.converter.annotation.ProtoField* you need to extend *net.badata.protobuf.converter.type.EnumStringConverter* 
