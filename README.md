@@ -74,12 +74,10 @@ and grpc stubs to make some testing running *com.harlan.javagrpc.main.login.Logi
 TODO
 ---
 - Modularize JavaToProtoNew. Code is written in a very imperative way, and hard to mantain.
-- Add converters similar to *net.badata.protobuf.converter.type.DateLongConverter* for fields with types: LocalTime, LocalDate. 
-Use *google.protobuf.Timestamp* in the converter implementation.
-- Add converters similar to *net.badata.protobuf.converter.type.DateLongConverter* for fields with types: Duration. 
-Use *google.protobuf.Duration* in the converter implementation.
-- Add custom Java *Annotations* to classes and/or fields in order to collect reserved field tags and names for the .proto definition file.
-- Support *@java.lang.Deprecated* on classes. It translates to *option deprecated = true;* after message declaration on the .proto file.
+- Add converters similar to *net.badata.protobuf.converter.type.DateLongConverter* for fields with types: LocalTime, LocalDate.
+- Add converters similar to *net.badata.protobuf.converter.type.DateLongConverter* for fields with types: Duration.
+- Add custom Java *Annotations* to classes/interfaces and/or fields in order to collect reserved field tags and names for the .proto IDL file.
+- Support *@java.lang.Deprecated* on classes/interfaces. It translates to *option deprecated = true;* after message declaration on the .proto IDL file.
 - Support *@java.lang.Deprecated* on java fields. It translates to *[deprecated = true];* after field declaration on the .proto file.
 
 
