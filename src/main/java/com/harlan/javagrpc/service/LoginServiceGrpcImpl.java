@@ -48,7 +48,7 @@ public class LoginServiceGrpcImpl extends LoginServiceImplBase implements GrpcSe
 		grcpTryCatch( responseObserver, () -> {
 			
 			// convert protobuf type to domain model object
-			RequestProto requestProto = request.getRequestArg0();
+			RequestProto requestProto = request.getReq();
 			Request modelRequest = Converter.create().toDomain(Request.class, requestProto);
 			
 			// Here you can use your domain model objects and call your business layer
@@ -71,11 +71,11 @@ public class LoginServiceGrpcImpl extends LoginServiceImplBase implements GrpcSe
 		grcpTryCatch( responseObserver, () -> {
 			
 			// convert protobuf type to domain model object
-			RequestProto requestProto = request.getRequestArg0();
+			RequestProto requestProto = request.getReq();
 			Request requestModel = Converter.create().toDomain(Request.class, requestProto);
 			
 			// convert protobuf type to domain model object
-			Request2Proto request2Proto = request.getRequest2Arg1();
+			Request2Proto request2Proto = request.getReq2();
 			Request2 request2Model = Converter.create().toDomain(Request2.class, request2Proto);
 			
 			// Here you can use your domain model objects and call your business layer

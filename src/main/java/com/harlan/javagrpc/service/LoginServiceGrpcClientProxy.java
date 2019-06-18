@@ -44,7 +44,7 @@ public class LoginServiceGrpcClientProxy extends GrpcClientProxyLimited implemen
 			
 			// wrap the protobuf object
 			LoginProtoIn loginRequestProto = LoginProtoIn.newBuilder()
-					.setRequestArg0(requestProto)
+					.setReq(requestProto)
 					.build();
 			
 			// use the grpc client to call login()
@@ -68,8 +68,8 @@ public class LoginServiceGrpcClientProxy extends GrpcClientProxyLimited implemen
 			
 			// wrap the protobuf objects
 			GetResProtoIn resRequest = GetResProtoIn.newBuilder()
-					.setRequestArg0(requestProto)
-					.setRequest2Arg1(request2Proto)
+					.setReq(requestProto)
+					.setReq2(request2Proto)
 					.build();
 			
 			// use the grpc client to call getRes()

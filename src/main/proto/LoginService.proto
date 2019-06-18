@@ -17,14 +17,14 @@ service LoginService {
 }
 
 message GetResProtoIn {
-	RequestProto requestArg0 = 1;
-	Request2Proto request2Arg1 = 2;
+	RequestProto req = 1;
+	Request2Proto req2 = 2;
 }
 message GetResProtoOut {
 	ResponseProto response = 1;
 }
 message LoginProtoIn {
-	RequestProto requestArg0 = 1;
+	RequestProto req = 1;
 }
 message LoginProtoOut {
 	sint32 int = 1;

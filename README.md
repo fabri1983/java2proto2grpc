@@ -32,6 +32,7 @@ Features:
 - Provides two gRPC examples: *Helloworld* and *LoginService*.
 - Provides non secured and TLS-secured grpc server and client.
 - Use async grpc calls by *ListenableFuture*.
+- Use of java compiler *-parameter* option to expose parameters name in signature definition, so we can get the real parameter name and so improve the *.proto* file readablity.
 
 
 Usage:

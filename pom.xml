@@ -126,6 +126,10 @@
 					<source>8</source>
 					<target>8</target>
 					<!--release>11</release-->
+					<compilerArgs>
+						<!-- force inclusion of parameter real name on signature definition, so .proto file generation is more readable -->
+						<arg>-parameters</arg>
+					</compilerArgs>
 				</configuration>
 				<executions>
 					<execution>

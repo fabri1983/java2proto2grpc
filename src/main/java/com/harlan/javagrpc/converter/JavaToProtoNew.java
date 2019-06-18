@@ -282,8 +282,11 @@ public class JavaToProtoNew {
 			handleGeneric(typeName0);
 			handleGeneric(typeName1);
 			
-			// build up a param name because at this level Java does not return the real param name
-			String paramFinalName = lowerCaseFirstChar(classSimpleName) + capitalizeFirstChar(parameter.getName());
+			// build up a param name because at this level Java does not return the real param name unless you compile code with -parameters option
+			String paramFinalName = parameter.getName();
+			if (!parameter.isNamePresent()) {
+				paramFinalName += classSimpleName;				
+			}
 			
 			sb.append("\tmap<" + getGenericByTypeNameWithSuffix(typeName0) + ", " + 
 						getGenericByTypeNameWithSuffix(typeName1) + "> " + paramFinalName + " = "+ protoFieldIndex + ";\r\n");
@@ -295,8 +298,11 @@ public class JavaToProtoNew {
 				Type[] actualTypeArguments = pt.getActualTypeArguments();
 				Class<?> clazz = Class.forName(actualTypeArguments[0].getTypeName());
 				
-				// build up a param name because at this level Java does not return the real param name
-				String paramFinalName = lowerCaseFirstChar(classSimpleName) + capitalizeFirstChar(parameter.getName());
+				// build up a param name because at this level Java does not return the real param name unless you compile code with -parameters option
+				String paramFinalName = parameter.getName();
+				if (!parameter.isNamePresent()) {
+					paramFinalName += classSimpleName;				
+				}
 				
 				if (isJavaClass(clazz)) {
 					sb.append("\trepeated " + getProtobufFieldType(clazz) + " " +  paramFinalName + " = " + protoFieldIndex + ";\r\n");
@@ -333,8 +339,11 @@ public class JavaToProtoNew {
 		else if (isJavaClass(processingClass)) {
 			String repeatedKeyword = processingClass.isArray() ? "repeated " : "";
 			
-			// build up a param name because at this level Java does not return the real param name
-			String paramFinalName = lowerCaseFirstChar(classSimpleName) + capitalizeFirstChar(parameter.getName());
+			// build up a param name because at this level Java does not return the real param name unless you compile code with -parameters option
+			String paramFinalName = parameter.getName();
+			if (!parameter.isNamePresent()) {
+				paramFinalName += classSimpleName;				
+			}
 			
 			sb.append("\t" + repeatedKeyword + getProtobufFieldType(processingClass) + " " + paramFinalName + " = " + protoFieldIndex + ";\r\n");
 		}
@@ -344,8 +353,13 @@ public class JavaToProtoNew {
 //		}
 		else {
 			String paramFinalType = classSimpleName + PROTO_SUFFIX;
-			// build up a param name because at this level Java does not return the real param name
-			String paramFinalName = lowerCaseFirstChar(classSimpleName) + capitalizeFirstChar(parameter.getName());
+			
+			// build up a param name because at this level Java does not return the real param name unless you compile code with -parameters option
+			String paramFinalName = parameter.getName();
+			if (!parameter.isNamePresent()) {
+				paramFinalName += classSimpleName;				
+			}
+			
 			sb.append("\t" + paramFinalType + " " + paramFinalName + " = " + protoFieldIndex +";\r\n");
 			
 			if (!map.containsKey(processingClass.getName())) {
