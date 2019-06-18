@@ -37,7 +37,7 @@ public class LoginServiceSecuredGrpcTest {
 		
 		// create login service proxy (stub)
 		LoginServiceFutureStub futureStub = LoginServiceGrpc.newFutureStub(mangedChannelRule.getChannel());
-		LoginService loginService = new LoginServiceGrpcProxy(futureStub);
+		LoginService loginService = new LoginServiceGrpcClientProxy(futureStub);
 		
 		// create some testing data
 		User[] users = new User[] { 

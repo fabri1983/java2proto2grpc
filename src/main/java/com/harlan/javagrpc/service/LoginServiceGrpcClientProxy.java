@@ -16,11 +16,11 @@ import com.harlan.javagrpc.service.contract.protobuf.RequestProto;
 
 import net.badata.protobuf.converter.Converter;
 
-public class LoginServiceGrpcProxy extends GrpcClientProxyLimited implements LoginService {
+public class LoginServiceGrpcClientProxy extends GrpcClientProxyLimited implements LoginService {
 
 	private LoginServiceFutureStub futureStub;
 	
-	public LoginServiceGrpcProxy(LoginServiceFutureStub futureStub) {
+	public LoginServiceGrpcClientProxy(LoginServiceFutureStub futureStub) {
 		super();
 		this.futureStub = futureStub;
 	}

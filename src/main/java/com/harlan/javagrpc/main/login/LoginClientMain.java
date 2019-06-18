@@ -6,7 +6,7 @@ import com.halran.javagrpc.model.Corpus;
 import com.halran.javagrpc.model.Request;
 import com.halran.javagrpc.model.Request2;
 import com.halran.javagrpc.model.Response;
-import com.harlan.javagrpc.service.LoginServiceGrpcProxy;
+import com.harlan.javagrpc.service.LoginServiceGrpcClientProxy;
 import com.harlan.javagrpc.service.contract.LoginService;
 import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc;
 import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc.LoginServiceFutureStub;
@@ -22,7 +22,7 @@ public class LoginClientMain {
 		
 		// create login service proxy (stub)
 		LoginServiceFutureStub futureStub = LoginServiceGrpc.newFutureStub(managedChannel.getChannel());
-		LoginService loginService = new LoginServiceGrpcProxy(futureStub);
+		LoginService loginService = new LoginServiceGrpcClientProxy(futureStub);
 		
 		// create some testing data
 		User[] users = new User[] { 
