@@ -11,37 +11,39 @@
 
 This project is a modification from original projects https://github.com/jhrgitgit/java2proto and https://github.com/lloydsparkes/java-proto-generator.  
 Credits belong to the creators of the mentioned projects.  
-I just made it compatible with Windows, renamed some packages, fixed some bugs, added usage of *protobuf-converter* 
-(https://github.com/BAData/protobuf-converter) with custom modifications to transform domain model objects to protobuf messages and viceversa, 
-created LoginService client and server, and more.
+I just renamed some packages, fixed some bugs, add LoginService client and server examples and tests, extended and fixed api 
+[protobuf-converter](https://github.com/BAData/protobuf-converter "protobuf-converter") with custom modifications to transform domain 
+model objects to protobuf messages and viceversa, and more.
 
 
 Features:
 ---
 - Depends on Maven (uses plugins to generate grpc stubs).
-- Java 8 and higher. 
-	- note the use of pedendency *javax.annotation:javax.annotation-api* which solves the issue on generated grpc stubs due to Java internal relocation of *@javax.annotation.Generated*.
+- Java 8+. 
+	- note the use of dependency *javax.annotation:javax.annotation-api* which solves the issue on generated grpc stubs due to Java internal relocation of *@javax.annotation.Generated* on newer java versions.
 - Java 6, 7: requires some changes since the code uses *java.time* package.
-- Generates *.proto* files (**syntax v3**) out of Java classes/interfaces existing in the classpath and decorated by *@GrpcEnabled*.
+- Generates *.proto* files (**IDL syntax v3**) out of Java classes/interfaces existing in the classpath and decorated by *@GrpcEnabled*.
 - Generates gRPC stubs out of *.proto files*.
-- Provides two gRPC examples: *Helloworld* and *LoginService*.
 - Conversion api between protobuf objects and DTOs or Domain Model Objects, and viceversa:
 	- Fixed and extended version of api *protobuf-converter* from [BAData](https://github.com/BAData/protobuf-converter "protobuf-converter").
 	- *java.lang.Enum* is defined as *string* when generating proto file. 
 	So when using *@net.badata.protobuf.converter.annotation.ProtoField* you need to extend *net.badata.protobuf.converter.type.EnumStringConverter* 
 	and set it as *converter* attribute. See **Request** and **Response** example classes.
+- Provides two gRPC examples: *Helloworld* and *LoginService*.
+- Provides non secured and TLS-secured grpc server and client.
+- Use async grpc calls by *ListenableFuture*.
 
 
 Usage:
 ---
 First you need to generate **.proto** files out of your java **classes/interfaces** located at your classpath 
 and which are decorated with annotation *@GrpcEnabled*.
-- **JavaToProtoNewMain**: generates *.proto* files (**syntax v3**) from a class/package at specific folder:  
+- **JavaToProtoNewMain**: generates *.proto* files (**IDL syntax v3**) from a class/package at specific folder:  
 	```sh
 	mvn compile
 	mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.converter.JavaToProtoNewMain -Dexec.args="com.harlan.javagrpc.service.contract src/main/proto"
 	```
-- JavaToProtoMain: generates *.proto* files (**syntax v3**) from a class/package at specific folder:  
+- JavaToProtoMain: generates *.proto* files (**IDL syntax v3**) from a class/package at specific folder:  
 	**Currently work in progress. Messages are being nested and it ends up with lot of repeated messages.**
 	```sh
 	mvn compile
