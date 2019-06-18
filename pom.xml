@@ -56,16 +56,15 @@
 			<artifactId>grpc-stub</artifactId>
 			<version>${io.grpc.version}</version>
 		</dependency>
-		<!-- Use just grpc-netty-shaded if not using TLS -->
 		<dependency>
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-netty-shaded</artifactId>
 			<version>${io.grpc.version}</version>
 		</dependency>
-		<!-- For gRPC TLS: must see https://github.com/grpc/grpc-java/blob/master/SECURITY.md#netty -->
+		<!-- Required to resolve internal compilation references by some classes in the netty-shaded dependency -->
 		<dependency>
 			<groupId>io.grpc</groupId>
-			<artifactId>grpc-netty</artifactId>
+			<artifactId>grpc-core</artifactId>
 			<version>${io.grpc.version}</version>
 		</dependency>
 		<!-- JUnit -->
