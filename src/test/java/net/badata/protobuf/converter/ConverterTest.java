@@ -4,6 +4,7 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.Timestamp;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Arrays;
@@ -20,8 +21,10 @@ import net.badata.protobuf.converter.domain.ConverterDomain;
 import net.badata.protobuf.converter.domain.ConverterDomain.TestEnumConverter.TestEnum;
 import net.badata.protobuf.converter.proto.ConverterProto;
 import net.badata.protobuf.converter.type.DateTimestampConverterImpl;
+import net.badata.protobuf.converter.type.LocalDateLongConverterImpl;
 import net.badata.protobuf.converter.type.LocalDateTimeLongConverterImpl;
 import net.badata.protobuf.converter.type.LocalDateTimeTimestampConverterImpl;
+import net.badata.protobuf.converter.type.LocalDateTimestampConverterImpl;
 
 /**
  * @author jsjem
@@ -59,8 +62,10 @@ public class ConverterTest {
 						.setEnumString("THREE")
 						.setDateToLong(System.currentTimeMillis())
 						.setLocalDateTimeToLong(System.currentTimeMillis())
+						.setLocalDateToLong(nowLocalDateInMillis())
 						.setDateToTimestamp(toTimestamp(System.currentTimeMillis()))
 						.setLocalDateTimeToTimestamp(toTimestamp(System.currentTimeMillis()))
+						.setLocalDateToTimestamp(toTimestamp(nowLocalDateInMillis()))
 						.addStringSetValue("11"))
 				.setNullDefaultValue(ConverterProto.NullDefaultTest.newBuilder()
 								.setCustomInspectionString("Assumed as null value")
@@ -74,6 +79,10 @@ public class ConverterTest {
 				.putSimpleMapValue("key", "value")
 				.putComplexMapValue("key", ConverterProto.PrimitiveTest.newBuilder().setIntValue(1001).build())
 				.build();
+	}
+
+	private long nowLocalDateInMillis() {
+		return LocalDate.now().atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli();
 	}
 
 	private Timestamp toTimestamp(long millis) {
@@ -95,8 +104,10 @@ public class ConverterTest {
 		fieldConverterTest.setEnumString(TestEnum.TWO);
 		fieldConverterTest.setDateToLong(new Date());
 		fieldConverterTest.setLocalDateTimeToLong(nowLocalDateTime());
+		fieldConverterTest.setLocalDateToLong(nowLocalDate());
 		fieldConverterTest.setDateToTimestamp(new Date());
 		fieldConverterTest.setLocalDateTimeToTimestamp(nowLocalDateTime());
+		fieldConverterTest.setLocalDateToTimestamp(nowLocalDate());
 		Set<String> stringSet = new HashSet<String>();
 		stringSet.add("111");
 		fieldConverterTest.setStringSetValue(stringSet);
@@ -142,6 +153,18 @@ public class ConverterTest {
 		return nowLocalDateTime;
 	}
 
+	/**
+	 * Use System.currentTimeMillis() to avoid the extra microseconds added on Java9+ when using Instant.now().
+	 * See https://stackoverflow.com/questions/39586311/java-8-localdatetime-now-only-giving-precision-of-milliseconds
+	 * 
+	 * @return
+	 */
+	private LocalDate nowLocalDate() {
+		Instant instantNow = Instant.ofEpochMilli( System.currentTimeMillis() );
+		LocalDate nowLocalDate = instantNow.atOffset(ZoneOffset.UTC).toLocalDate();
+		return nowLocalDate;
+	}
+	
 	private void createIgnoredFieldsMap() {
 		fieldsIgnore = new FieldsIgnore();
 		fieldsIgnore.add(ConverterDomain.PrimitiveTest.class);
@@ -178,8 +201,10 @@ public class ConverterTest {
 
 		Assert.assertEquals(conversionProto.getDateToLong(), conversionDomain.getDateToLong().getTime());
 		Assert.assertEquals(conversionProto.getLocalDateTimeToLong(), toLong(conversionDomain.getLocalDateTimeToLong()));
+		Assert.assertEquals(conversionProto.getLocalDateToLong(), toLong(conversionDomain.getLocalDateToLong()));
 		Assert.assertEquals(conversionProto.getDateToTimestamp(), toTimestamp(conversionDomain.getDateToTimestamp()));
 		Assert.assertEquals(conversionProto.getLocalDateTimeToTimestamp(), toTimestamp(conversionDomain.getLocalDateTimeToTimestamp()));
+		Assert.assertEquals(conversionProto.getLocalDateToTimestamp(), toTimestamp(conversionDomain.getLocalDateToTimestamp()));
 		Assert.assertEquals(conversionProto.getEnumString(), conversionDomain.getEnumString().name());
 		Assert.assertTrue(conversionDomain.getStringSetValue().remove(conversionProto.getStringSetValue(0)));
 
@@ -252,8 +277,10 @@ public class ConverterTest {
 
 		Assert.assertEquals(conversionDomain.getDateToLong().getTime(), conversionProto.getDateToLong());
 		Assert.assertEquals(conversionDomain.getLocalDateTimeToLong(), toLocalDateTime(conversionProto.getLocalDateTimeToLong()));
+		Assert.assertEquals(conversionDomain.getLocalDateToLong(), toLocalDate(conversionProto.getLocalDateToLong()));
 		Assert.assertEquals(conversionDomain.getDateToTimestamp(), toDate(conversionProto.getDateToTimestamp()));
 		Assert.assertEquals(conversionDomain.getLocalDateTimeToTimestamp(), toLocalDateTime(conversionProto.getLocalDateTimeToTimestamp()));
+		Assert.assertEquals(conversionDomain.getLocalDateToTimestamp(), toLocalDate(conversionProto.getLocalDateToTimestamp()));
 		Assert.assertEquals(conversionDomain.getEnumString().name(), conversionProto.getEnumString());
 		Assert.assertTrue(conversionDomain.getStringSetValue().remove(conversionProto.getStringSetValue(0)));
 
@@ -293,8 +320,19 @@ public class ConverterTest {
 		return millis.longValue();
 	}
 	
+	private long toLong(LocalDate localDate) {
+		LocalDateLongConverterImpl converter = new LocalDateLongConverterImpl();
+		Long millis = converter.toProtobufValue(localDate);
+		return millis.longValue();
+	}
+	
 	private LocalDateTime toLocalDateTime(Long millis) {
 		LocalDateTimeLongConverterImpl converter = new LocalDateTimeLongConverterImpl();
+		return converter.toDomainValue(millis);
+	}
+	
+	private LocalDate toLocalDate(Long millis) {
+		LocalDateLongConverterImpl converter = new LocalDateLongConverterImpl();
 		return converter.toDomainValue(millis);
 	}
 	
@@ -318,4 +356,13 @@ public class ConverterTest {
 		return converter.toDomainValue(timestamp);
 	}
 
+	private Timestamp toTimestamp(LocalDate localDate) {
+		LocalDateTimestampConverterImpl converter = new LocalDateTimestampConverterImpl();
+		return converter.toProtobufValue(localDate);
+	}
+	
+	private LocalDate toLocalDate(Timestamp timestamp) {
+		LocalDateTimestampConverterImpl converter = new LocalDateTimestampConverterImpl();
+		return converter.toDomainValue(timestamp);
+	}
 }

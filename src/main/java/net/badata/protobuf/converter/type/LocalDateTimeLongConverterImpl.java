@@ -6,7 +6,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 /**
- * Converts domain {@link java.time.LocalDateTime LocalDateTime} field value to protobuf {@link java.lang.Long Long} field value.
+ * Converts domain {@link java.time.LocalDateTime LocalDateTime} field value to 
+ * protobuf {@link java.lang.Long Long} field value.
  *
  * @author jsjem
  * @author Roman Gushel

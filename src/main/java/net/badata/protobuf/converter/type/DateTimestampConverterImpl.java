@@ -6,7 +6,8 @@ import com.google.protobuf.Timestamp;
 import java.util.Date;
 
 /**
- * Converts domain {@link java.util.Date Date} field value to protobuf {@link com.google.protobuf.Timestamp Timestamp} field value.
+ * Converts domain {@link java.util.Date Date} field value to 
+ * protobuf {@link com.google.protobuf.Timestamp Timestamp} field value.
  *
  * @author jsjem
  * @author Roman Gushel

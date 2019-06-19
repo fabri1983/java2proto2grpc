@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Converts domain {@link java.util.Set Set} field value to protobuf {@link java.util.List List} field value.
+ * Converts domain {@link java.util.Set Set} field value to 
+ * protobuf {@link java.util.List List} field value.
  *
  * @author jsjem
  * @author Roman Gushel
