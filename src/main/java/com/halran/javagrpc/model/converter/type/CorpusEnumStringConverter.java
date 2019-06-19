@@ -1,4 +1,4 @@
-package com.halran.javagrpc.model.converter;
+package com.halran.javagrpc.model.converter.type;
 
 import com.halran.javagrpc.model.Corpus;
 

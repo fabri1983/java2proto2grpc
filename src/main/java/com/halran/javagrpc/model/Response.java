@@ -1,6 +1,6 @@
 package com.halran.javagrpc.model;
 
-import com.halran.javagrpc.model.converter.CorpusEnumStringConverter;
+import com.halran.javagrpc.model.converter.type.CorpusEnumStringConverter;
 import com.harlan.javagrpc.service.contract.protobuf.ResponseProto;
 
 import net.badata.protobuf.converter.annotation.ProtoClass;

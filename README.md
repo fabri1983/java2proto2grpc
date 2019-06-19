@@ -22,7 +22,7 @@ Features:
 - **Java 8+**. 
 	- note the use of dependency *javax.annotation:javax.annotation-api* which solves the issue on generated grpc stubs due to Java internal relocation of *@javax.annotation.Generated* on newer java versions.
 - Java 6, 7: requires some changes since the code uses *java.time* package.
-- Generates **.proto** files (**IDL syntax v3**) out of Java classes/interfaces existing in the classpath and decorated by *@GrpcEnabled*.
+- Generates **.proto** files (**IDL syntax v3**) out of Java classes/interfaces existing in the classpath and decorated by *@ProtobufEnabled*.
 - Generates **gRPC stubs** out of *.proto files*.
 - Conversion api between protobuf objects and DTOs and/or Domain Model Objects, and viceversa:
 	- Fixed and extended version of api *protobuf-converter* from [BAData](https://github.com/BAData/protobuf-converter "protobuf-converter").
@@ -38,7 +38,7 @@ Features:
 Usage:
 ---
 First you need to generate **.proto** files out of your java **classes/interfaces** located at your classpath 
-and which are decorated with annotation *@GrpcEnabled*.
+and which are decorated with annotation *@ProtobufEnabled*.
 - **JavaToProtoNewMain**: generates *.proto* files (**IDL syntax v3**) from a class/package at specific folder:  
 	```sh
 	mvn compile

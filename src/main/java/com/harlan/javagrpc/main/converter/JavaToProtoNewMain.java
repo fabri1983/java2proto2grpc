@@ -1,7 +1,7 @@
 package com.harlan.javagrpc.main.converter;
 
 import com.harlan.javagrpc.converter.JavaToProtoNew;
-import com.harlan.javagrpc.converter.annotation.GrpcEnabled;
+import com.harlan.javagrpc.converter.annotation.ProtobufEnabled;
 import com.harlan.javagrpc.util.ClassGrabberUtil;
 
 import java.io.BufferedWriter;
@@ -16,7 +16,7 @@ import java.util.List;
 public class JavaToProtoNewMain {
 	
 	public static void main(String[] args) throws IOException {
-
+		
 		// no arguments?
 		if (args.length == 0) {
 			System.err.println("Usage:");
@@ -77,7 +77,7 @@ public class JavaToProtoNewMain {
 		List<Class<?>> classes = Collections.emptyList();
 		
 		try {
-			classes = ClassGrabberUtil.getClassesOrSingleClass(classnameOrPackage, GrpcEnabled.class);
+			classes = ClassGrabberUtil.getClassesOrSingleClass(classnameOrPackage, ProtobufEnabled.class);
 		} catch (Exception e) {
 			System.err.println("Could not load class. Make sure it is in the classpath!");
 			e.printStackTrace();
