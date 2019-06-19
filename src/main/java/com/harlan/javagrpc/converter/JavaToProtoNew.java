@@ -1,17 +1,22 @@
 package com.harlan.javagrpc.converter;
 
+import com.harlan.javagrpc.converter.annotation.ProtobufSkipFields;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 public class JavaToProtoNew {
 
@@ -51,7 +56,7 @@ public class JavaToProtoNew {
 		generateMessages(sb, methods);
 		
 		// process all messages accumulated in the map
-		sb.append(Map2StringBuffer(map));
+		sb.append(mapToStringBuffer(map));
 		
 		map.clear();
 		
@@ -322,11 +327,8 @@ public class JavaToProtoNew {
 					}
 					else {
 						int j = 1;
-						Field[] fields = clazz.getDeclaredFields();
+						List<Field> fields = getAllFields(clazz);
 						for (Field f : fields) {
-							if (skipField(f)) {
-								continue;
-							}
 							handleField(f, j, listTm);
 							j++;
 						}
@@ -371,11 +373,8 @@ public class JavaToProtoNew {
 					handleEnum(processingClass);
 				} else {
 					int j = 1;
-					Field[] fields = processingClass.getDeclaredFields();
+					List<Field> fields = getAllFields(processingClass);
 					for(Field f : fields) {
-						if (skipField(f)) {
-							continue;
-						}
 						handleField(f, j, ObjTm);
 						j++;
 					}
@@ -425,11 +424,8 @@ public class JavaToProtoNew {
 					}
 					else {
 						int j = 1;
-						Field[] fields = clazz.getDeclaredFields();
+						List<Field> fields = getAllFields(clazz);
 						for (Field f : fields) {
-							if (skipField(f)) {
-								continue;
-							}
 							handleField(f, j, listTm);
 							j++;
 						}
@@ -462,11 +458,8 @@ public class JavaToProtoNew {
 					handleEnum(processingClass);
 				} else {
 					int j = 1;
-					Field[] fields = processingClass.getDeclaredFields();
+					List<Field> fields = getAllFields(processingClass);
 					for(Field f : fields) {
-						if (skipField(f)) {
-							continue;
-						}
 						handleField(f, j, ObjTm);
 						j++;
 					}
@@ -516,11 +509,8 @@ public class JavaToProtoNew {
 					}
 					else {
 						int j = 1;
-						Field[] fields = clazz.getDeclaredFields();
+						List<Field> fields = getAllFields(clazz);
 						for (Field f : fields) {
-							if (skipField(f)) {
-								continue;
-							}
 							handleField(f, j, listTm);
 							j++;
 						}
@@ -553,11 +543,8 @@ public class JavaToProtoNew {
 					handleEnum(processingClass);
 				} else {
 					int j = 1;
-					Field[] fields = processingClass.getDeclaredFields();
+					List<Field> fields = getAllFields(processingClass);
 					for(Field f : fields) {
-						if (skipField(f)) {
-							continue;
-						}
 						handleField(f, j, ObjTm);
 						j++;
 					}
@@ -566,7 +553,7 @@ public class JavaToProtoNew {
 		}
 	}
 	
-	private void handleGeneric( String typeName) {
+	private void handleGeneric(String typeName) {
 		try {
 			Class<?> clazz = Class.forName(typeName);
 			if (isJavaClass(clazz)) {
@@ -583,12 +570,9 @@ public class JavaToProtoNew {
 				if (clazz.isEnum() || (clazz.isArray() && clazz.getComponentType().isEnum())) {
 					handleEnum(clazz);
 				} else {
-					Field[] fields = clazz.getDeclaredFields();
+					List<Field> fields = getAllFields(clazz);
 					int i = 1;
 					for(Field f : fields) {
-						if (skipField(f)) {
-							continue;
-						}
 						handleField(f, i, ObjTm);
 						i++;
 					}
@@ -615,41 +599,67 @@ public class JavaToProtoNew {
 		return "null";
 	}
 	
-	private StringBuffer Map2StringBuffer(Map<String, TreeMap<Integer, String>> map) {
-			StringBuffer sb = new StringBuffer();
-			for (Map.Entry<String, TreeMap<Integer, String>> entry : map.entrySet()) {
-				
-				String className = entry.getKey();
-				TreeMap<Integer, String> fieldMap = entry.getValue();
-				
-				try {
-					Class<?> clazz = Class.forName(className);
-					if (clazz.isEnum()) {
-						// NOTE: do not generate enum types since we treat them as string by isJavaClass()
+	private StringBuffer mapToStringBuffer(Map<String, TreeMap<Integer, String>> map) {
+		StringBuffer sb = new StringBuffer(2048);
+		
+		for (Map.Entry<String, TreeMap<Integer, String>> entry : map.entrySet()) {
+			
+			String className = entry.getKey();
+			TreeMap<Integer, String> fieldMap = entry.getValue();
+			
+			if (fieldMap.isEmpty()) {
+				continue;
+			}
+			
+			try {
+				Class<?> clazz = Class.forName(className);
+				if (clazz.isEnum()) {
+					// NOTE: do not generate enum types since we treat them as string by isJavaClass()
 //						sb.append("enum " + clazz.getSimpleName() + " {\r\n");
 //						for (Integer key : fieldMap.keySet()) {
 //							String field = fieldMap.get(key);
 //							sb.append(field);
 //						}
 //						sb.append("}\r\n");
-					} else {
-						String finalTypeName = removeArraySymbol(clazz.getSimpleName());
-						if (!isJavaClass(clazz)) {
-							finalTypeName += PROTO_SUFFIX;
-						}
-						sb.append("message " + finalTypeName + " {\r\n");
-						for (Integer key : fieldMap.keySet()) {
-							String field = fieldMap.get(key);
-							sb.append(field);
-						}
-						sb.append("}\r\n");
+				} else {
+					String finalTypeName = removeArraySymbol(clazz.getSimpleName());
+					if (!isJavaClass(clazz)) {
+						finalTypeName += PROTO_SUFFIX;
 					}
-				} catch (ClassNotFoundException e) {
-//					e.printStackTrace();
+					sb.append("message " + finalTypeName + " {\r\n");
+					for (Integer key : fieldMap.keySet()) {
+						String field = fieldMap.get(key);
+						sb.append(field);
+					}
+					sb.append("}\r\n");
 				}
+			} catch (ClassNotFoundException e) {
+//					e.printStackTrace();
 			}
-			return sb;
 		}
+		return sb;
+	}
+
+	/**
+	 * Collects all interesting fields.
+	 * 
+	 * @param targetClazz
+	 * @return
+	 */
+	private List<Field> getAllFields(Class<?> targetClazz) {
+		List<Field> fields = new ArrayList<Field>();
+        for (Class<?> clazz = targetClazz; clazz != null; clazz = clazz.getSuperclass()) {
+        	// skip this class?
+        	if (clazz.isAnnotationPresent(ProtobufSkipFields.class)) {
+        		continue;
+        	}
+            fields.addAll(Arrays.asList(clazz.getDeclaredFields()));
+        }
+        // skip unwanted fields
+        return fields.stream()
+        		.filter( f -> !skipField(f) )
+        		.collect( Collectors.toList() );
+	}
 
 	private String getProtobufFieldType(Class<?> clazz) {
 		String typeName = clazz.getSimpleName();

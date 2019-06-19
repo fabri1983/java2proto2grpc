@@ -3,9 +3,9 @@ package com.harlan.javagrpc.service.contract;
 import com.halran.javagrpc.model.Request;
 import com.halran.javagrpc.model.Request2;
 import com.halran.javagrpc.model.Response;
-import com.harlan.javagrpc.converter.annotation.ProtobufEnabled;
+import com.harlan.javagrpc.converter.annotation.GrpcEnabled;
 
-@ProtobufEnabled
+@GrpcEnabled
 public interface LoginService {
 	
 	public void loginVoid();

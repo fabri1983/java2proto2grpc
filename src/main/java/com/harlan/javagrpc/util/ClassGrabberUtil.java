@@ -1,6 +1,6 @@
 package com.harlan.javagrpc.util;
 
-import com.harlan.javagrpc.converter.annotation.ProtobufEnabled;
+import com.harlan.javagrpc.converter.annotation.GrpcEnabled;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +13,7 @@ import java.util.List;
 
 public class ClassGrabberUtil {
 
-	public static List<Class<?>> getClassesOrSingleClass(String s, Class<ProtobufEnabled> annotationFilter) {
+	public static List<Class<?>> getClassesOrSingleClass(String s, Class<GrpcEnabled> annotationFilter) {
 		// treat it as a class
 		try {
 			Class<?> singleClass = Class.forName(s);
@@ -35,7 +35,7 @@ public class ClassGrabberUtil {
 	 * @param annotationFilter 
 	 * @return The classes
 	 */
-	public static List<Class<?>> getClasses(String packageName, Class<ProtobufEnabled> annotationFilter) {
+	public static List<Class<?>> getClasses(String packageName, Class<GrpcEnabled> annotationFilter) {
 	    ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 	    assert classLoader != null;
 	    String path = packageName.replace('.', '/');
@@ -65,7 +65,7 @@ public class ClassGrabberUtil {
 	 * @param packageName The package name for classes found inside the base directory
 	 * @return The classes
 	 */
-	public static List<Class<?>> findClasses(File directory, String packageName, Class<ProtobufEnabled> annotationFilter) {
+	public static List<Class<?>> findClasses(File directory, String packageName, Class<GrpcEnabled> annotationFilter) {
 	    if (!directory.exists()) {
 	        return Collections.emptyList();
 	    }

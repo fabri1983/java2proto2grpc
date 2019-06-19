@@ -20,9 +20,12 @@ Features:
 ---
 - Depends on **Maven** (uses plugins to generate grpc stubs).
 - **Java 8+**. 
-	- note the use of dependency *javax.annotation:javax.annotation-api* which solves the issue on generated grpc stubs due to Java internal relocation of *@javax.annotation.Generated* on newer java versions.
+	- note the use of dependency *javax.annotation:javax.annotation-api* which solves the issue on generated grpc stubs due to Java internal 
+	relocation of *@javax.annotation.Generated* on newer java versions.
 - Java 6, 7: requires some changes since the code uses *java.time* package.
-- Generates **.proto** files (**IDL syntax v3**) out of Java classes/interfaces existing in the classpath and decorated by *@ProtobufEnabled*.
+- Generates **.proto** files (**IDL syntax v3**) out of Java classes/interfaces existing in the classpath and decorated by *@GrpcEnabled*.
+- Skips generation of protobuf message or inner fields by decorating a class with *@ProtobufSkipFields*. This is particularly usefull when you 
+have a class hierarchy and you want to skip one or several of them.
 - Generates **gRPC stubs** out of *.proto files*.
 - Conversion api between protobuf objects and DTOs and/or Domain Model Objects, and viceversa:
 	- Fixed and extended version of api *protobuf-converter* from [BAData](https://github.com/BAData/protobuf-converter "protobuf-converter").
@@ -32,13 +35,15 @@ Features:
 - Provides two gRPC examples: *Helloworld* and *LoginService*.
 - Provides non secured and TLS-secured grpc server and client.
 - Use async grpc calls by *ListenableFuture*.
-- Use of java compiler *-parameter* option to expose parameters name in signature definition, so we can get the real parameter name and so improve the *.proto* file readablity.
+- Use of java compiler *-parameter* option to expose parameters name in signature definition, so we can get the real parameter name and 
+so improve the *.proto* file readablity.
 
 
 Usage:
 ---
 First you need to generate **.proto** files out of your java **classes/interfaces** located at your classpath 
-and which are decorated with annotation *@ProtobufEnabled*.
+and which are decorated with annotation *@GrpcEnabled*.  
+The processs skips generation of protobuf messages or inner fields if class is decorated with with *@ProtobufSkipFields*.
 - **JavaToProtoNewMain**: generates *.proto* files (**IDL syntax v3**) from a class/package at specific folder:  
 	```sh
 	mvn compile
@@ -58,18 +63,20 @@ Generated code is located at *target/generated-sources/protobuf/* and *target/ge
 
 Helloworld and LoginService examples:
 ---
-Folder **src/main/proto** contains two commited files named *helloworld.proto* and *LoginService.proto*. If you plan to make modificaitons on them you 
-can use next commands in order to ignore track any change:
+Folder **src/main/proto** contains two commited files named *helloworld.proto* and *LoginService.proto*. If you plan to make modificaitons 
+on them you can use next commands in order to ignore track any change:
 ```sh
 git update-index --assume-unchanged src/main/proto/helloworld.proto
 git update-index --assume-unchanged src/main/proto/LoginService.proto
 ```
 
 The file *helloworld.proto* is used to generated grpc-java example classes as per https://github.com/grpc/grpc-java/tree/master/examples, 
-so you can make some testing running *com.harlan.javagrpc.main.helloworld.HelloWorldClientMain* and *com.harlan.javagrpc.main.helloworld.HelloWorldServerMain*.
+so you can make some testing running *com.harlan.javagrpc.main.helloworld.HelloWorldClientMain* 
+and *com.harlan.javagrpc.main.helloworld.HelloWorldServerMain*.
 
-The file *LoginService.proto* is the one you can generate running *com.harlan.javagrpc.main.converter.JavaToProtoMainNew*, and it generates protobuf classes 
-and grpc stubs to make some testing running *com.harlan.javagrpc.main.login.LoginClientMain* and *com.harlan.javagrpc.main.login.LoginServerMain*.
+The file *LoginService.proto* is the one you can generate running *com.harlan.javagrpc.main.converter.JavaToProtoMainNew*, and it generates 
+protobuf classes and grpc stubs to make some testing running *com.harlan.javagrpc.main.login.LoginClientMain* 
+and *com.harlan.javagrpc.main.login.LoginServerMain*.
 
 
 TODO
