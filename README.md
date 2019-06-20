@@ -82,7 +82,9 @@ and *com.harlan.javagrpc.main.login.LoginServerMain*.
 TODO
 ---
 - Modularize JavaToProtoNew. Code is written in a very imperative way, and hard to mantain.
-- Add converters similar to *net.badata.protobuf.converter.type.XxxConverter* for fields with types: Duration.
+- Add converters similar to *net.badata.protobuf.converter.type.XxxConverter* for fields with types: Duration. 
+See [this](https://github.com/google/qrisp/blob/master/google/protobuf/java/util/src/main/java/com/google/protobuf/util/TimeUtil.java)
+- Replace custom protobuf-converter solution by [MapStruct](http://mapstruct.org/). It's faster and reflection free.
 - Add custom Java *Annotations* to classes/interfaces and/or fields in order to collect reserved field tags and names for the .proto IDL file.
 - Support *@java.lang.Deprecated* on classes/interfaces. It translates to *option deprecated = true;* after message declaration on the .proto IDL file.
 - Support *@java.lang.Deprecated* on java fields. It translates to *[deprecated = true];* after field declaration on the .proto file.
