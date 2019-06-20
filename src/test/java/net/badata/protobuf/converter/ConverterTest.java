@@ -6,7 +6,9 @@ import com.google.protobuf.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -25,6 +27,9 @@ import net.badata.protobuf.converter.type.LocalDateLongConverterImpl;
 import net.badata.protobuf.converter.type.LocalDateTimeLongConverterImpl;
 import net.badata.protobuf.converter.type.LocalDateTimeTimestampConverterImpl;
 import net.badata.protobuf.converter.type.LocalDateTimestampConverterImpl;
+import net.badata.protobuf.converter.type.LocalTimeLongConverterImpl;
+import net.badata.protobuf.converter.type.LocalTimeTimestampConverterImpl;
+import net.badata.protobuf.converter.type.TimeUtil;
 
 /**
  * @author jsjem
@@ -63,9 +68,11 @@ public class ConverterTest {
 						.setDateToLong(System.currentTimeMillis())
 						.setLocalDateTimeToLong(System.currentTimeMillis())
 						.setLocalDateToLong(nowLocalDateInMillis())
-						.setDateToTimestamp(toTimestamp(System.currentTimeMillis()))
-						.setLocalDateTimeToTimestamp(toTimestamp(System.currentTimeMillis()))
-						.setLocalDateToTimestamp(toTimestamp(nowLocalDateInMillis()))
+						.setLocalTimeToLong(nowLocalTimeInSeconds())
+						.setDateToTimestamp(toTimestampFromMillis(System.currentTimeMillis()))
+						.setLocalDateTimeToTimestamp(toTimestampFromMillis(System.currentTimeMillis()))
+						.setLocalDateToTimestamp(toTimestampFromMillis(nowLocalDateInMillis()))
+						.setLocalTimeToTimestamp(toTimestampFromSeconds(nowLocalTimeInSeconds()))
 						.addStringSetValue("11"))
 				.setNullDefaultValue(ConverterProto.NullDefaultTest.newBuilder()
 								.setCustomInspectionString("Assumed as null value")
@@ -85,13 +92,22 @@ public class ConverterTest {
 		return LocalDate.now().atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli();
 	}
 
-	private Timestamp toTimestamp(long millis) {
-		Timestamp timestamp = Timestamp.newBuilder()
-				.setSeconds(millis / 1000)
-				.setNanos((int) ((millis % 1000) * 1000000)).build();
+	private long nowLocalTimeInSeconds() {
+		return LocalTime.now().truncatedTo(ChronoUnit.SECONDS).toSecondOfDay();
+	}
+	
+	private Timestamp toTimestampFromMillis(long millis) {
+		Timestamp timestamp = TimeUtil.normalizedTimestamp(
+				millis / TimeUtil.MILLIS_PER_SECOND,
+				(int) ((millis % TimeUtil.MILLIS_PER_SECOND) * TimeUtil.NANOS_PER_MILLISECOND));
 		return timestamp;
 	}
 
+	private Timestamp toTimestampFromSeconds(long seconds) {
+		Timestamp timestamp = TimeUtil.normalizedTimestamp(seconds, 0);
+		return timestamp;
+	}
+	
 	private void createTestDomain() {
 		ConverterDomain.PrimitiveTest primitiveTest = new ConverterDomain.PrimitiveTest();
 		primitiveTest.setBooleanValue(true);
@@ -105,9 +121,11 @@ public class ConverterTest {
 		fieldConverterTest.setDateToLong(new Date());
 		fieldConverterTest.setLocalDateTimeToLong(nowLocalDateTime());
 		fieldConverterTest.setLocalDateToLong(nowLocalDate());
+		fieldConverterTest.setLocalTimeToLong(nowLocalTime());
 		fieldConverterTest.setDateToTimestamp(new Date());
 		fieldConverterTest.setLocalDateTimeToTimestamp(nowLocalDateTime());
 		fieldConverterTest.setLocalDateToTimestamp(nowLocalDate());
+		fieldConverterTest.setLocalTimeToTimestamp(nowLocalTime());
 		Set<String> stringSet = new HashSet<String>();
 		stringSet.add("111");
 		fieldConverterTest.setStringSetValue(stringSet);
@@ -165,6 +183,10 @@ public class ConverterTest {
 		return nowLocalDate;
 	}
 	
+	private LocalTime nowLocalTime() {
+		return LocalTime.now(ZoneOffset.UTC).truncatedTo(ChronoUnit.SECONDS);
+	}
+	
 	private void createIgnoredFieldsMap() {
 		fieldsIgnore = new FieldsIgnore();
 		fieldsIgnore.add(ConverterDomain.PrimitiveTest.class);
@@ -202,9 +224,11 @@ public class ConverterTest {
 		Assert.assertEquals(conversionProto.getDateToLong(), conversionDomain.getDateToLong().getTime());
 		Assert.assertEquals(conversionProto.getLocalDateTimeToLong(), toLong(conversionDomain.getLocalDateTimeToLong()));
 		Assert.assertEquals(conversionProto.getLocalDateToLong(), toLong(conversionDomain.getLocalDateToLong()));
+		Assert.assertEquals(conversionProto.getLocalTimeToLong(), toLong(conversionDomain.getLocalTimeToLong()));
 		Assert.assertEquals(conversionProto.getDateToTimestamp(), toTimestamp(conversionDomain.getDateToTimestamp()));
 		Assert.assertEquals(conversionProto.getLocalDateTimeToTimestamp(), toTimestamp(conversionDomain.getLocalDateTimeToTimestamp()));
 		Assert.assertEquals(conversionProto.getLocalDateToTimestamp(), toTimestamp(conversionDomain.getLocalDateToTimestamp()));
+		Assert.assertEquals(conversionProto.getLocalTimeToTimestamp(), toTimestamp(conversionDomain.getLocalTimeToTimestamp()));
 		Assert.assertEquals(conversionProto.getEnumString(), conversionDomain.getEnumString().name());
 		Assert.assertTrue(conversionDomain.getStringSetValue().remove(conversionProto.getStringSetValue(0)));
 
@@ -278,9 +302,11 @@ public class ConverterTest {
 		Assert.assertEquals(conversionDomain.getDateToLong().getTime(), conversionProto.getDateToLong());
 		Assert.assertEquals(conversionDomain.getLocalDateTimeToLong(), toLocalDateTime(conversionProto.getLocalDateTimeToLong()));
 		Assert.assertEquals(conversionDomain.getLocalDateToLong(), toLocalDate(conversionProto.getLocalDateToLong()));
+		Assert.assertEquals(conversionDomain.getLocalTimeToLong(), toLocalTime(conversionProto.getLocalTimeToLong()));
 		Assert.assertEquals(conversionDomain.getDateToTimestamp(), toDate(conversionProto.getDateToTimestamp()));
 		Assert.assertEquals(conversionDomain.getLocalDateTimeToTimestamp(), toLocalDateTime(conversionProto.getLocalDateTimeToTimestamp()));
 		Assert.assertEquals(conversionDomain.getLocalDateToTimestamp(), toLocalDate(conversionProto.getLocalDateToTimestamp()));
+		Assert.assertEquals(conversionDomain.getLocalTimeToTimestamp(), toLocalTime(conversionProto.getLocalTimeToTimestamp()));
 		Assert.assertEquals(conversionDomain.getEnumString().name(), conversionProto.getEnumString());
 		Assert.assertTrue(conversionDomain.getStringSetValue().remove(conversionProto.getStringSetValue(0)));
 
@@ -326,6 +352,12 @@ public class ConverterTest {
 		return millis.longValue();
 	}
 	
+	private long toLong(LocalTime localTime) {
+		LocalTimeLongConverterImpl converter = new LocalTimeLongConverterImpl();
+		Long seconds = converter.toProtobufValue(localTime);
+		return seconds.longValue();
+	}
+	
 	private LocalDateTime toLocalDateTime(Long millis) {
 		LocalDateTimeLongConverterImpl converter = new LocalDateTimeLongConverterImpl();
 		return converter.toDomainValue(millis);
@@ -334,6 +366,11 @@ public class ConverterTest {
 	private LocalDate toLocalDate(Long millis) {
 		LocalDateLongConverterImpl converter = new LocalDateLongConverterImpl();
 		return converter.toDomainValue(millis);
+	}
+	
+	private LocalTime toLocalTime(Long seconds) {
+		LocalTimeLongConverterImpl converter = new LocalTimeLongConverterImpl();
+		return converter.toDomainValue(seconds);
 	}
 	
 	private Timestamp toTimestamp(Date date) {
@@ -361,8 +398,19 @@ public class ConverterTest {
 		return converter.toProtobufValue(localDate);
 	}
 	
+	private Timestamp toTimestamp(LocalTime localTime) {
+		LocalTimeTimestampConverterImpl converter = new LocalTimeTimestampConverterImpl();
+		return converter.toProtobufValue(localTime);
+	}
+	
 	private LocalDate toLocalDate(Timestamp timestamp) {
 		LocalDateTimestampConverterImpl converter = new LocalDateTimestampConverterImpl();
 		return converter.toDomainValue(timestamp);
 	}
+	
+	private LocalTime toLocalTime(Timestamp timestamp) {
+		LocalTimeTimestampConverterImpl converter = new LocalTimeTimestampConverterImpl();
+		return converter.toDomainValue(timestamp);
+	}
+	
 }

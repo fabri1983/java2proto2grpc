@@ -21,10 +21,12 @@ message FieldConverterTest {
     int64 dateToLong = 2;
     int64 localDateTimeToLong = 3;
     int64 localDateToLong = 4;
-    google.protobuf.Timestamp dateToTimestamp = 5;
-    google.protobuf.Timestamp localDateTimeToTimestamp = 6;
-    google.protobuf.Timestamp localDateToTimestamp = 7;
-    repeated string stringSetValue = 8;
+    int64 localTimeToLong = 5;
+    google.protobuf.Timestamp dateToTimestamp = 6;
+    google.protobuf.Timestamp localDateTimeToTimestamp = 7;
+    google.protobuf.Timestamp localDateToTimestamp = 8;
+    google.protobuf.Timestamp localTimeToTimestamp = 9;
+    repeated string stringSetValue = 10;
 }
 
 message NullDefaultTest {

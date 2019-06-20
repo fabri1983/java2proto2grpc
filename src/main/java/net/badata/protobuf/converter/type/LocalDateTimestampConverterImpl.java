@@ -37,10 +37,7 @@ public class LocalDateTimestampConverterImpl implements TypeConverter<LocalDate,
 	public Timestamp toProtobufValue(final Object instance) {
 		LocalDate localDate = (LocalDate) instance;
 		Instant instant = localDate.atStartOfDay(ZoneOffset.UTC).toInstant();
-		Timestamp timestamp = Timestamp.newBuilder()
-				.setSeconds(instant.getEpochSecond())
-				.setNanos(instant.getNano())
-				.build();
+		Timestamp timestamp = TimeUtil.normalizedTimestamp(instant.getEpochSecond(), instant.getNano());
 		return timestamp;
 	}
 }

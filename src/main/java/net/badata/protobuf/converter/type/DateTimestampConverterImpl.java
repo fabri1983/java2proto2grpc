@@ -21,7 +21,8 @@ public class DateTimestampConverterImpl implements TypeConverter<Date, Timestamp
 	@Override
 	public Date toDomainValue(final Object instance) {
 		Timestamp timestamp = (Timestamp) instance;
-		long millis = (timestamp.getSeconds() * 1000) + (timestamp.getNanos() / 1000000);
+		long millis = (timestamp.getSeconds() * TimeUtil.MILLIS_PER_SECOND) 
+				+ (timestamp.getNanos() / TimeUtil.NANOS_PER_MILLISECOND);
 		return new Date(millis);
 	}
 
@@ -32,10 +33,9 @@ public class DateTimestampConverterImpl implements TypeConverter<Date, Timestamp
 	public Timestamp toProtobufValue(final Object instance) {
 		Date date = (Date) instance;
 		long millis = date.getTime();
-		Timestamp timestamp = Timestamp.newBuilder()
-				.setSeconds(millis / 1000)
-				.setNanos((int) ((millis % 1000) * 1000000))
-				.build();
+		Timestamp timestamp = TimeUtil.normalizedTimestamp(
+				millis / TimeUtil.MILLIS_PER_SECOND,
+				(int) ((millis % TimeUtil.MILLIS_PER_SECOND) * TimeUtil.NANOS_PER_MILLISECOND));
 		return timestamp;
 	}
 }
