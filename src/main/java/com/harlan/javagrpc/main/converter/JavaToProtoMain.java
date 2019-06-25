@@ -13,6 +13,9 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Copyright - Lloyd Sparkes 2012.</br>
  * 2019: Updated to reflect proto3 language version.
@@ -48,6 +51,8 @@ import java.util.List;
  */
 public class JavaToProtoMain {
 	
+	private static final Logger log = LoggerFactory.getLogger(JavaToProtoMain.class);
+	
 	/**
 	 * Entry Point for the CLI Interface to this Program.
 	 * @param args
@@ -57,9 +62,8 @@ public class JavaToProtoMain {
 		
 		// no arguments?
 		if (args.length == 0) {
-			System.err.println("Usage:");
-			System.err.println("\t mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.converter.JavaToProtoMain <classname/package> [<output folder name>]");
-			System.err.println("");
+			log.error("Usage:");
+			log.error("mvn exec:java -Dexec.mainClass=" + JavaToProtoMain.class.getName() + " <classname/package> [<output folder name>]");
 			return;
 		}
 		
@@ -80,7 +84,7 @@ public class JavaToProtoMain {
 			String protobuf = jtp.toString();
 			
 			if (protobuf == null) {
-				System.out.println(clazz.getSimpleName() + " has no declared methods.");
+				log.info(clazz.getSimpleName() + " has no declared methods.");
 				continue;
 			}
 			
@@ -93,9 +97,8 @@ public class JavaToProtoMain {
 					out = new BufferedWriter(fw);
 					out.write(protobuf);
 				} catch (Exception e) {
-					System.err.println("Got Exception while writing to File.");
-					System.err.println(protobuf);
-					e.printStackTrace();
+					log.error("Got Exception while writing to File.", e);
+					log.error(protobuf);
 				} finally {
 					if (out != null) {
 						out.flush();
@@ -104,9 +107,9 @@ public class JavaToProtoMain {
 				}
 				
 			}
-			// Write to Console
+			// Write to logger
 			else {
-				System.out.println(protobuf);
+				log.info(protobuf);
 			}
 		}
 	}
@@ -117,8 +120,7 @@ public class JavaToProtoMain {
 		try {
 			classes = ClassGrabberUtil.getClassesOrSingleClass(classnameOrPackage, GrpcEnabled.class);
 		} catch (Exception e) {
-			System.err.println("Could not load class. Make sure it is in the classpath!");
-			e.printStackTrace();
+			log.error("Could not load class. Make sure it is in the classpath!", e);
 		}
 		
 		return classes;

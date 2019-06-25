@@ -8,11 +8,16 @@ import io.grpc.util.MutableHandlerRegistry;
 import java.io.IOException;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Register gRPC's {@link BindableService} objects implementing {@link GrpcServiceMarker} to be exposed by a gRPC Server.
  */
 public class GrpcServerStarter implements IGrpcServerStarter {
 
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	
 	private int port;
 	private boolean withShutdownHook;
 	private Server server;
@@ -64,10 +69,10 @@ public class GrpcServerStarter implements IGrpcServerStarter {
 			server = serverBuilder
 					.build()
 					.start();
-			System.out.println("Grpc Server started. Listening on port " + port);
+			log.info("Grpc Server started. Listening on port " + port);
 		}
 		catch (IOException e) {
-			System.err.println("*** Could not start gRPC Server. " + e.getMessage());
+			log.error("*** Could not start gRPC Server. " + e.getMessage());
 			throw e;
 		}
 
@@ -76,9 +81,9 @@ public class GrpcServerStarter implements IGrpcServerStarter {
 			Runtime.getRuntime().addShutdownHook(new Thread() {
 				@Override
 				public void run() {
-					System.err.println("*** shutting down gRPC server since JVM is shutting down.");
+					log.error("*** shutting down gRPC server since JVM is shutting down.");
 					GrpcServerStarter.this.stop();
-					System.err.println("*** server shut down.");
+					log.error("*** server shut down.");
 				}
 			});
 		}
@@ -124,7 +129,7 @@ public class GrpcServerStarter implements IGrpcServerStarter {
 		try {
 			server.awaitTermination();
 		} catch (InterruptedException ex) {
-			System.err.println(ex);
+			log.error("", ex);
 		}
 	}
 

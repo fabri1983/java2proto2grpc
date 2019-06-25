@@ -49,27 +49,27 @@ import java.util.Stack;
 
 public class JavaToProto {
 	
-	private static final String NAME = "JavaToProto Generator";
-	private static final String VERSION = "v0.2";
+	private final String NAME = "JavaToProto Generator";
+	private final String VERSION = "v0.2";
 	
 	// rpc related
-	private static final String SERVICE = "service";
-	private static final String RPC = "rpc";
+	private final String SERVICE = "service";
+	private final String RPC = "rpc";
 	
 	// protocol bufffers related
-	private static final String OPEN_BLOCK = "{";
-	private static final String CLOSE_BLOCK = "}";
-	private static final String MESSAGE = "message";
-	private static final String ENUM = "enum";
-	private static final String NEWLINE = "\n";
-	private static final String TAB = "\t";	
-	private static final String COMMENT = "//";
-	private static final String SPACE = " ";
-	private static final String PATH_SEPERATOR = ".";
-	private static final String OPTIONAL = "optional";
-	private static final String REQUIRED = "required";
-	private static final String REPEATED = "repeated";
-	private static final String LINE_END = ";";
+	private final String OPEN_BLOCK = "{";
+	private final String CLOSE_BLOCK = "}";
+	private final String MESSAGE = "message";
+	private final String ENUM = "enum";
+	private final String NEWLINE = "\n";
+	private final String TAB = "\t";	
+	private final String COMMENT = "//";
+	private final String SPACE = " ";
+	private final String PATH_SEPERATOR = ".";
+	private final String OPTIONAL = "optional";
+	private final String REQUIRED = "required";
+	private final String REPEATED = "repeated";
+	private final String LINE_END = ";";
 	
 	private StringBuilder builder;
 	private Map<Class<?>, String> typesMap = getPrimitivesMap();

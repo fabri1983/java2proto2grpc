@@ -7,8 +7,13 @@ import io.grpc.examples.helloworld.protobuf.GreeterGrpc;
 import io.grpc.examples.helloworld.protobuf.SearchRequest;
 import io.grpc.examples.helloworld.protobuf.SearchResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class HelloWorldClientMain {
 
+	private static final Logger log = LoggerFactory.getLogger(HelloWorldClientMain.class);
+	
 	public static void main(String[] args) throws InterruptedException {
 		
 		// create managed channel
@@ -35,10 +40,10 @@ public class HelloWorldClientMain {
 				.build();
 		
 		SearchResponse response = blockingGreeterStub.sayHello(request);
-		System.out.println("hello" + response.getHelloReply(0).getMessage());
+		log.info("hello" + response.getHelloReply(0).getMessage());
 		
 //		HelloReply response2 = blockingStub.sayWorld(request);
-//		System.out.println("world" + response2.getMessage());
+//		log.info("world" + response2.getMessage());
 	}
 	
 }

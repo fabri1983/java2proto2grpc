@@ -3,12 +3,15 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
 >
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.harlan</groupId>
-	<artifactId>java-grpc</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<groupId>org.fabri1983</groupId>
+	<artifactId>java2proto2grpc</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<name>Java To Protobuf To gRPC</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<log4j2.version>2.11.2</log4j2.version>
 		<javax.annotation.api.version>1.3.2</javax.annotation.api.version> <!-- protobuf Java 9+ compatibility -->
 		<os.maven.version>1.6.1</os.maven.version>
 		<protobuf.maven.version>0.6.1</protobuf.maven.version>
@@ -18,64 +21,135 @@
 		<junit.version>4.13-beta-3</junit.version>
 	</properties>
 	
+	<dependencyManagement>
+		<dependencies>
+			<!-- The Log4j 2 SLF4J Binding allows applications coded to the SLF4J API to use Log4j 2 as the implementation. -->
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-slf4j-impl</artifactId>
+				<version>${log4j2.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-core</artifactId>
+				<version>${log4j2.version}</version>
+			</dependency>
+			<!-- protobuf Java 9+ compatibility -->
+			<dependency>
+				<groupId>javax.annotation</groupId>
+				<artifactId>javax.annotation-api</artifactId>
+				<version>${javax.annotation.api.version}</version>
+			</dependency>
+			<!-- Protocol Buffers compiler to be used by plugin protobuf-maven-plugin -->
+			<dependency>
+			    <groupId>com.google.protobuf</groupId>
+			    <artifactId>protoc</artifactId>
+			    <version>${google.protobuf.version}</version>
+			    <type>pom</type>
+			</dependency>
+			<!-- Core Protocol Buffers library. Protocol Buffers are a way of encoding structured data in an efficient yet extensible format. -->
+			<dependency>
+				<groupId>com.google.protobuf</groupId>
+				<artifactId>protobuf-java</artifactId>
+				<version>${google.protobuf.version}</version>
+			</dependency>
+			<!-- gRPC compiler to be used by plugin protobuf-maven-plugin -->
+			<dependency>
+				<groupId>io.grpc</groupId>
+				<artifactId>protoc-gen-grpc-java</artifactId>
+				<version>${io.grpc.version}</version>
+				<type>pom</type>
+			</dependency>
+			<!-- gRPC Client and Server -->
+			<dependency>
+				<groupId>io.grpc</groupId>
+				<artifactId>grpc-protobuf</artifactId>
+				<version>${io.grpc.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.grpc</groupId>
+				<artifactId>grpc-stub</artifactId>
+				<version>${io.grpc.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.grpc</groupId>
+				<artifactId>grpc-netty-shaded</artifactId>
+				<version>${io.grpc.version}</version>
+			</dependency>
+			<!-- Required to resolve internal compilation references by some classes in the netty-shaded dependency -->
+			<dependency>
+				<groupId>io.grpc</groupId>
+				<artifactId>grpc-core</artifactId>
+				<version>${io.grpc.version}</version>
+			</dependency>
+			<!-- JUnit -->
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>${junit.version}</version>
+				<scope>test</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	
 	<dependencies>
+		<!-- The Log4j 2 SLF4J Binding allows applications coded to the SLF4J API to use Log4j 2 as the implementation. -->
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j-impl</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+		</dependency>
 		<!-- protobuf Java 9+ compatibility -->
 		<dependency>
 			<groupId>javax.annotation</groupId>
 			<artifactId>javax.annotation-api</artifactId>
-			<version>${javax.annotation.api.version}</version>
 		</dependency>
 		<!-- Protocol Buffers compiler to be used by plugin protobuf-maven-plugin -->
 		<dependency>
 		    <groupId>com.google.protobuf</groupId>
 		    <artifactId>protoc</artifactId>
-		    <version>${google.protobuf.version}</version>
 		    <type>pom</type>
 		</dependency>
 		<!-- Core Protocol Buffers library. Protocol Buffers are a way of encoding structured data in an efficient yet extensible format. -->
 		<dependency>
 			<groupId>com.google.protobuf</groupId>
 			<artifactId>protobuf-java</artifactId>
-			<version>${google.protobuf.version}</version>
 		</dependency>
 		<!-- gRPC compiler to be used by plugin protobuf-maven-plugin -->
 		<dependency>
 			<groupId>io.grpc</groupId>
 			<artifactId>protoc-gen-grpc-java</artifactId>
-			<version>${io.grpc.version}</version>
 			<type>pom</type>
 		</dependency>
 		<!-- gRPC Client and Server -->
 		<dependency>
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-protobuf</artifactId>
-			<version>${io.grpc.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-stub</artifactId>
-			<version>${io.grpc.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-netty-shaded</artifactId>
-			<version>${io.grpc.version}</version>
 		</dependency>
 		<!-- Required to resolve internal compilation references by some classes in the netty-shaded dependency -->
 		<dependency>
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-core</artifactId>
-			<version>${io.grpc.version}</version>
 		</dependency>
 		<!-- JUnit -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
+	
 	<build>
 		<plugins>
 			<plugin>

@@ -8,8 +8,13 @@ import io.grpc.examples.helloworld.protobuf.SearchResponse;
 import io.grpc.examples.helloworld.protobuf.SearchResponse.HelloReply.Builder;
 import io.grpc.stub.StreamObserver;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 // 实现 定义一个实现服务接口的类 
 public class GreeterServiceGrpcImpl extends GreeterGrpc.GreeterImplBase implements GrpcServiceMarker {
+	
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	
 	public GreeterServiceGrpcImpl() {
 		super();
@@ -19,7 +24,7 @@ public class GreeterServiceGrpcImpl extends GreeterGrpc.GreeterImplBase implemen
 	public void sayHello(SearchRequest request, StreamObserver<SearchResponse> responseObserver) {
 		grcpTryCatch( responseObserver, () -> {
 			
-			System.out.println("sayHello service:" + request.getHelloRequest(0).getName());
+			log.info("sayHello service:" + request.getHelloRequest(0).getName());
 			String message = request.getHelloRequest(0).getName();
 			Builder replyProto = SearchResponse.HelloReply.newBuilder()
 					.setMessage("hello" + message);
@@ -35,7 +40,7 @@ public class GreeterServiceGrpcImpl extends GreeterGrpc.GreeterImplBase implemen
 //	public void sayHello(HelloRequest req, StreamObserver<HelloReply> responseObserver) {
 //		grcpTryCatch( responseObserver, () -> {
 //
-//			System.out.println("sayHello service:" + req.getName());
+//			log.info("sayHello service:" + req.getName());
 //			HelloReply reply = HelloReply.newBuilder().setMessage(("Hello: " + req.getName())).build();
 	
 //			responseObserver.onNext(reply);
@@ -46,7 +51,7 @@ public class GreeterServiceGrpcImpl extends GreeterGrpc.GreeterImplBase implemen
 //	public void sayWorld(HelloRequest request, StreamObserver<HelloReply> responseObserver) {
 //		grcpTryCatch( responseObserver, () -> {
 //
-//			System.out.println("sayWorld service:" + request.getName());
+//			log.info("sayWorld service:" + request.getName());
 //			HelloReply reply = HelloReply.newBuilder().setMessage(("Hello: " + request.getName())).build();
 	
 //			responseObserver.onNext(reply);

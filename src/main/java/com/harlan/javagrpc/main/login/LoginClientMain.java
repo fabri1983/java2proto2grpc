@@ -11,7 +11,12 @@ import com.harlan.javagrpc.service.contract.LoginService;
 import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc;
 import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc.LoginServiceFutureStub;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class LoginClientMain {
+	
+	private static final Logger log = LoggerFactory.getLogger(LoginClientMain.class);
 	
 	public static void main(String[] args) throws InterruptedException {
 		
@@ -44,7 +49,7 @@ public class LoginClientMain {
 		
 		int loginId = loginService.login(request);
 		Response response = loginService.getRes(request, request2);
-		System.out.println("login id: " + loginId + ". Corpus: " + response.getCorpus().toString());
+		log.info("login id: " + loginId + ". Corpus: " + response.getCorpus().toString());
 	}
 
 	private static class User {

@@ -10,8 +10,13 @@ import java.io.InputStream;
 
 import javax.net.ssl.SSLException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class GrpcManagedChannelSecured extends GrpcManagedChannel {
 
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	
 	public GrpcManagedChannelSecured(String host, int port) {
 		super(host, port);
 	}
@@ -28,7 +33,7 @@ public class GrpcManagedChannelSecured extends GrpcManagedChannel {
 					.overrideAuthority("foo.test.google.fr")
 					.sslContext(sslContext);
 		} catch (SSLException ex) {
-			System.err.println(ex);
+			log.error("", ex);
 			throw new RuntimeException(ex);
 		}
 	}

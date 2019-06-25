@@ -12,10 +12,15 @@ import java.io.InputStream;
 
 import javax.net.ssl.SSLException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Register gRPC's {@link BindableService} objects implementing {@link GrpcServiceMarker} to be exposed by a gRPC Server.
  */
 public class GrpcServerStarterSecured extends GrpcServerStarter {
+	
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	
 	public GrpcServerStarterSecured(int port, boolean withShutdownHook) {
 		super(port, withShutdownHook);
@@ -30,7 +35,7 @@ public class GrpcServerStarterSecured extends GrpcServerStarter {
 					.forPort(port)
 					.sslContext(sslContext);
 		} catch (SSLException ex) {
-			System.err.println(ex);
+			log.error("", ex);
 			throw new RuntimeException(ex);
 		}
 	}

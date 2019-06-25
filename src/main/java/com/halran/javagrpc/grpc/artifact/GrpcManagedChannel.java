@@ -5,8 +5,13 @@ import io.grpc.ManagedChannelBuilder;
 
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class GrpcManagedChannel implements IGrpcManagedChannel {
 
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	
 	private final ManagedChannel channel;
 
 	public GrpcManagedChannel(String host, int port) {
@@ -33,11 +38,11 @@ public class GrpcManagedChannel implements IGrpcManagedChannel {
 	@Override
 	public void shutdown() {
 		try {
-			System.out.println("*** Client shutdown.");
+			log.info("*** Client shutdown.");
 			channel.shutdown()
 					.awaitTermination(2, TimeUnit.SECONDS);
 		} catch (InterruptedException ex) {
-			System.err.println();
+			log.error("", ex);
 		}
 	}
 	

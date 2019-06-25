@@ -13,15 +13,19 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class JavaToProtoNewMain {
+	
+	private static final Logger log = LoggerFactory.getLogger(JavaToProtoNewMain.class);
 	
 	public static void main(String[] args) throws IOException {
 		
 		// no arguments?
 		if (args.length == 0) {
-			System.err.println("Usage:");
-			System.err.println("\t mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.converter.JavaToProtoNewMain <classname/package> [<output folder name>]");
-			System.err.println("");
+			log.error("Usage:");
+			log.error("mvn exec:java -Dexec.mainClass=" + JavaToProtoNewMain.class.getName() + " <classname/package> [<output folder name>]");
 			return;
 		}
 		
@@ -42,7 +46,7 @@ public class JavaToProtoNewMain {
 			String protobuf = javaToProto2.getProtobuf(clazz);
 			
 			if (protobuf == null) {
-				System.out.println(clazz.getSimpleName() + " has no declared methods.");
+				log.info(clazz.getSimpleName() + " has no declared methods.");
 				continue;
 			}
 			
@@ -55,9 +59,8 @@ public class JavaToProtoNewMain {
 					out = new BufferedWriter(fw);
 					out.write(protobuf);
 				} catch (Exception e) {
-					System.err.println("Got Exception while writing to File.");
-					System.err.println(protobuf);
-					e.printStackTrace();
+					log.error("Got Exception while writing to File.", e);
+					log.error(protobuf);
 				} finally {
 					if (out != null) {
 						out.flush();
@@ -66,9 +69,9 @@ public class JavaToProtoNewMain {
 				}
 				
 			}
-			// Write to Console
+			// Write to logger
 			else {
-				System.out.println(protobuf);
+				log.info(protobuf);
 			}
 		}
 	}
@@ -79,8 +82,7 @@ public class JavaToProtoNewMain {
 		try {
 			classes = ClassGrabberUtil.getClassesOrSingleClass(classnameOrPackage, GrpcEnabled.class);
 		} catch (Exception e) {
-			System.err.println("Could not load class. Make sure it is in the classpath!");
-			e.printStackTrace();
+			log.error("Could not load class. Make sure it is in the classpath!", e);
 		}
 		
 		return classes;

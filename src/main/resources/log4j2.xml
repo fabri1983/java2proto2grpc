@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<Configuration status="WARN">
+
+	<Appenders>
+
+		<Async name="ASYNC_CONSOLE">
+			<AppenderRef ref="CONSOLE" />
+		</Async>
+		
+		<Console name="CONSOLE" target="SYSTEM_OUT">
+			<PatternLayout>
+				<pattern>%d{dd/MM HH:mm:ss,SSS} %-5level [%t] %c{1}: %m%n</pattern>
+			</PatternLayout>
+		</Console>
+
+	</Appenders>
+
+	<Loggers>
+		<Root level="INFO" additivity="false">
+			<AppenderRef ref="ASYNC_CONSOLE" level="INFO" />
+		</Root>
+	</Loggers>
+	
+</Configuration>

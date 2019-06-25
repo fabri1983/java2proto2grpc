@@ -8,8 +8,13 @@ import com.google.common.util.concurrent.MoreExecutors;
 import java.util.concurrent.Semaphore;
 import java.util.function.Supplier;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class GrpcClientProxyLimited {
 
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	
 	// limit rpc calls made to the stub
 	protected final Semaphore limiter = new Semaphore(100);
 	
@@ -34,7 +39,7 @@ public class GrpcClientProxyLimited {
 
 			@Override
 			public void onFailure(Throwable t) {
-				System.err.println("ERROR: " + t.getLocalizedMessage());
+				log.error(t.getLocalizedMessage());
 			}
 		};
 	}

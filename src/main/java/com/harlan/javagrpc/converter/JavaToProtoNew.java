@@ -18,11 +18,16 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class JavaToProtoNew {
 
-	private static final String PROTO_SUFFIX = "Proto";
-	private static final String PROTO_IN_SUFFIX = "ProtoIn";
-	private static final String PROTO_OUT_SUFFIX = "ProtoOut";
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	
+	private final String PROTO_SUFFIX = "Proto";
+	private final String PROTO_IN_SUFFIX = "ProtoIn";
+	private final String PROTO_OUT_SUFFIX = "ProtoOut";
 	
 	private Map<String,TreeMap<Integer,String>> map;
 	
@@ -335,7 +340,7 @@ public class JavaToProtoNew {
 					}
 				}
 			} catch (ClassNotFoundException e) {
-//				e.printStackTrace();
+				log.error("", e);
 			}
 		}
 		else if (isJavaClass(processingClass)) {
@@ -432,7 +437,7 @@ public class JavaToProtoNew {
 					}
 				}
 			} catch (ClassNotFoundException e) {
-//				e.printStackTrace();
+				log.error("", e);
 			}
 		}
 		else if (isJavaClass(processingClass)) {
@@ -517,7 +522,7 @@ public class JavaToProtoNew {
 					}
 				}
 			} catch (ClassNotFoundException e) {
-//				e.printStackTrace();
+				log.error("", e);
 			}
 		}
 		else if (isJavaClass(processingClass)) {
@@ -579,9 +584,9 @@ public class JavaToProtoNew {
 				}
 			}
 		} catch (ClassNotFoundException e) {
-//			e.printStackTrace();
+			log.error("", e);
 		} catch (SecurityException e) {
-			e.printStackTrace();
+			log.error("", e);
 		}
 	}
 
@@ -594,7 +599,7 @@ public class JavaToProtoNew {
 				return removeArraySymbol(clazz.getSimpleName()) + PROTO_SUFFIX;
 			}
 		} catch (ClassNotFoundException e) {
-//			e.printStackTrace();
+			log.error("", e);
 		}
 		return "null";
 	}
@@ -634,7 +639,7 @@ public class JavaToProtoNew {
 					sb.append("}\r\n");
 				}
 			} catch (ClassNotFoundException e) {
-//					e.printStackTrace();
+				log.error("", e);
 			}
 		}
 		return sb;
