@@ -17,7 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 /**
- * Test Secured Grpc Server and Client. 
+ * Test Grpc Server and Client using TLS mutual authentication.  
  */
 public class LoginServiceSecuredGrpcTest {
 	
@@ -30,27 +30,31 @@ public class LoginServiceSecuredGrpcTest {
 	@Test
 	public void testSecured() {
 		
-		// register login service
-		LoginBusiness loginBusiness = new LoginBusinessImpl();
-		LoginServiceGrpcImpl loginServiceGrpc = new LoginServiceGrpcImpl(loginBusiness);
-		serverStarterRule.getServerStarter().register(loginServiceGrpc);
+		registerLoginService();
 		
-		// create login service proxy (stub)
-		LoginServiceFutureStub futureStub = LoginServiceGrpc.newFutureStub(mangedChannelRule.getChannel());
-		LoginService loginService = new LoginServiceGrpcClientProxy(futureStub);
+		LoginService loginService = createLoginServiceClientStub();
 		
 		// create some testing data
-		User[] users = new User[] { 
-				User.from(11, "pepito", Corpus.IMAGES),
-				User.from(22, "martita", Corpus.LOCAL),
-				User.from(33, "robertito", Corpus.PRODUCTS)};
+		User[] users = createUsers();
 		
 		// call grpc stub
 		for (int i = 0; i < users.length; i++) {
 			callAndAssert(loginService, users[i]);
 		}
 	}
-	
+
+	private void registerLoginService() {
+		LoginBusiness loginBusiness = new LoginBusinessImpl();
+		LoginServiceGrpcImpl loginServiceGrpc = new LoginServiceGrpcImpl(loginBusiness);
+		serverStarterRule.getServerStarter().register(loginServiceGrpc);
+	}
+
+	private LoginService createLoginServiceClientStub() {
+		LoginServiceFutureStub futureStub = LoginServiceGrpc.newFutureStub(mangedChannelRule.getChannel());
+		LoginService loginService = new LoginServiceGrpcClientProxy(futureStub);
+		return loginService;
+	}
+
 	private void callAndAssert(LoginService loginService, User user) {
 		Request request = Request.from(user.getId(), user.getName(), user.getCorpus());
 		Request2 request2 = Request2.from(user.getId(), user.getName());
@@ -60,6 +64,14 @@ public class LoginServiceSecuredGrpcTest {
 		Assert.assertEquals(user.getId(), response.getId());
 		Assert.assertEquals(user.getName(), response.getName());
 		Assert.assertEquals(user.getCorpus(), response.getCorpus());
+	}
+
+	private User[] createUsers() {
+		User[] users = new User[] { 
+				User.from(11, "pepito", Corpus.IMAGES),
+				User.from(22, "martita", Corpus.LOCAL),
+				User.from(33, "robertito", Corpus.PRODUCTS)};
+		return users;
 	}
 
 	private static class User {
