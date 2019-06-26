@@ -17,17 +17,17 @@ public class GrpcManagedChannelSecured extends GrpcManagedChannel {
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	
-	public GrpcManagedChannelSecured(String host, int port) {
-		super(host, port);
+	public GrpcManagedChannelSecured(GrpcConfiguration config) {
+		super(config);
 	}
 	
 	@Override
-	protected ManagedChannelBuilder<?> createManagedChannel(String host, int port) {
+	protected ManagedChannelBuilder<?> createManagedChannelBuilder(GrpcConfiguration config) {
 		try {
 			boolean mutualAuth = false;
 			SslContext sslContext = buildSslContext(mutualAuth);
 			return NettyChannelBuilder
-					.forAddress(host, port)
+					.forAddress(config.getHost(), config.getPort())
 					// Only for using provided test certs to match the Subject Alternative Names in the test certificates. 
 					// You can generate your own self-signed certificates with commands in the certs README.
 					.overrideAuthority("foo.test.google.fr")

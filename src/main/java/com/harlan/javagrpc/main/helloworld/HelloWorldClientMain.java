@@ -1,5 +1,6 @@
 package com.harlan.javagrpc.main.helloworld;
 
+import com.halran.javagrpc.grpc.artifact.GrpcConfiguration;
 import com.halran.javagrpc.grpc.artifact.GrpcManagedChannel;
 import com.halran.javagrpc.grpc.artifact.IGrpcManagedChannel;
 
@@ -19,7 +20,7 @@ public class HelloWorldClientMain {
 		// create managed channel
 		String host = "127.0.0.1";
 		int port = 50051;
-		IGrpcManagedChannel managedChannel = new GrpcManagedChannel(host, port);
+		IGrpcManagedChannel managedChannel = new GrpcManagedChannel(GrpcConfiguration.from(host, port));
 		
 		// create greeter proxy (stub)
 		GreeterGrpc.GreeterBlockingStub blockingGreeterStub = 

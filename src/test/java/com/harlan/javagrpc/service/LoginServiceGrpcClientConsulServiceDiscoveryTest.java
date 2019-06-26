@@ -1,5 +1,6 @@
 package com.harlan.javagrpc.service;
 
+import com.halran.javagrpc.grpc.artifact.GrpcConfiguration;
 import com.halran.javagrpc.model.Corpus;
 import com.halran.javagrpc.model.Request;
 import com.halran.javagrpc.model.Request2;
@@ -9,11 +10,14 @@ import com.harlan.javagrpc.business.contract.LoginBusiness;
 import com.harlan.javagrpc.service.contract.LoginService;
 import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc;
 import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc.LoginServiceFutureStub;
-import com.harlan.javagrpc.testutil.GrpcManagedChannelRule;
+import com.harlan.javagrpc.testutil.ConsulServiceRegisterRule;
+import com.harlan.javagrpc.testutil.GrpcManagedChannelWithConsulRule;
 import com.harlan.javagrpc.testutil.GrpcServerStarterRule;
+import com.harlan.javagrpc.testutil.PropertiesLoader;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -22,22 +26,55 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Test Grpc Server and Client (non secured connection). 
+ * Test Grpc Server and Client (non secured connection) using Consul as Service Discovery.
  */
-public class LoginServiceGrpcClientLoadBalancingTest {
+public class LoginServiceGrpcClientConsulServiceDiscoveryTest {
+	
+	private static final Logger log = LoggerFactory.getLogger(LoginServiceGrpcClientConsulServiceDiscoveryTest.class);
+	
+	private static final Properties consulProperties = PropertiesLoader.getProperties("consul-test.properties");
+	
+	private static final String consulServiceName = "grpcServiceDiscovery-test";
+	private static final String consulId = "server1";
+	private static final String consulHost = getConsulIp();
+	private static final int consulPort = getConsulPort();
+	private static final String consulCheckInterval = "10s";
+	private static final String consulCheckTimeout = "1s";
+	
+	@ClassRule
+	public static ConsulServiceRegisterRule consulServiceRegisterRule = new ConsulServiceRegisterRule(
+			consulServiceName, consulId, consulHost, consulPort, consulCheckInterval, consulCheckTimeout);
 	
 	@Rule
 	public GrpcServerStarterRule serverStarterRule = new GrpcServerStarterRule(50051);
 	
 	@Rule
-	public GrpcManagedChannelRule mangedChannelRule = new GrpcManagedChannelRule("127.0.0.1", 50051);
+	public GrpcManagedChannelWithConsulRule mangedChannelRule = new GrpcManagedChannelWithConsulRule(
+			GrpcConfiguration.fromConsulServiceDiscovery(consulServiceName, consulHost, consulPort, 0));
 
+	private static String getConsulIp() {
+		return consulProperties.getProperty("consul.ip");
+	}
+	
+	private static int getConsulPort() {
+		return Integer.parseInt(consulProperties.getProperty("consul.port"));
+	}
+	
 	@Test
-	public void testMultiClientNonSecured() throws InterruptedException {
+	public void testMultiClientWithServiceDiscovery() throws InterruptedException {
+		if (!consulServiceRegisterRule.isRegistered()) {
+			log.warn("Consul Service wasn't registered. Test won't run.");
+			Assert.assertTrue(true);
+			return;
+		}
+		
 		// number of client tubs to create
 		int numClientStubs = 10;
 		

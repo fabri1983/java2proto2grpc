@@ -27,7 +27,7 @@ public class GreeterServiceGrpcImpl extends GreeterGrpc.GreeterImplBase implemen
 			log.info("sayHello service:" + request.getHelloRequest(0).getName());
 			String message = request.getHelloRequest(0).getName();
 			Builder replyProto = SearchResponse.HelloReply.newBuilder()
-					.setMessage("hello" + message);
+					.setMessage("hello " + message);
 			SearchResponse reply = SearchResponse.newBuilder()
 					.addHelloReply(replyProto)
 					.build();

@@ -22,7 +22,7 @@ Features:
 - **Java 8+**. 
 	- note the use of dependency *javax.annotation:javax.annotation-api* which solves the issue on generated grpc stubs due to Java internal 
 	relocation of *@javax.annotation.Generated* on newer java versions.
-- Java 6, 7: requires some changes since the code uses *java.time* package.
+- Java 6, 7: requires some changes since the code uses *java.time* package and minor usages of *java.util.stream*.
 - Generates **.proto** files (**IDL syntax v3**) out of Java classes/interfaces existing in the classpath and decorated by *@GrpcEnabled*.
 - Skips generation of protobuf message or inner fields by decorating a class with *@ProtobufSkipFields*. This is particularly usefull when you 
 have a class hierarchy and you want to skip one or several of them.
@@ -37,6 +37,8 @@ have a class hierarchy and you want to skip one or several of them.
 - Use async grpc calls by *ListenableFuture*.
 - Use of java compiler *-parameter* option to expose parameters name in signature definition, so we can get the real parameter name and 
 so improve the *.proto* file readablity.
+- Provides a ManagedChannel with Consul Service Discovery capability and Client-Side Load Balancing, 
+from [grpc-java-load-balancer-using-consul](https://github.com/mykidong/grpc-java-load-balancer-using-consul).
 
 
 Usage:
@@ -77,6 +79,31 @@ and *com.harlan.javagrpc.main.helloworld.HelloWorldServerMain*.
 The file *LoginService.proto* is the one you can generate running *com.harlan.javagrpc.main.converter.JavaToProtoMainNew*, and it generates 
 protobuf classes and grpc stubs to make some testing running *com.harlan.javagrpc.main.login.LoginClientMain* 
 and *com.harlan.javagrpc.main.login.LoginServerMain*.
+
+https://github.com/hashicorp/consul
+Run Tests with Consul
+---
+*Consul* is a tool for *service discovery*. Consul is distributed, highly available, and extremely scalable.
+Visit https://github.com/hashicorp/consul.  
+Test **LoginServiceGrpcClientConsulServiceDiscoveryTest** runs a **LoginService gRPC** test with multiple stubs using a 
+**Managed Channel** which connects to a *Consul* server, trying to call one server instance. Not a real scenario, just testing if it works.  
+Consul can be obtained as a stand alone app or as a **docker image**:
+	- stand alone app: https://www.consul.io/downloads.html
+	- docker image: *docker pull consul*
+You need to setup the consul ip address in order to test run **LoginServiceGrpcClientConsulServiceDiscoveryTest** correctly:
+- If you are using docker in *Windows* with **Docker Tool Box** then get your docker machine ip with:
+	```sh
+	docker-machine ip default
+	192.168.99.100
+	```
+	and put that ip in the file **src/test/resources/consul-test.properties**.
+- If you are running docker as standalone app in another server then you can get the consul app ip with:
+	```sh
+	docker inspect -f "{{ .NetworkSettings.IPAddress }}" consul
+	```
+	and put that ip in the file **src/test/resources/consul-test.properties**.
+- If running consul standalone or on a local docker image then usually the consul ip is 127.0.0.1 (or localhost).
+	In this case put 127.0.0.1 in the file **src/test/resources/consul-test.properties**.
 
 
 TODO

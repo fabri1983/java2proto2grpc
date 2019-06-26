@@ -1,5 +1,6 @@
 package com.harlan.javagrpc.service;
 
+import com.halran.javagrpc.grpc.artifact.GrpcConfiguration;
 import com.halran.javagrpc.model.Corpus;
 import com.halran.javagrpc.model.Request;
 import com.halran.javagrpc.model.Request2;
@@ -25,7 +26,8 @@ public class LoginServiceSecuredGrpcTest {
 	public GrpcServerStarterSecuredRule serverStarterRule = new GrpcServerStarterSecuredRule(50051);
 	
 	@Rule
-	public GrpcManagedChannelSecuredRule mangedChannelRule = new GrpcManagedChannelSecuredRule("127.0.0.1", 50051);
+	public GrpcManagedChannelSecuredRule mangedChannelRule = new GrpcManagedChannelSecuredRule(
+			GrpcConfiguration.from("127.0.0.1", 50051));
 	
 	@Test
 	public void testSecured() {

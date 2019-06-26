@@ -1,5 +1,6 @@
 package com.harlan.javagrpc.testutil;
 
+import com.halran.javagrpc.grpc.artifact.GrpcConfiguration;
 import com.halran.javagrpc.grpc.artifact.GrpcManagedChannel;
 import com.halran.javagrpc.grpc.artifact.IGrpcManagedChannel;
 
@@ -11,18 +12,16 @@ import org.junit.runners.model.Statement;
 public class GrpcManagedChannelRule extends GrpcCleanupRule {
 
 	private IGrpcManagedChannel managedChannel;
-	private String host;
-	private int port;
+	private GrpcConfiguration config;
 	
-	public GrpcManagedChannelRule(String host, int port) {
+	public GrpcManagedChannelRule(GrpcConfiguration config) {
 		super();
-		this.host = host;
-		this.port = port;
+		this.config = config;
 	}
 
 	@Override
 	public Statement apply(final Statement base, Description description) {
-		managedChannel = new GrpcManagedChannel(host, port);
+		managedChannel = new GrpcManagedChannel(config);
 		register(managedChannel.getChannel());
 		return super.apply(base, description);
 	}

@@ -18,6 +18,7 @@
 		<io.grpc.version>1.21.0</io.grpc.version>
 		<!-- protobuf version 3.8.0 needs protobuf-java dependency to avoid code generation error -->
 		<google.protobuf.version>3.8.0</google.protobuf.version>
+		<consul.version>1.4.2</consul.version>
 		<junit.version>4.13-beta-3</junit.version>
 	</properties>
 	
@@ -82,6 +83,12 @@
 				<artifactId>grpc-core</artifactId>
 				<version>${io.grpc.version}</version>
 			</dependency>
+			<!-- Consul Service Discovery api -->
+			<dependency>
+				<groupId>com.ecwid.consul</groupId>
+				<artifactId>consul-api</artifactId>
+				<version>${consul.version}</version>
+			</dependency>
 			<!-- JUnit -->
 			<dependency>
 				<groupId>junit</groupId>
@@ -141,6 +148,11 @@
 		<dependency>
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-core</artifactId>
+		</dependency>
+		<!-- Consul Service Discovery api -->
+		<dependency>
+			<groupId>com.ecwid.consul</groupId>
+			<artifactId>consul-api</artifactId>
 		</dependency>
 		<!-- JUnit -->
 		<dependency>
