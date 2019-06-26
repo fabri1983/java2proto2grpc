@@ -1,4 +1,4 @@
-package com.harlan.javagrpc.testutil;
+package com.harlan.javagrpc.testutil.rules;
 
 import com.halran.javagrpc.grpc.artifact.GrpcConfiguration;
 import com.halran.javagrpc.grpc.artifact.GrpcManagedChannel;

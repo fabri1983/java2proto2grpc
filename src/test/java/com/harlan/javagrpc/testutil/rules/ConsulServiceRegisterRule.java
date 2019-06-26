@@ -1,4 +1,4 @@
-package com.harlan.javagrpc.testutil;
+package com.harlan.javagrpc.testutil.rules;
 
 import io.shunters.grpc.component.consul.ConsulServiceDiscovery;
 

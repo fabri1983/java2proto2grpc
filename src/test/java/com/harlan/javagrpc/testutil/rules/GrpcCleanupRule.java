@@ -1,4 +1,4 @@
-package com.harlan.javagrpc.testutil;
+package com.harlan.javagrpc.testutil.rules;
 
 /*
  * Copyright 2018 The gRPC Authors

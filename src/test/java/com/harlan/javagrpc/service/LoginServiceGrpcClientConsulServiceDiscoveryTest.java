@@ -10,10 +10,10 @@ import com.harlan.javagrpc.business.contract.LoginBusiness;
 import com.harlan.javagrpc.service.contract.LoginService;
 import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc;
 import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc.LoginServiceFutureStub;
-import com.harlan.javagrpc.testutil.ConsulServiceRegisterRule;
-import com.harlan.javagrpc.testutil.GrpcManagedChannelWithConsulRule;
-import com.harlan.javagrpc.testutil.GrpcServerStarterRule;
 import com.harlan.javagrpc.testutil.PropertiesLoader;
+import com.harlan.javagrpc.testutil.rules.ConsulServiceRegisterRule;
+import com.harlan.javagrpc.testutil.rules.GrpcManagedChannelWithConsulRule;
+import com.harlan.javagrpc.testutil.rules.GrpcServerStarterRule;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,7 +70,7 @@ public class LoginServiceGrpcClientConsulServiceDiscoveryTest {
 	@Test
 	public void testMultiClientWithServiceDiscovery() throws InterruptedException {
 		if (!consulServiceRegisterRule.isRegistered()) {
-			log.warn("Consul Service wasn't registered. Test won't run.");
+			log.warn("Consul Service wasn't registered. Test won't run and is resolved as correct.");
 			Assert.assertTrue(true);
 			return;
 		}

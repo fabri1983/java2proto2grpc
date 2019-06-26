@@ -10,8 +10,8 @@ import com.harlan.javagrpc.business.contract.LoginBusiness;
 import com.harlan.javagrpc.service.contract.LoginService;
 import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc;
 import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc.LoginServiceFutureStub;
-import com.harlan.javagrpc.testutil.GrpcManagedChannelRule;
-import com.harlan.javagrpc.testutil.GrpcServerStarterRule;
+import com.harlan.javagrpc.testutil.rules.GrpcManagedChannelRule;
+import com.harlan.javagrpc.testutil.rules.GrpcServerStarterRule;
 
 import org.junit.Assert;
 import org.junit.Rule;
