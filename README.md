@@ -37,8 +37,8 @@ have a class hierarchy and you want to skip one or several of them.
 - Use async grpc calls by *ListenableFuture*.
 - Use of java compiler *-parameter* option to expose parameters name in signature definition, so we can get the real parameter name and 
 so improve the *.proto* file readablity.
-- Provides a ManagedChannel with Consul Service Discovery capability and Client-Side Load Balancing, 
-from [grpc-java-load-balancer-using-consul](https://github.com/mykidong/grpc-java-load-balancer-using-consul).
+- Provides a **ManagedChannelServiceDiscovery** with Consul Service Discovery capability, 
+from [grpc-java-load-balancer-using-consul](https://github.com/mykidong/grpc-java-load-balancer-using-consul). See tests.
 
 
 Usage:
@@ -86,7 +86,7 @@ Run Tests with Consul
 **Consul** is a tool for *service discovery* with load balancing and health check capabilities.  
 Consul is distributed, highly available, and extremely scalable. Visit https://github.com/hashicorp/consul.  
 JUnit **LoginServiceGrpcClientConsulServiceDiscoveryTest** runs a **LoginService gRPC** test with multiple stub calls using a 
-**Managed Channel** which connects to a *Consul* server, trying to call one server instance. Not a real scenario, just testing if it works.  
+**ManagedChannel** which connects to a *Consul* server (local or external, see below). Not a real scenario, just testing if it works.  
 JUnit **GreeterServiceGrpcClientLoadBalancerTest** runs a **Greeter gRPC** test with multiple stub calls using a custom gRPC Load Balancer 
 on client side using *static gRPC nodes* and also *Consul service discovery*. Not a real scenario, just testing if it works.  
 Consul can be obtained as a stand alone app or as a **docker image**:
@@ -111,6 +111,8 @@ You need to setup the consul ip address in order to test run **LoginServiceGrpcC
 TODO
 ---
 - Modularize JavaToProtoNew. Code is written in a very imperative way, and hard to mantain.
+- Use more than one static gRPC server on junit *GreeterServiceGrpcClientLoadBalancerTest*.
+- Add ability to use *GrpcClientLoadBalancer* with current gRPC clients.
 - Add converters similar to *net.badata.protobuf.converter.type.XxxConverter* for fields with types: Duration. 
 See [this](https://github.com/google/qrisp/blob/master/google/protobuf/java/util/src/main/java/com/google/protobuf/util/TimeUtil.java)
 - Replace custom protobuf-converter solution by [MapStruct](http://mapstruct.org/). It's faster and reflection free.
