@@ -89,9 +89,11 @@ JUnit **LoginServiceGrpcClientConsulServiceDiscoveryTest** runs a **LoginService
 **ManagedChannel** which connects to a *Consul* server (local or external, see below). Not a real scenario, just testing if it works.  
 JUnit **GreeterServiceGrpcClientLoadBalancerTest** runs a **Greeter gRPC** test with multiple stub calls using a custom gRPC Load Balancer 
 on client side using *static gRPC nodes* and also *Consul service discovery*. Not a real scenario, just testing if it works.  
-Consul can be obtained as a stand alone app or as a **docker image**:
-	- stand alone app: https://www.consul.io/downloads.html
-	- docker image: *docker pull consul*
+
+Consul can be obtained as a stand alone app or as a **docker image**:  
+- stand alone app: https://www.consul.io/downloads.html  
+- docker image: *docker pull consul*  
+
 You need to setup the consul ip address in order to test run **LoginServiceGrpcClientConsulServiceDiscoveryTest** correctly:
 - If you are using docker in *Windows* with **Docker Tool Box** then get your docker machine ip with:
 	```sh
