@@ -11,8 +11,13 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ClassGrabberUtil {
 
+	private static Logger log = LoggerFactory.getLogger(ClassGrabberUtil.class);
+	
 	public static List<Class<?>> getClassesOrSingleClass(String s, Class<GrpcEnabled> annotationFilter) {
 		// treat it as a class
 		try {
@@ -43,7 +48,7 @@ public class ClassGrabberUtil {
 		try {
 			resources = classLoader.getResources(path);
 		} catch (IOException ex) {
-			ex.printStackTrace();
+			log.error("", ex);
 			return Collections.emptyList();
 		}
 	    List<File> dirs = new ArrayList<File>();
@@ -82,7 +87,7 @@ public class ClassGrabberUtil {
 						classes.add(clazz);
 					}
 				} catch (ClassNotFoundException ex) {
-					ex.printStackTrace();
+					log.error("", ex);
 				}
 	        }
 	    }

@@ -13,6 +13,15 @@ import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc.LoginServi
 import com.harlan.javagrpc.testutil.rules.GrpcManagedChannelRule;
 import com.harlan.javagrpc.testutil.rules.GrpcServerStarterRule;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
+
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,7 +41,7 @@ public class LoginServiceGrpcTest {
 	@Test
 	public void testNonSecured() {
 		
-		registerLoginService();
+		registerLoginServiceGrpc();
 		
 		LoginService loginService = createLoginServiceClientStub();
 		
@@ -45,7 +54,48 @@ public class LoginServiceGrpcTest {
 		}
 	}
 
-	private void registerLoginService() {
+	@Test
+	public void testNonSecuredMultiClientCalls() throws InterruptedException {
+		// register login service
+		registerLoginServiceGrpc();
+		
+		// number of concurrent client stubs calls
+		int repeatNumStubs = 10;
+		
+		// create login service proxy (stub)
+		List<LoginService> loginServices = repeatLoginServiceClientStub(repeatNumStubs);
+		
+		// create some testing data
+		User[] users = createUsers();
+		
+        // wraps as Callable tasks
+     	List<Callable<Void>> tasks = loginServices.stream()
+     			.map( loginService -> new Callable<Void>() {
+     				@Override
+     	            public Void call() {
+     					int randomIndex = (int) (Math.random() * users.length);
+     					User user = users[randomIndex];
+     					callAndAssert(loginService, user);
+     	                return null;
+     	            }
+     			})
+     			.collect( Collectors.toList() );
+     	
+		// call grpc stubs in a parallel fashion
+		ExecutorService executorService = Executors.newFixedThreadPool(4);
+        List<Future<Void>> futures = executorService.invokeAll(tasks);
+        
+        // block until all tasks are done
+        futures.forEach( f -> {
+				try {
+					f.get();
+				} catch (InterruptedException | ExecutionException ex) {
+					throw new RuntimeException(ex);
+				}
+			});
+	}
+	
+	private void registerLoginServiceGrpc() {
 		LoginBusiness loginBusiness = new LoginBusinessImpl();
 		LoginServiceGrpcImpl loginServiceGrpc = new LoginServiceGrpcImpl(loginBusiness);
 		serverStarterRule.getServerStarter().register(loginServiceGrpc);
@@ -57,6 +107,15 @@ public class LoginServiceGrpcTest {
 		return loginService;
 	}
 
+	private List<LoginService> repeatLoginServiceClientStub(int repeatNum) {
+		LoginService loginServiceStub = createLoginServiceClientStub();
+		List<LoginService> list = new ArrayList<>(repeatNum);
+		for (int i = 0; i < repeatNum; ++i) {
+			list.add(loginServiceStub);
+		}
+		return list;
+	}
+	
 	private void callAndAssert(LoginService loginService, User user) {
 		Request request = Request.from(user.getId(), user.getName(), user.getCorpus());
 		Request2 request2 = Request2.from(user.getId(), user.getName());

@@ -10,7 +10,7 @@ public class GrpcConfiguration {
 	private String consulHost;
 	private int consulPort;
 	private boolean ignoreConsul;
-	private List<String> staticHostPorts;
+	private List<String> staticGrpcHostPorts;
 	private int timerCheckPeriodInSeconds;
 	
 	public static GrpcConfiguration from(String host, int port) {
@@ -34,7 +34,7 @@ public class GrpcConfiguration {
 	public GrpcConfiguration fromConsulStaticHosts(List<String> staticHostPorts, 
 			int timerCheckPeriodInSeconds) {
 		GrpcConfiguration newObj = new GrpcConfiguration();
-		newObj.staticHostPorts = staticHostPorts;
+		newObj.staticGrpcHostPorts = staticHostPorts;
 		newObj.timerCheckPeriodInSeconds = timerCheckPeriodInSeconds;
 		newObj.ignoreConsul = true;
 		return newObj;
@@ -64,8 +64,8 @@ public class GrpcConfiguration {
 		return ignoreConsul;
 	}
 
-	public List<String> getStaticHostPorts() {
-		return staticHostPorts;
+	public List<String> getStaticGrpcHostPorts() {
+		return staticGrpcHostPorts;
 	}
 
 	public int getTimerCheckPeriodInSeconds() {

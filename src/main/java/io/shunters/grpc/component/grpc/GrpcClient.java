@@ -7,11 +7,16 @@ import io.grpc.ManagedChannelBuilder;
 import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Created by mykidong on 2018-01-11.
  */
 public class GrpcClient<R, B, A> {
 
+	private static Logger log = LoggerFactory.getLogger(GrpcClientLoadBalancer.class);
+	
     private final ManagedChannel channel;
     private B blockingStub;
     private A asyncStub;
@@ -21,14 +26,16 @@ public class GrpcClient<R, B, A> {
     private Class<R> rpcClass;
 
     public GrpcClient(String host, int port, Class<R> rpcClass) {
-        this(ManagedChannelBuilder.forAddress(host, port).usePlaintext(true).build(), rpcClass);
+        this(ManagedChannelBuilder.forAddress(host, port)
+        		.usePlaintext().build(), rpcClass);
 
         this.host = host;
         this.port = port;
         this.rpcClass = rpcClass;
     }
 
-    private GrpcClient(ManagedChannel channel, Class<R> rpcClass) {
+    @SuppressWarnings("unchecked")
+	private GrpcClient(ManagedChannel channel, Class<R> rpcClass) {
         this.channel = channel;
 
         try {
@@ -38,7 +45,7 @@ public class GrpcClient<R, B, A> {
             Method asyncStubMethod = rpcClass.getMethod("newStub", Channel.class);
             asyncStub = (A) asyncStubMethod.invoke(null, channel);
         } catch (Exception e) {
-            e.printStackTrace();
+        	 log.error("", e);
         }
     }
 

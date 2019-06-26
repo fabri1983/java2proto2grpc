@@ -4,17 +4,25 @@ import com.ecwid.consul.v1.ConsulClient;
 import com.ecwid.consul.v1.QueryParams;
 import com.ecwid.consul.v1.Response;
 import com.ecwid.consul.v1.agent.model.NewService;
+import com.ecwid.consul.v1.health.HealthServicesRequest;
 import com.ecwid.consul.v1.health.model.HealthService;
 import com.ecwid.consul.v1.kv.model.GetValue;
 import com.ecwid.consul.v1.kv.model.PutParams;
 import com.ecwid.consul.v1.session.SessionClient;
 import com.ecwid.consul.v1.session.SessionConsulClient;
 import com.ecwid.consul.v1.session.model.NewSession;
+
 import io.shunters.grpc.api.component.ServiceDiscovery;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.*;
 
 public class ConsulServiceDiscovery implements ServiceDiscovery {
 
@@ -88,7 +96,14 @@ public class ConsulServiceDiscovery implements ServiceDiscovery {
 
         List<ServiceNode> list = new ArrayList<>();
 
-        Response<List<HealthService>> healthServiceResponse = client.getHealthServices(serviceName, true, QueryParams.DEFAULT);
+        HealthServicesRequest request = HealthServicesRequest.newBuilder()
+				.setTag(null)
+				.setPassing(true)
+				.setQueryParams(QueryParams.DEFAULT)
+				.setToken(null)
+				.build();
+        
+        Response<List<HealthService>> healthServiceResponse = client.getHealthServices(serviceName, request);
 
         List<HealthService> healthServices = healthServiceResponse.getValue();
         if (healthServices == null) {

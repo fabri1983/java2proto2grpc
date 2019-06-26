@@ -41,10 +41,7 @@ public class HelloWorldClientMain {
 				.build();
 		
 		SearchResponse response = blockingGreeterStub.sayHello(request);
-		log.info("hello" + response.getHelloReply(0).getMessage());
-		
-//		HelloReply response2 = blockingStub.sayWorld(request);
-//		log.info("world" + response2.getMessage());
+		log.info("Message: " + response.getHelloReply(0).getMessage());
 	}
 	
 }

@@ -80,13 +80,15 @@ The file *LoginService.proto* is the one you can generate running *com.harlan.ja
 protobuf classes and grpc stubs to make some testing running *com.harlan.javagrpc.main.login.LoginClientMain* 
 and *com.harlan.javagrpc.main.login.LoginServerMain*.
 
-https://github.com/hashicorp/consul
+
 Run Tests with Consul
 ---
-*Consul* is a tool for *service discovery*. Consul is distributed, highly available, and extremely scalable.
-Visit https://github.com/hashicorp/consul.  
-Test **LoginServiceGrpcClientConsulServiceDiscoveryTest** runs a **LoginService gRPC** test with multiple stubs using a 
+**Consul** is a tool for *service discovery* with load balancing and health check capabilities.  
+Consul is distributed, highly available, and extremely scalable. Visit https://github.com/hashicorp/consul.  
+JUnit **LoginServiceGrpcClientConsulServiceDiscoveryTest** runs a **LoginService gRPC** test with multiple stub calls using a 
 **Managed Channel** which connects to a *Consul* server, trying to call one server instance. Not a real scenario, just testing if it works.  
+JUnit **GreeterServiceGrpcClientLoadBalancerTest** runs a **Greeter gRPC** test with multiple stub calls using a custom gRPC Load Balancer 
+on client side using *static gRPC nodes* and also *Consul service discovery*. Not a real scenario, just testing if it works.  
 Consul can be obtained as a stand alone app or as a **docker image**:
 	- stand alone app: https://www.consul.io/downloads.html
 	- docker image: *docker pull consul*

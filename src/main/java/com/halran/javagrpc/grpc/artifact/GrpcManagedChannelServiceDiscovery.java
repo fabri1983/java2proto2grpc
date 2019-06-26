@@ -17,12 +17,12 @@ public class GrpcManagedChannelServiceDiscovery extends GrpcManagedChannel {
 		String consulAddr = "consul://" + config.getConsulHost() + ":" + config.getConsulPort();
 		String consulServiceName = config.getConsulServiceName();
 		boolean ignoreConsul = config.isIgnoreConsul();
-		List<String> staticHostPorts = config.getStaticHostPorts();
+		List<String> staticGrpcHostPorts = config.getStaticGrpcHostPorts();
         int timerCheckPeriodInSeconds = config.getTimerCheckPeriodInSeconds();
         
         ConsulNameResolver.ConsulNameResolverProvider consulNameResolverProvider = 
         		new ConsulNameResolver.ConsulNameResolverProvider(consulServiceName, timerCheckPeriodInSeconds, 
-        				ignoreConsul, staticHostPorts);
+        				ignoreConsul, staticGrpcHostPorts);
         
         return ManagedChannelBuilder
         		.forTarget(consulAddr)
