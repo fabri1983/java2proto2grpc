@@ -85,6 +85,7 @@ Run Tests with Consul
 ---
 **Consul** is a tool for *service discovery* with load balancing and health check capabilities.  
 Consul is distributed, highly available, and extremely scalable. Visit https://github.com/hashicorp/consul.  
+  
 JUnit **LoginServiceGrpcClientConsulServiceDiscoveryTest** runs a **LoginService gRPC** test with multiple stub calls using a 
 **ManagedChannel** which connects to a *Consul* server (local or external, see below). Not a real scenario, just testing if it works.  
 JUnit **GreeterServiceGrpcClientLoadBalancerTest** runs a **Greeter gRPC** test with multiple stub calls using a custom gRPC Load Balancer 
@@ -92,9 +93,10 @@ on client side using *static gRPC nodes* and also *Consul service discovery*. No
 
 Consul can be obtained as a stand alone app or as a **docker image**:  
 - stand alone app: https://www.consul.io/downloads.html  
-- docker image: *docker pull consul*  
+- docker image: *docker pull consul*
+	- See *Useful Tips* section for instruciton on docker consul execution
 
-You need to setup the consul ip address in order to test run **LoginServiceGrpcClientConsulServiceDiscoveryTest** correctly:
+You need to setup the current consul ip address in order to test run **LoginServiceGrpcClientConsulServiceDiscoveryTest** correctly:
 - If you are using docker in *Windows* with **Docker Tool Box** then get your docker machine ip with:
 	```sh
 	docker-machine ip default
@@ -136,10 +138,22 @@ Useful tips
 - I have some tracked files which potentially can be modified.  
 I don't want to untrack them, I just don't want them to appear as modified and I don't want them to be staged when I git add.  
 Solution:
+```sh
+git update-index --assume-unchanged <file>
+```
+To undo and start tracking again:
+```sh
+git update-index --no-assume-unchanged [<file> ...]
+```
+- Running Docker Consul for Development:
+See this [link](https://docs.docker.com/samples/library/consul/#running-consul-for-development)
+	- download docker *Consul image* if not already:
 	```sh
-	git update-index --assume-unchanged <file>
+	docker pull consul
 	```
-	To undo and start tracking again:
+	- run *Consul*:
 	```sh
-	git update-index --no-assume-unchanged [<file> ...]
+	docker run -d -p 8500:8500 -p 172.17.0.1:53:8600/udp -p 8400:8400 --name=dev-consul -e CONSUL_BIND_INTERFACE=eth0 consul
 	```
+		- within Consul, port 8400 is used for RPC, 8500 is used for HTTP, 8600 is used for DNS. By using “-p” option, we are exposing these ports to the host machine.
+		- 172.17.0.1 is the Docker bridge IP address. We are remapping Consul Container’s port 8600 to host machine’s Docker bridge port 53 so that Containers on that host can use Consul for DNS.

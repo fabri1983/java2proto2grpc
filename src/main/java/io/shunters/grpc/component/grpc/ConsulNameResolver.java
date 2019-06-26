@@ -69,7 +69,6 @@ public class ConsulNameResolver extends NameResolver {
     @Override
     public void start(Listener listener) {
         this.listener = listener;
-
         loadServiceNodes();
     }
 
@@ -82,7 +81,7 @@ public class ConsulNameResolver extends NameResolver {
 
             nodes = getServiceNodes(serviceName, consulHost, consulPort);
             if (nodes == null || nodes.size() == 0) {
-                log.info("there is no node info for serviceName: [{}]...", serviceName);
+                log.warn("there is no node info for serviceName: [{}]...", serviceName);
                 return;
             }
 
@@ -176,8 +175,9 @@ public class ConsulNameResolver extends NameResolver {
                     String host = node.getHost();
                     int port = node.getPort();
                     try {
-                    	// TODO Is this enough to check if node is up?
+                    	// creating a socket stream also connects to it
                         Socket socketClient = new Socket(host, port);
+                        socketClient.close();
                     } catch (IOException e) {
                         log.error(e.getMessage());
                         log.info("service nodes being reloaded...");

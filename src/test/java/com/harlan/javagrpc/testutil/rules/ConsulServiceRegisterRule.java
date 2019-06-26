@@ -26,8 +26,9 @@ public class ConsulServiceRegisterRule extends ExternalResource {
 						ConsulProperties.consulPort, 
 						null, 
 						null, 
-						ConsulProperties.consulCheckInterval, 
-						ConsulProperties.consulCheckTimeout);
+						null, // ConsulProperties.consulCheckInterval 
+						ConsulProperties.consulCheckTimeout,
+						ConsulProperties.consulCheckTtl);
 			registered = true;
 			log.info("Consul: " + ConsulProperties.consulServiceName + " registered.");
 		}

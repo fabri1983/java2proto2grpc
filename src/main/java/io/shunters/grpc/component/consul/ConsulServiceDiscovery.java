@@ -65,22 +65,34 @@ public class ConsulServiceDiscovery implements ServiceDiscovery {
      * @param tcp         "localhost:9911"
      * @param interval    "10s"
      * @param timeout     "1s"
+     * @param ttl         "10s"
+     * @see https://www.consul.io/docs/agent/checks.html
      */
     @Override
-    public void createService(String serviceName, String id, List<String> tags, String address, int port, String script, String tcp, String interval, String timeout) {
+    public void createService(String serviceName, String id, List<String> tags, String address, int port, 
+    		String script, String tcp, String interval, String timeout, String ttl) {
+    	
         // register new service with associated health check
         NewService newService = new NewService();
         newService.setName(serviceName);
         newService.setId(id);
         newService.setAddress(address);
         newService.setPort(port);
-        if (tags != null) newService.setTags(tags);
+        if (tags != null)
+        	newService.setTags(tags);
 
         NewService.Check serviceCheck = new NewService.Check();
-        if (script != null) serviceCheck.setScript(script);
-        if (tcp != null) serviceCheck.setTcp(tcp);
-        serviceCheck.setInterval(interval);
-        if (timeout != null) serviceCheck.setTimeout(timeout);
+        if (script != null)
+        	serviceCheck.setScript(script);
+        if (tcp != null)
+        	serviceCheck.setTcp(tcp);
+        // NOTE: only one of Interval or Ttl can be set
+        if (interval != null && !interval.isEmpty())
+        	serviceCheck.setInterval(interval);
+        else if (ttl != null && !ttl.isEmpty())
+        	serviceCheck.setTtl(ttl);
+        if (timeout != null)
+        	serviceCheck.setTimeout(timeout);
         newService.setCheck(serviceCheck);
 
         client.agentServiceRegister(newService);
@@ -93,8 +105,6 @@ public class ConsulServiceDiscovery implements ServiceDiscovery {
     
     @Override
     public List<ServiceNode> getHealthServices(String serviceName) {
-
-        List<ServiceNode> list = new ArrayList<>();
 
         HealthServicesRequest request = HealthServicesRequest.newBuilder()
 				.setTag(null)
@@ -110,6 +120,8 @@ public class ConsulServiceDiscovery implements ServiceDiscovery {
             return null;
         }
 
+        List<ServiceNode> list = new ArrayList<>(2);
+        
         for (HealthService healthService : healthServices) {
             HealthService.Service service = healthService.getService();
 
