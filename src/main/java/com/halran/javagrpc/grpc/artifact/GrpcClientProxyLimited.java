@@ -27,6 +27,7 @@ public class GrpcClientProxyLimited {
 			return future.get();
 		}
 		catch (Exception ex) {
+			log.error(ex.getMessage());
 			throw new RuntimeException(ex);
 		}
 	}

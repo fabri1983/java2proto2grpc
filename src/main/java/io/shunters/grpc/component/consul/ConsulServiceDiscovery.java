@@ -51,7 +51,6 @@ public class ConsulServiceDiscovery implements ServiceDiscovery {
     private ConsulServiceDiscovery(String agentHost, int agentPort) {
         client = new ConsulClient(agentHost, agentPort);
         sessionClient = new SessionConsulClient(agentHost, agentPort);
-
         log.info("consul client info: " + client.toString());
     }
 
@@ -61,9 +60,8 @@ public class ConsulServiceDiscovery implements ServiceDiscovery {
      * @param tags
      * @param address
      * @param port
-     * @param consulTtl
      * @param script
-     * @param tcp         "localhost:9911"
+     * @param tcp              "localhost:9911"
      * @param checkInterval    "10s"
      * @param checkTimeout     "1s"
      * @param checkTtl         "10s"
@@ -71,33 +69,47 @@ public class ConsulServiceDiscovery implements ServiceDiscovery {
      */
     @Override
     public void createService(String serviceName, String id, List<String> tags, String address, int port, 
-    		String consulTtl, String script, String tcp, String checkInterval, String checkTimeout, String checkTtl) {
+    		String script, String http, String tcp, String checkInterval, String checkTimeout, String checkTtl) {
     	
-        // register new service with associated health check
-        NewService newService = new NewService();
-        newService.setName(serviceName);
-        newService.setId(id);
-        newService.setAddress(address);
-        newService.setPort(port);
-//        newService.setTtl(consulTtl);
-        if (tags != null)
-        	newService.setTags(tags);
+		// create new service with associated health check
+		NewService newService = new NewService();
+		newService.setName(serviceName);
+		newService.setId(id);
+		newService.setAddress(address);
+		newService.setPort(port);
+		if (tags != null)
+			newService.setTags(tags);
 
-        NewService.Check serviceCheck = new NewService.Check();
-        if (script != null)
-        	serviceCheck.setScript(script);
-        if (tcp != null)
-        	serviceCheck.setTcp(tcp);
-        // NOTE: only one of Interval or Ttl can be set
-        if (checkInterval != null && !checkInterval.isEmpty())
-        	serviceCheck.setInterval(checkInterval);
-        else if (checkTtl != null && !checkTtl.isEmpty())
-        	serviceCheck.setTtl(checkTtl);
-        if (checkTimeout != null)
-        	serviceCheck.setTimeout(checkTimeout);
-        newService.setCheck(serviceCheck);
+		// See different check solutions: https://www.consul.io/docs/agent/checks.html
+		NewService.Check serviceCheck = new NewService.Check();
+		// Script + Interval
+		if (script != null && checkInterval != null) {
+			serviceCheck.setScript(script);
+			serviceCheck.setInterval(checkInterval);
+		}
+		// Http + Interval
+		else if (http != null && checkInterval != null) {
+			serviceCheck.setHttp(http);
+			serviceCheck.setInterval(checkInterval);
+		}
+		// Tcp + Interval
+		else if (tcp != null && checkInterval != null) {
+			serviceCheck.setTcp(tcp);
+			serviceCheck.setInterval(checkInterval);
+		}
+		// TTL
+		else if (checkTtl != null) {
+			serviceCheck.setTtl(checkTtl);
+		}
+		
+		if (checkTimeout != null)
+			serviceCheck.setTimeout(checkTimeout);
+		
+		// add service check
+//		newService.setCheck(serviceCheck);
 
-        client.agentServiceRegister(newService);
+		// register service
+		client.agentServiceRegister(newService);
     }
 
     @Override

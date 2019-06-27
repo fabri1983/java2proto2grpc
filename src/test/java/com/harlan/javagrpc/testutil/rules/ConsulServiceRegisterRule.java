@@ -17,19 +17,13 @@ public class ConsulServiceRegisterRule extends ExternalResource {
 	@Override
 	protected void before() throws Throwable {
 		try {
-			ConsulServiceDiscovery.singleton(ConsulProperties.consulHost, ConsulProperties.consulPort)
-				.createService(
-						ConsulProperties.consulServiceName, 
-						ConsulProperties.consulId, 
-						null, 
-						ConsulProperties.consulHost, 
-						ConsulProperties.consulPort, 
-						ConsulProperties.consulTtl, 
-						null, 
-						null, 
-						null, // ConsulProperties.consulCheckInterval 
-						ConsulProperties.consulCheckTimeout,
-						ConsulProperties.consulCheckTtl);
+			// attempt to deregister service
+			deregisterService();
+			// register service
+			registerService();
+			
+			// TODO wait until health check is ok. Currently health check is omitted in ConsulServiceDiscovery.java line 109
+			
 			registered = true;
 			log.info("Consul: " + ConsulProperties.consulServiceName + " registered.");
 		}
@@ -43,8 +37,7 @@ public class ConsulServiceRegisterRule extends ExternalResource {
 	protected void after() {
 		try {
 			if (registered) {
-				ConsulServiceDiscovery.singleton(ConsulProperties.consulHost, ConsulProperties.consulPort)
-					.deregisterService(ConsulProperties.consulId);
+				deregisterService();
 				log.info("Consul: " + ConsulProperties.consulServiceName + " deregistered.");
 			}
 		}
@@ -56,6 +49,27 @@ public class ConsulServiceRegisterRule extends ExternalResource {
 	
 	public boolean isRegistered() {
 		return registered;
+	}
+
+	private void registerService() {
+		ConsulServiceDiscovery.singleton(ConsulProperties.consulHost, ConsulProperties.consulPort)
+			.createService(
+					ConsulProperties.consulServiceName, 
+					ConsulProperties.consulId, 
+					null, 
+					ConsulProperties.consulHost, 
+					ConsulProperties.consulPort, 
+					null, // ConsulProperties.consulCheckScript,
+					null, // ConsulProperties.consulCheckHttp,
+					ConsulProperties.consulCheckTcp, 
+					ConsulProperties.consulCheckInterval, 
+					ConsulProperties.consulCheckTimeout,
+					null); // ConsulProperties.consulCheckTtl
+	}
+
+	private void deregisterService() {
+		ConsulServiceDiscovery.singleton(ConsulProperties.consulHost, ConsulProperties.consulPort)
+			.deregisterService(ConsulProperties.consulId);
 	}
 
 }

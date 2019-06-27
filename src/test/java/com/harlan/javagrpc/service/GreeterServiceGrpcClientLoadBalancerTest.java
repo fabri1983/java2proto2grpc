@@ -20,6 +20,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.junit.Assert;
@@ -82,7 +83,7 @@ public class GreeterServiceGrpcClientLoadBalancerTest {
      	
 		// call grpc stubs in a parallel fashion
 		ExecutorService executorService = Executors.newFixedThreadPool(4);
-        List<Future<Void>> futures = executorService.invokeAll(tasks);
+        List<Future<Void>> futures = executorService.invokeAll(tasks, 5, TimeUnit.SECONDS);
         
         // block until all tasks are done
         futures.forEach( f -> {
@@ -126,7 +127,7 @@ public class GreeterServiceGrpcClientLoadBalancerTest {
      	
 		// call grpc stubs in a parallel fashion
 		ExecutorService executorService = Executors.newFixedThreadPool(4);
-        List<Future<Void>> futures = executorService.invokeAll(tasks);
+        List<Future<Void>> futures = executorService.invokeAll(tasks, 5, TimeUnit.SECONDS);
         
         // block until all tasks are done
         futures.forEach( f -> {

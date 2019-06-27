@@ -81,14 +81,14 @@ public class ConsulNameResolver extends NameResolver {
 
             nodes = getServiceNodes(serviceName, consulHost, consulPort);
             if (nodes == null || nodes.size() == 0) {
-                log.warn("there is no node info for serviceName: [{}]...", serviceName);
+                log.warn("There is no node info for serviceName: [{}]...", serviceName);
                 return;
             }
 
             for (ServiceDiscovery.ServiceNode node : nodes) {
                 String host = node.getHost();
                 int port = node.getPort();
-                log.info("serviceName: [" + serviceName + "], host: [" + host + "], port: [" + port + "]");
+                log.info("Found serviceName: [" + serviceName + "], host: [" + host + "], port: [" + port + "]");
 
                 List<SocketAddress> sockaddrsList = new ArrayList<SocketAddress>();
                 sockaddrsList.add(new InetSocketAddress(host, port));
