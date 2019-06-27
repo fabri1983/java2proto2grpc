@@ -61,16 +61,17 @@ public class ConsulServiceDiscovery implements ServiceDiscovery {
      * @param tags
      * @param address
      * @param port
+     * @param consulTtl
      * @param script
      * @param tcp         "localhost:9911"
-     * @param interval    "10s"
-     * @param timeout     "1s"
-     * @param ttl         "10s"
+     * @param checkInterval    "10s"
+     * @param checkTimeout     "1s"
+     * @param checkTtl         "10s"
      * @see https://www.consul.io/docs/agent/checks.html
      */
     @Override
     public void createService(String serviceName, String id, List<String> tags, String address, int port, 
-    		String script, String tcp, String interval, String timeout, String ttl) {
+    		String consulTtl, String script, String tcp, String checkInterval, String checkTimeout, String checkTtl) {
     	
         // register new service with associated health check
         NewService newService = new NewService();
@@ -78,6 +79,7 @@ public class ConsulServiceDiscovery implements ServiceDiscovery {
         newService.setId(id);
         newService.setAddress(address);
         newService.setPort(port);
+//        newService.setTtl(consulTtl);
         if (tags != null)
         	newService.setTags(tags);
 
@@ -87,12 +89,12 @@ public class ConsulServiceDiscovery implements ServiceDiscovery {
         if (tcp != null)
         	serviceCheck.setTcp(tcp);
         // NOTE: only one of Interval or Ttl can be set
-        if (interval != null && !interval.isEmpty())
-        	serviceCheck.setInterval(interval);
-        else if (ttl != null && !ttl.isEmpty())
-        	serviceCheck.setTtl(ttl);
-        if (timeout != null)
-        	serviceCheck.setTimeout(timeout);
+        if (checkInterval != null && !checkInterval.isEmpty())
+        	serviceCheck.setInterval(checkInterval);
+        else if (checkTtl != null && !checkTtl.isEmpty())
+        	serviceCheck.setTtl(checkTtl);
+        if (checkTimeout != null)
+        	serviceCheck.setTimeout(checkTimeout);
         newService.setCheck(serviceCheck);
 
         client.agentServiceRegister(newService);

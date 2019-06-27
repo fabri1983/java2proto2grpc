@@ -10,8 +10,9 @@ public class ConsulProperties {
 	public static final String consulId = "server-test-1";
 	public static final String consulHost = consulProperties.getProperty("consul.ip");
 	public static final int consulPort = Integer.parseInt(consulProperties.getProperty("consul.port"));
+	public static final String consulTtl = "10s";
 	public static final String consulCheckInterval = "10s";
-	public static final String consulCheckTimeout = "1s";
 	public static final String consulCheckTtl = "10s";
+	public static final String consulCheckTimeout = "1s";
 	
 }

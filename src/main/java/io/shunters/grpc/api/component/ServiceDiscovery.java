@@ -10,7 +10,7 @@ import java.util.Set;
 public interface ServiceDiscovery {
 
     void createService(String serviceName, String id, List<String> tags, String address, int port, 
-    		String script, String tcp, String interval, String timeout, String ttl);
+    		String consulTtl, String script, String tcp, String checkInterval, String checkTimeout, String checkTtl);
 
     void deregisterService(String id);
     

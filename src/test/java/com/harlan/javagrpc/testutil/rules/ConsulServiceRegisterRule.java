@@ -24,6 +24,7 @@ public class ConsulServiceRegisterRule extends ExternalResource {
 						null, 
 						ConsulProperties.consulHost, 
 						ConsulProperties.consulPort, 
+						ConsulProperties.consulTtl, 
 						null, 
 						null, 
 						null, // ConsulProperties.consulCheckInterval 

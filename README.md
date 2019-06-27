@@ -94,7 +94,7 @@ on client side using *static gRPC nodes* and also *Consul service discovery*. No
 Consul can be obtained as a stand alone app or as a **docker image**:  
 - stand alone app: https://www.consul.io/downloads.html  
 - docker image: *docker pull consul*
-	- See *Useful Tips* section for instruciton on docker consul execution
+	- See *Useful Tips* section for instruciton on docker Consul execution.
 
 You need to setup the current consul ip address in order to test run **LoginServiceGrpcClientConsulServiceDiscoveryTest** correctly:
 - If you are using docker in *Windows* with **Docker Tool Box** then get your docker machine ip with:
@@ -118,7 +118,7 @@ TODO
 - Use more than one static gRPC server on junit *GreeterServiceGrpcClientLoadBalancerTest*.
 - Add ability to use *GrpcClientLoadBalancer* with current gRPC clients.
 - Add converters similar to *net.badata.protobuf.converter.type.XxxConverter* for fields with types: Duration. 
-See [this](https://github.com/google/qrisp/blob/master/google/protobuf/java/util/src/main/java/com/google/protobuf/util/TimeUtil.java)
+See [this](https://github.com/google/qrisp/blob/master/google/protobuf/java/util/src/main/java/com/google/protobuf/util/TimeUtil.java).
 - Replace custom protobuf-converter solution by [MapStruct](http://mapstruct.org/). It's faster and reflection free.
 - Add custom Java *Annotations* to classes/interfaces and/or fields in order to collect reserved field tags and names for the .proto IDL file.
 - Support *@java.lang.Deprecated* on classes/interfaces. It translates to *option deprecated = true;* after message declaration on the .proto IDL file.
