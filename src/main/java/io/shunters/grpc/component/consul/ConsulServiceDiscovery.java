@@ -106,6 +106,7 @@ public class ConsulServiceDiscovery implements ServiceDiscovery {
 			serviceCheck.setTimeout(checkTimeout);
 		
 		// add service check
+		// FIXME [Bug] Adding a check service requires to wait some seconds before it's ready.
 //		newService.setCheck(serviceCheck);
 
 		// register service

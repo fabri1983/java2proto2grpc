@@ -151,9 +151,15 @@ See this [link](https://docs.docker.com/samples/library/consul/#running-consul-f
 	```sh
 	docker pull consul
 	```
-	- run *Consul*:
+	- run *Consul* on *Windows* with *Docker Tool Box*:
 	```sh
+	Development mode:
 	docker run -d -p 8500:8500 -p 172.17.0.1:53:8600/udp -p 8400:8400 --name=dev-consul -e CONSUL_BIND_INTERFACE=eth0 consul
+	Agent server mode:
+	docker run -d -p 8500:8500 -p 172.17.0.1:53:8600/udp -p 8400:8400 consul agent -server -bootstrap -advertise=172.17.0.2 -client=172.17.0.2 -data-dir=/tmp/node -ui -node=s1
 	```
-		- within Consul, port 8400 is used for RPC, 8500 is used for HTTP, 8600 is used for DNS. By using “-p” option, we are exposing these ports to the host machine.
+		- within Consul, port 8400 is used for RPC, 8500 is used for HTTP, 8600 is used for DNS. By using *-p* option, we are exposing these ports to the host machine.
 		- 172.17.0.1 is the Docker bridge IP address. We are remapping Consul Container’s port 8600 to host machine’s Docker bridge port 53 so that Containers on that host can use Consul for DNS.
+		- *bootstrap* means consul runs in a standalone mode.
+		- 172.17.0.2 is the Docker IP assigned to the network interface.
+		- Docker Tool Box is exposed at IP 192.99.100.
