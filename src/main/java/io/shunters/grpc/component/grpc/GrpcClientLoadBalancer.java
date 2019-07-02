@@ -5,8 +5,6 @@ import io.shunters.grpc.component.consul.ConsulServiceDiscovery;
 import io.shunters.grpc.util.RoundRobin;
 import io.shunters.grpc.util.RoundRobin.Robin;
 import io.shunters.grpc.util.TimeUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -15,6 +13,9 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.locks.ReentrantLock;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by mykidong on 2018-01-11.
@@ -219,7 +220,7 @@ public class GrpcClientLoadBalancer<R, B, A> {
                     socketClient.close();
                 } catch (IOException e) {
                     log.error(e.getMessage());
-                    log.info("service nodes being reloaded...");
+                    log.warn("service nodes being reloaded...");
                     this.lb.loadServiceNodes();
                     break;
                 }

@@ -162,4 +162,4 @@ See this [link](https://docs.docker.com/samples/library/consul/#running-consul-f
 		- 172.17.0.1 is the Docker bridge IP address. We are remapping Consul Container’s port 8600 to host machine’s Docker bridge port 53 so that Containers on that host can use Consul for DNS.
 		- *bootstrap* means consul runs in a standalone mode.
 		- 172.17.0.2 is the Docker IP assigned to the network interface.
-		- Docker Tool Box is exposed at IP 192.99.100.
+		- Docker Tool Box is exposed at IP 192.168.99.100.

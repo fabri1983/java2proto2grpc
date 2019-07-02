@@ -1,5 +1,6 @@
 package com.halran.javagrpc.grpc.artifact;
 
+import io.grpc.LoadBalancerRegistry;
 import io.grpc.ManagedChannelBuilder;
 import io.shunters.grpc.component.grpc.ConsulNameResolver;
 
@@ -24,9 +25,15 @@ public class GrpcManagedChannelServiceDiscovery extends GrpcManagedChannel {
         		new ConsulNameResolver.ConsulNameResolverProvider(consulServiceName, timerCheckPeriodInSeconds, 
         				ignoreConsul, staticGrpcHostPorts);
         
+        String loadBalancerPolicyName = LoadBalancerRegistry.getDefaultRegistry()
+        		.getProvider("round_robin")
+        		.getPolicyName(); 
+        
         return ManagedChannelBuilder
         		.forTarget(consulAddr)
                 .nameResolverFactory(consulNameResolverProvider)
+                // use round robin policy
+                .defaultLoadBalancingPolicy(loadBalancerPolicyName)
                 // use plain text if your entire microservice ecosystem is inside a controlled network, 
                 // otherwise setup your security artifacts such as key/trust stores
                 .usePlaintext();

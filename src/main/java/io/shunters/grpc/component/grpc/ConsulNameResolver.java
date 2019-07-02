@@ -41,16 +41,15 @@ public class ConsulNameResolver extends NameResolver {
     private ConsulNameResolver() {
     }
 
-	public static ConsulNameResolver fromWithHealthCheck(URI uri, String serviceName, int pauseInSeconds, boolean ignoreConsul,
+	public static ConsulNameResolver withHealthCheck(URI uri, String serviceName, int pauseInSeconds, boolean ignoreConsul,
 			List<String> hostPorts) {
-		ConsulNameResolver newObj = fromNoHealthCheck(uri, serviceName, pauseInSeconds, ignoreConsul, hostPorts);
-		// run connection check timer.
+		ConsulNameResolver newObj = noHealthCheck(uri, serviceName, pauseInSeconds, ignoreConsul, hostPorts);
 		newObj.connectionCheckTimer = new ConnectionCheckTimer(newObj, newObj.pauseInSeconds);
 		newObj.connectionCheckTimer.runTimer();
 		return newObj;
 	}
     
-	public static ConsulNameResolver fromNoHealthCheck(URI uri, String serviceName, int pauseInSeconds, boolean ignoreConsul,
+	public static ConsulNameResolver noHealthCheck(URI uri, String serviceName, int pauseInSeconds, boolean ignoreConsul,
 			List<String> hostPorts) {
 		ConsulNameResolver newObj = new ConsulNameResolver();
 		newObj.uri = uri;
@@ -73,13 +72,14 @@ public class ConsulNameResolver extends NameResolver {
     }
 
     private void loadServiceNodes() {
-        List<EquivalentAddressGroup> addrs = new ArrayList<>();
+        List<EquivalentAddressGroup> addrs = new ArrayList<>(5);
 
-        if(!this.ignoreConsul) {
+        if (!this.ignoreConsul) {
             String consulHost = uri.getHost();
             int consulPort = uri.getPort();
 
             nodes = getServiceNodes(serviceName, consulHost, consulPort);
+            
             if (nodes == null || nodes.size() == 0) {
                 log.warn("There is no node info for serviceName: [{}]...", serviceName);
                 return;
@@ -90,48 +90,48 @@ public class ConsulNameResolver extends NameResolver {
                 int port = node.getPort();
                 log.info("Found serviceName: [" + serviceName + "], host: [" + host + "], port: [" + port + "]");
 
-                List<SocketAddress> sockaddrsList = new ArrayList<SocketAddress>();
+                List<SocketAddress> sockaddrsList = new ArrayList<SocketAddress>(2);
                 sockaddrsList.add(new InetSocketAddress(host, port));
                 addrs.add(new EquivalentAddressGroup(sockaddrsList));
             }
         }
-        else
-        {
-            nodes = new ArrayList<>();
+        else {
+            nodes = new ArrayList<>(5);
             for(String hostPort : this.hostPorts)
             {
                 String[] tokens = hostPort.split(":");
 
                 String host = tokens[0];
                 int port = Integer.valueOf(tokens[1]);
-                log.info("static host: [" + host + "], port: [" + port + "]");
+                log.info("Static host: [" + host + "], port: [" + port + "]");
 
                 nodes.add(new ServiceDiscovery.ServiceNode("", host, port));
 
-                List<SocketAddress> sockaddrsList = new ArrayList<SocketAddress>();
+                List<SocketAddress> sockaddrsList = new ArrayList<SocketAddress>(2);
                 sockaddrsList.add(new InetSocketAddress(host, port));
                 addrs.add(new EquivalentAddressGroup(sockaddrsList));
             }
         }
 
-        if(addrs.size() > 0) {
+        if (addrs.size() > 0) {
             this.listener.onAddresses(addrs, Attributes.EMPTY);
         }
     }
 
-    public List<ServiceDiscovery.ServiceNode> getNodes() {
-        return this.nodes;
-    }
-
     private List<ServiceDiscovery.ServiceNode> getServiceNodes(String serviceName, String consulHost, int consulPort) {
-        ServiceDiscovery serviceDiscovery = ConsulServiceDiscovery.singleton(consulHost, consulPort);
+	    ServiceDiscovery serviceDiscovery = ConsulServiceDiscovery.singleton(consulHost, consulPort);
+	    return serviceDiscovery.getHealthServices(serviceName);
+	}
 
-        return serviceDiscovery.getHealthServices(serviceName);
+	public List<ServiceDiscovery.ServiceNode> getNodes() {
+        return this.nodes;
     }
 
     @Override
     public void shutdown() {
-
+    	if (connectionCheckTimer != null) {
+    		connectionCheckTimer.shutdown();
+    	}
     }
 
     private static class ConnectionCheckTimer {
@@ -152,15 +152,16 @@ public class ConsulNameResolver extends NameResolver {
         public void runTimer() {
             this.timer.scheduleAtFixedRate(this.timerTask, delay, this.pauseInSeconds * 1000);
         }
-
-        public void reset() {
-            this.timerTask.cancel();
+        
+        public void shutdown() {
+        	this.timerTask.cancel();
+            this.timer.cancel();
             this.timer.purge();
-            this.timerTask = new ConnectionCheckTimerTask(consulNameResolver);
         }
     }
 
     private static class ConnectionCheckTimerTask extends TimerTask {
+    	
         private ConsulNameResolver consulNameResolver;
 
         public ConnectionCheckTimerTask(ConsulNameResolver consulNameResolver) {
@@ -170,7 +171,7 @@ public class ConsulNameResolver extends NameResolver {
         @Override
         public void run() {
             List<ServiceDiscovery.ServiceNode> nodes = consulNameResolver.getNodes();
-            if(nodes != null) {
+            if (nodes != null) {
                 for (ServiceDiscovery.ServiceNode node : nodes) {
                     String host = node.getHost();
                     int port = node.getPort();
@@ -180,15 +181,13 @@ public class ConsulNameResolver extends NameResolver {
                         socketClient.close();
                     } catch (IOException e) {
                         log.error(e.getMessage());
-                        log.info("service nodes being reloaded...");
-
+                        log.warn("service nodes being reloaded...");
                         this.consulNameResolver.loadServiceNodes();
                         break;
                     }
                 }
             }
-            else
-            {
+            else {
                 log.info("no service nodes...");
             }
         }
@@ -231,9 +230,9 @@ public class ConsulNameResolver extends NameResolver {
         @Override
         public NameResolver newNameResolver(URI uri, Attributes attributes) {
         	if (withHealthCheck) {
-        		return ConsulNameResolver.fromWithHealthCheck(uri, serviceName, pauseInSeconds, this.ignoreConsul, this.hostPorts);
+        		return ConsulNameResolver.withHealthCheck(uri, serviceName, pauseInSeconds, this.ignoreConsul, this.hostPorts);
         	}
-        	return ConsulNameResolver.fromNoHealthCheck(uri, serviceName, pauseInSeconds, this.ignoreConsul, this.hostPorts);
+        	return ConsulNameResolver.noHealthCheck(uri, serviceName, pauseInSeconds, this.ignoreConsul, this.hostPorts);
         }
 
         @Override

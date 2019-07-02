@@ -178,8 +178,9 @@ public class GreeterServiceGrpcClientLoadBalancerTest {
 			HelloReply helloReply = response.getHelloReply(0);
 			String message = helloReply.getMessage();
 			return message;
-		} catch (Exception e) {
-			log.error("", e);
+		}
+		catch (Exception e) {
+			log.error(e.getMessage());
 			return null;
 		}
 	}

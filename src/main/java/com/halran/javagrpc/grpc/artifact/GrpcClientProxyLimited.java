@@ -32,6 +32,16 @@ public class GrpcClientProxyLimited {
 		}
 	}
 	
+	protected <T> T just(Supplier<T> process) {
+		try {
+			return process.get();
+		}
+		catch (Exception ex) {
+			log.error(ex.getMessage());
+			throw new RuntimeException(ex);
+		}
+	}
+	
 	private <T> FutureCallback<T> callback() {
 		return new FutureCallback<T>() {
 			@Override

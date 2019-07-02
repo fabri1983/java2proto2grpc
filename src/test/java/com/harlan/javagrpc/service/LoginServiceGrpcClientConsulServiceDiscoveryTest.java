@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
  */
 public class LoginServiceGrpcClientConsulServiceDiscoveryTest {
 	
-	private static final Logger log = LoggerFactory.getLogger(LoginServiceGrpcClientConsulServiceDiscoveryTest.class);
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	
 	@ClassRule
 	public static ConsulServiceRegisterRule consulServiceRegisterRule = new ConsulServiceRegisterRule();
@@ -122,14 +122,20 @@ public class LoginServiceGrpcClientConsulServiceDiscoveryTest {
 	}
 
 	private void callAndAssert(LoginService loginService, User user) {
-		Request request = Request.from(user.getId(), user.getName(), user.getCorpus());
-		Request2 request2 = Request2.from(user.getId(), user.getName());
-		
-		Response response = loginService.getRes(request, request2);
-
-		Assert.assertEquals(user.getId(), response.getId());
-		Assert.assertEquals(user.getName(), response.getName());
-		Assert.assertEquals(user.getCorpus(), response.getCorpus());
+		try {
+			Request request = Request.from(user.getId(), user.getName(), user.getCorpus());
+			Request2 request2 = Request2.from(user.getId(), user.getName());
+			
+			Response response = loginService.getRes(request, request2);
+	
+			Assert.assertEquals(user.getId(), response.getId());
+			Assert.assertEquals(user.getName(), response.getName());
+			Assert.assertEquals(user.getCorpus(), response.getCorpus());
+		}
+		catch (Exception e) {
+			log.error(e.getMessage());
+			throw new RuntimeException(e);
+		}
 	}
 
 	private User[] createUsers() {

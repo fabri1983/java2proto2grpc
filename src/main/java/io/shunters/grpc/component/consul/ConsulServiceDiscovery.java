@@ -260,7 +260,6 @@ public class ConsulServiceDiscovery implements ServiceDiscovery {
 
     @Override
     public void setKVValue(String key, String value) {
-
         client.setKVValue(key, value);
     }
 
