@@ -10,7 +10,8 @@ import com.harlan.javagrpc.business.contract.LoginBusiness;
 import com.harlan.javagrpc.service.contract.LoginService;
 import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc;
 import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc.LoginServiceFutureStub;
-import com.harlan.javagrpc.testutil.ConsulProperties;
+import com.harlan.javagrpc.testutil.IServiceDiscoveryProperties;
+import com.harlan.javagrpc.testutil.ServiceDiscoveryPropertiesFromFile;
 import com.harlan.javagrpc.testutil.rules.ConsulServiceRegisterRule;
 import com.harlan.javagrpc.testutil.rules.GrpcManagedChannelWithConsulRule;
 import com.harlan.javagrpc.testutil.rules.GrpcServerStarterRule;
@@ -39,8 +40,12 @@ public class LoginServiceGrpcClientConsulServiceDiscoveryTest {
 	
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	
+	private static final IServiceDiscoveryProperties serviceDiscoveryProps = 
+			new ServiceDiscoveryPropertiesFromFile();
+	
 	@ClassRule
-	public static ConsulServiceRegisterRule consulServiceRegisterRule = new ConsulServiceRegisterRule();
+	public static ConsulServiceRegisterRule consulServiceRegisterRule = 
+			new ConsulServiceRegisterRule(serviceDiscoveryProps);
 	
 	@Rule
 	public GrpcServerStarterRule serverStarterRule = new GrpcServerStarterRule(50051);
@@ -48,9 +53,9 @@ public class LoginServiceGrpcClientConsulServiceDiscoveryTest {
 	@Rule
 	public GrpcManagedChannelWithConsulRule mangedChannelRule = new GrpcManagedChannelWithConsulRule(
 			GrpcConfiguration.fromConsulServiceDiscovery(
-					ConsulProperties.consulServiceName,
-					ConsulProperties.consulHost,
-					ConsulProperties.consulPort,
+					serviceDiscoveryProps.getConsulServiceName(),
+					serviceDiscoveryProps.getConsulHost(),
+					serviceDiscoveryProps.getConsulPort(),
 					0) /* 0 secs = disable health check */);
 
 	@Test
@@ -116,8 +121,8 @@ public class LoginServiceGrpcClientConsulServiceDiscoveryTest {
 	}
 	
 	private LoginService createLoginServiceClientStub() {
-		LoginServiceFutureStub futureStub = LoginServiceGrpc.newFutureStub(mangedChannelRule.getChannel());
-		LoginService loginService = new LoginServiceGrpcClientProxy(futureStub);
+		LoginServiceFutureStub stub = LoginServiceGrpc.newFutureStub(mangedChannelRule.getChannel());
+		LoginService loginService = new LoginServiceGrpcClientProxy(stub);
 		return loginService;
 	}
 

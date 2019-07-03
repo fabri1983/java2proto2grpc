@@ -28,16 +28,20 @@ public class GrpcServerStarter implements IGrpcServerStarter {
 		this.port = port;
 		this.withShutdownHook = withShutdownHook;
 		serviceRegistry = new MutableHandlerRegistry();
-		serverBuilder = createBuilder(port)
+		serverBuilder = createBuilder()
 				// substantial performance improvements. However, it also requires the application to not block under any circumstances.
 				.directExecutor()
 				// allow to register services once the server has started
 				.fallbackHandlerRegistry(serviceRegistry);
 	}
 
-	protected ServerBuilder<?> createBuilder(int port) {
+	protected ServerBuilder<?> createBuilder() {
 		return ServerBuilder
 				.forPort(port);
+	}
+	
+	public int getPort() {
+		return port;
 	}
 	
 	@Override

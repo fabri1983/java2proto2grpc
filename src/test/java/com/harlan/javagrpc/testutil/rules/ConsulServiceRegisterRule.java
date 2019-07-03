@@ -1,6 +1,6 @@
 package com.harlan.javagrpc.testutil.rules;
 
-import com.harlan.javagrpc.testutil.ConsulProperties;
+import com.harlan.javagrpc.testutil.IServiceDiscoveryProperties;
 
 import io.shunters.grpc.component.consul.ConsulServiceDiscovery;
 
@@ -12,7 +12,14 @@ public class ConsulServiceRegisterRule extends ExternalResource {
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 
+	private IServiceDiscoveryProperties serviceDiscoveryProps;
 	private boolean registered;
+
+	
+	public ConsulServiceRegisterRule(IServiceDiscoveryProperties props) {
+		super();
+		this.serviceDiscoveryProps = props;
+	}
 
 	@Override
 	protected void before() throws Throwable {
@@ -25,7 +32,7 @@ public class ConsulServiceRegisterRule extends ExternalResource {
 			// TODO wait until health check is ok. Currently health check is omitted in ConsulServiceDiscovery.java line 109
 			
 			registered = true;
-			log.info("Consul: " + ConsulProperties.consulServiceName + " registered.");
+			log.info("Consul: " + serviceDiscoveryProps.getConsulServiceName() + " registered.");
 		}
 		catch (Exception e) {
 			log.warn(e.getMessage());
@@ -38,7 +45,7 @@ public class ConsulServiceRegisterRule extends ExternalResource {
 		try {
 			if (registered) {
 				deregisterService();
-				log.info("Consul: " + ConsulProperties.consulServiceName + " deregistered.");
+				log.info("Consul: " + serviceDiscoveryProps.getConsulServiceName() + " deregistered.");
 			}
 		}
 		catch (Exception e) {
@@ -52,24 +59,26 @@ public class ConsulServiceRegisterRule extends ExternalResource {
 	}
 
 	private void registerService() {
-		ConsulServiceDiscovery.singleton(ConsulProperties.consulHost, ConsulProperties.consulPort)
+		ConsulServiceDiscovery
+			.singleton(serviceDiscoveryProps.getConsulHost(), serviceDiscoveryProps.getConsulPort())
 			.createService(
-					ConsulProperties.consulServiceName, 
-					ConsulProperties.consulId, 
+					serviceDiscoveryProps.getConsulServiceName(), 
+					serviceDiscoveryProps.getConsulId(), 
 					null, 
-					ConsulProperties.consulHost, 
-					ConsulProperties.consulPort, 
-					null, // ConsulProperties.consulCheckScript,
-					null, // ConsulProperties.consulCheckHttp,
-					ConsulProperties.consulCheckTcp, 
-					ConsulProperties.consulCheckInterval, 
-					ConsulProperties.consulCheckTimeout,
-					null); // ConsulProperties.consulCheckTtl
+					serviceDiscoveryProps.getGrpcHost(), 
+					serviceDiscoveryProps.getGrpcPort(), 
+					null, // serviceDiscoveryProps.getConsulCheckScript(),
+					null, // serviceDiscoveryProps.getConsulCheckHttp(),
+					serviceDiscoveryProps.getConsulCheckTcp(), 
+					serviceDiscoveryProps.getConsulCheckInterval(), 
+					serviceDiscoveryProps.getConsulCheckTimeout(),
+					null); // serviceDiscoveryProps.getConsulCheckTtl()
 	}
 
 	private void deregisterService() {
-		ConsulServiceDiscovery.singleton(ConsulProperties.consulHost, ConsulProperties.consulPort)
-			.deregisterService(ConsulProperties.consulId);
+		ConsulServiceDiscovery
+			.singleton(serviceDiscoveryProps.getConsulHost(), serviceDiscoveryProps.getConsulPort())
+			.deregisterService(serviceDiscoveryProps.getConsulId());
 	}
 
 }

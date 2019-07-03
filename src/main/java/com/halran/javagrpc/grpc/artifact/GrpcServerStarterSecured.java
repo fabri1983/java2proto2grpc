@@ -27,12 +27,12 @@ public class GrpcServerStarterSecured extends GrpcServerStarter {
 	}
 
 	@Override
-	protected ServerBuilder<?> createBuilder(int port) {
+	protected ServerBuilder<?> createBuilder() {
 		try {
 			boolean mutualAuth = false;
 			SslContext sslContext = getSslContextBuilder(mutualAuth);
 			return NettyServerBuilder
-					.forPort(port)
+					.forPort(getPort())
 					.sslContext(sslContext);
 		} catch (SSLException ex) {
 			log.error("", ex);

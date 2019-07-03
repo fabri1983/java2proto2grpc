@@ -102,14 +102,14 @@ You need to setup the current consul ip address in order to test run **LoginServ
 	docker-machine ip default
 	192.168.99.100
 	```
-	and put that ip in the file **src/test/resources/consul-test.properties**.
+	and put that ip in the file **src/test/resources/service-discovery.properties**.
 - If you are running docker as standalone app in another server then you can get the consul app ip with:
 	```sh
 	docker inspect -f "{{ .NetworkSettings.IPAddress }}" consul
 	```
-	and put that ip in the file **src/test/resources/consul-test.properties**.
-- If running consul standalone or on a local docker image then usually the consul ip is 127.0.0.1 (or localhost).
-	In this case put 127.0.0.1 in the file **src/test/resources/consul-test.properties**.
+	and put that ip in the file **src/test/resources/service-discovery-test.properties**.
+- If running consul standalone then usually the consul ip is 127.0.0.1 (or localhost).
+	In this case put 127.0.0.1 in the file **src/test/resources/service-discovery-test.properties**.
 
 
 TODO
@@ -135,8 +135,10 @@ Licenses corresponds to projects:
 
 Useful tips
 ---
+
 - I have some tracked files which potentially can be modified.  
 I don't want to untrack them, I just don't want them to appear as modified and I don't want them to be staged when I git add.  
+
 Solution:
 ```sh
 git update-index --assume-unchanged <file>
@@ -145,7 +147,8 @@ To undo and start tracking again:
 ```sh
 git update-index --no-assume-unchanged [<file> ...]
 ```
-- Running Docker Consul for Development:
+
+- Running Consul in Docker:
 See this [link](https://docs.docker.com/samples/library/consul/#running-consul-for-development)
 	- download docker *Consul image* if not already:
 	```sh
@@ -154,12 +157,26 @@ See this [link](https://docs.docker.com/samples/library/consul/#running-consul-f
 	- run *Consul* on *Windows* with *Docker Tool Box*:
 	```sh
 	Development mode:
-	docker run -d -p 8500:8500 -p 172.17.0.1:53:8600/udp -p 8400:8400 --name=dev-consul -e CONSUL_BIND_INTERFACE=eth0 consul
-	Agent server mode:
-	docker run -d -p 8500:8500 -p 172.17.0.1:53:8600/udp -p 8400:8400 consul agent -server -bootstrap -advertise=172.17.0.2 -client=172.17.0.2 -data-dir=/tmp/node -ui -node=s1
+	docker run -d -p 8500:8500 -p 172.17.0.1:53:8600/udp -p 8400:8400 -p 8300:8300 --name=dev-consul -e CONSUL_BIND_INTERFACE=eth0 consul
+	Agent Server mode:
+	docker run -d -p 8500:8500 -p 172.17.0.1:53:8600/udp -p 8400:8400 -p 8300:8300 --name=consul consul agent -server -bootstrap -ui -node=docker-1 -client=172.17.0.2 -advertise=172.17.0.2 -data-dir=/tmp/node
 	```
-		- within Consul, port 8400 is used for RPC, 8500 is used for HTTP, 8600 is used for DNS. By using *-p* option, we are exposing these ports to the host machine.
+		- Within Consul:
+			- port 8300 is used by servers to handle incoming requests from other agents (TCP only).
+			- port 8400 is used for Client requests
+			- port 8500 is used for HTTP Api.
+			- port 8600 is used for answer DNS queries. By using *-p* option, we are exposing these ports to the host machine.
 		- 172.17.0.1 is the Docker bridge IP address. We are remapping Consul Container’s port 8600 to host machine’s Docker bridge port 53 so that Containers on that host can use Consul for DNS.
-		- *bootstrap* means consul runs in a standalone mode.
+		- *-bootstrap* means consul runs in a standalone mode.
 		- 172.17.0.2 is the Docker IP assigned to the network interface.
-		- Docker Tool Box is exposed at IP 192.168.99.100.
+
+- Considerations on *Docker Tool Box*:
+*Docker Tool Box* is exposed at IP 192.168.99.100.
+If by any reason you are in a situation that your app needs to route request made to Docker's internal IP 172.17.x.x to the exposed IP 192.168.99.100 then:
+	- you will have to add an entry in the route table:
+	```sh
+	Open a privileged console
+	route add 172.17.0.0 mask 255.255.0.0 192.168.99.100 -p
+	Then you can remove that entry with:
+	route delete 172.17.0.0
+	```

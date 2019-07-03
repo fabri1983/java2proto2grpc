@@ -24,7 +24,8 @@ public class GrpcManagedChannelServiceDiscovery extends GrpcManagedChannel {
         ConsulNameResolver.ConsulNameResolverProvider consulNameResolverProvider = 
         		new ConsulNameResolver.ConsulNameResolverProvider(consulServiceName, timerCheckPeriodInSeconds, 
         				ignoreConsul, staticGrpcHostPorts);
-        
+
+        // use round robin policy
         String loadBalancerPolicyName = LoadBalancerRegistry.getDefaultRegistry()
         		.getProvider("round_robin")
         		.getPolicyName(); 
@@ -32,7 +33,6 @@ public class GrpcManagedChannelServiceDiscovery extends GrpcManagedChannel {
         return ManagedChannelBuilder
         		.forTarget(consulAddr)
                 .nameResolverFactory(consulNameResolverProvider)
-                // use round robin policy
                 .defaultLoadBalancingPolicy(loadBalancerPolicyName)
                 // use plain text if your entire microservice ecosystem is inside a controlled network, 
                 // otherwise setup your security artifacts such as key/trust stores

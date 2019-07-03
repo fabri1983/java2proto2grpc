@@ -103,8 +103,8 @@ public class LoginServiceGrpcTest {
 	}
 	
 	private LoginService createLoginServiceClientStub() {
-		LoginServiceFutureStub futureStub = LoginServiceGrpc.newFutureStub(mangedChannelRule.getChannel());
-		LoginService loginService = new LoginServiceGrpcClientProxy(futureStub);
+		LoginServiceFutureStub stub = LoginServiceGrpc.newFutureStub(mangedChannelRule.getChannel());
+		LoginService loginService = new LoginServiceGrpcClientProxy(stub);
 		return loginService;
 	}
 

@@ -8,16 +8,16 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PropertiesLoader {
+public class PropertiesFromClassLoader {
 
-	private static final Logger log = LoggerFactory.getLogger(PropertiesLoader.class);
+	private static final Logger log = LoggerFactory.getLogger(PropertiesFromClassLoader.class);
 	
 	public static Properties getProperties(String propFileName) {
 		InputStream inputStream = null;
 		Properties props = new Properties();
 		
 		try {
-			inputStream = PropertiesLoader.class.getClassLoader().getResourceAsStream(propFileName);
+			inputStream = PropertiesFromClassLoader.class.getClassLoader().getResourceAsStream(propFileName);
 			if (inputStream != null) {
 				props.load(inputStream);
 			} else {

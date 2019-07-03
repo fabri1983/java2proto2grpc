@@ -60,8 +60,8 @@ public class ConsulServiceDiscovery implements ServiceDiscovery {
      * @param tags
      * @param address
      * @param port
-     * @param script
-     * @param tcp              "localhost:9911"
+     * @param checkScript
+     * @param checkTcp         "localhost:9911"
      * @param checkInterval    "10s"
      * @param checkTimeout     "1s"
      * @param checkTtl         "10s"
@@ -69,7 +69,7 @@ public class ConsulServiceDiscovery implements ServiceDiscovery {
      */
     @Override
     public void createService(String serviceName, String id, List<String> tags, String address, int port, 
-    		String script, String http, String tcp, String checkInterval, String checkTimeout, String checkTtl) {
+    		String checkScript, String checkHttp, String checkTcp, String checkInterval, String checkTimeout, String checkTtl) {
     	
 		// create new service with associated health check
 		NewService newService = new NewService();
@@ -83,18 +83,18 @@ public class ConsulServiceDiscovery implements ServiceDiscovery {
 		// See different check solutions: https://www.consul.io/docs/agent/checks.html
 		NewService.Check serviceCheck = new NewService.Check();
 		// Script + Interval
-		if (script != null && checkInterval != null) {
-			serviceCheck.setScript(script);
+		if (checkScript != null && checkInterval != null) {
+			serviceCheck.setScript(checkScript);
 			serviceCheck.setInterval(checkInterval);
 		}
 		// Http + Interval
-		else if (http != null && checkInterval != null) {
-			serviceCheck.setHttp(http);
+		else if (checkHttp != null && checkInterval != null) {
+			serviceCheck.setHttp(checkHttp);
 			serviceCheck.setInterval(checkInterval);
 		}
 		// Tcp + Interval
-		else if (tcp != null && checkInterval != null) {
-			serviceCheck.setTcp(tcp);
+		else if (checkTcp != null && checkInterval != null) {
+			serviceCheck.setTcp(checkTcp);
 			serviceCheck.setInterval(checkInterval);
 		}
 		// TTL
@@ -139,13 +139,9 @@ public class ConsulServiceDiscovery implements ServiceDiscovery {
         
         for (HealthService healthService : healthServices) {
             HealthService.Service service = healthService.getService();
-
             String id = service.getId();
-
-            String address = healthService.getNode().getAddress();
-
+            String address = service.getAddress();// healthService.getNode().getAddress();
             int port = service.getPort();
-
             list.add(new ServiceNode(id, address, port));
         }
 
@@ -163,7 +159,7 @@ public class ConsulServiceDiscovery implements ServiceDiscovery {
             return null;
         }
 
-        Map<String, String> map = new HashMap<>();
+        Map<String, String> map = new HashMap<>(3);
 
         for (GetValue v : getValues) {
             if (v == null || v.getValue() == null) {
@@ -171,9 +167,7 @@ public class ConsulServiceDiscovery implements ServiceDiscovery {
             }
 
             String key = v.getKey();
-
             String value = v.getDecodedValue();
-
             map.put(key, value);
         }
 
@@ -202,7 +196,7 @@ public class ConsulServiceDiscovery implements ServiceDiscovery {
             return null;
         }
 
-        Set<String> set = new HashSet<>();
+        Set<String> set = new HashSet<>(3);
 
         for (String key : getValues) {
             if (key != null) {
@@ -242,13 +236,11 @@ public class ConsulServiceDiscovery implements ServiceDiscovery {
             }
 
             if (count == 0) {
-                map = new HashMap<>();
+                map = new HashMap<>(3);
             }
 
             String key = v.getKey();
-
             String value = v.getDecodedValue();
-
             map.put(key, value);
 
             count++;

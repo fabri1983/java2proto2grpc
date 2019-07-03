@@ -1,6 +1,7 @@
 package com.harlan.javagrpc.service;
 
-import com.harlan.javagrpc.testutil.ConsulProperties;
+import com.harlan.javagrpc.testutil.IServiceDiscoveryProperties;
+import com.harlan.javagrpc.testutil.ServiceDiscoveryPropertiesFromFile;
 import com.harlan.javagrpc.testutil.rules.ConsulServiceRegisterRule;
 import com.harlan.javagrpc.testutil.rules.GrpcServerStarterRule;
 
@@ -38,8 +39,12 @@ public class GreeterServiceGrpcClientLoadBalancerTest {
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	private final String MESSAGE = "grpc load balancer";
 
+	private static final IServiceDiscoveryProperties serviceDiscoveryProps = 
+			new ServiceDiscoveryPropertiesFromFile();
+	
 	@ClassRule
-	public static ConsulServiceRegisterRule consulServiceRegisterRule = new ConsulServiceRegisterRule();
+	public static ConsulServiceRegisterRule consulServiceRegisterRule = 
+			new ConsulServiceRegisterRule(serviceDiscoveryProps);
 	
 	@Rule
 	public GrpcServerStarterRule serverStarterRule = new GrpcServerStarterRule(50051);
@@ -141,9 +146,10 @@ public class GreeterServiceGrpcClientLoadBalancerTest {
 
 	private GrpcClientLoadBalancer<GreeterGrpc, GreeterBlockingStub, GreeterStub> createClientLoadBalancerWithConsul() {
 		GrpcClientLoadBalancer<GreeterGrpc, GreeterBlockingStub, GreeterStub> lb = 
-				new GrpcClientLoadBalancer<>(ConsulProperties.consulServiceName,
-						ConsulProperties.consulHost,
-						ConsulProperties.consulPort,
+				new GrpcClientLoadBalancer<>(
+						serviceDiscoveryProps.getConsulServiceName(),
+						serviceDiscoveryProps.getConsulHost(),
+						serviceDiscoveryProps.getConsulPort(),
 						GreeterGrpc.class);
 		return lb;
 	}
