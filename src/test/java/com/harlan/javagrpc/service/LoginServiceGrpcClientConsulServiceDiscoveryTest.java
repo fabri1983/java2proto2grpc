@@ -27,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.junit.Assert;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -43,14 +42,13 @@ public class LoginServiceGrpcClientConsulServiceDiscoveryTest {
 	private static final IServiceDiscoveryProperties serviceDiscoveryProps = 
 			new ServiceDiscoveryPropertiesFromFile();
 	
-	@ClassRule
-	public static ConsulServiceRegisterRule consulServiceRegisterRule = 
-			new ConsulServiceRegisterRule(serviceDiscoveryProps);
+	@Rule( order = 1)
+	public GrpcServerStarterRule serverStarterRule = new GrpcServerStarterRule(50051, 50052);
 	
-	@Rule
-	public GrpcServerStarterRule serverStarterRule = new GrpcServerStarterRule(50051);
+	@Rule( order = 2)
+	public ConsulServiceRegisterRule consulServiceRegisterRule = new ConsulServiceRegisterRule(serviceDiscoveryProps);
 	
-	@Rule
+	@Rule( order = 3)
 	public GrpcManagedChannelServiceDiscoveryRule managedChannelRule = new GrpcManagedChannelServiceDiscoveryRule(
 			GrpcConfiguration.fromConsulServiceDiscovery(
 					serviceDiscoveryProps.getConsulServiceName(),
@@ -100,14 +98,14 @@ public class LoginServiceGrpcClientConsulServiceDiscoveryTest {
         
         // block until all tasks are done
         long finishedCount = futures.stream()
-        	.map( f -> {
-				try {
-					return f.get();
-				} catch (InterruptedException | ExecutionException ex) {
-					throw new RuntimeException(ex);
-				}
-			})
-        	.count();
+	        	.map( f -> {
+					try {
+						return f.get();
+					} catch (InterruptedException | ExecutionException ex) {
+						throw new RuntimeException(ex);
+					}
+				})
+	        	.count();
         
         Assert.assertEquals(repeatNumStubs, finishedCount);
 	}
@@ -115,7 +113,7 @@ public class LoginServiceGrpcClientConsulServiceDiscoveryTest {
 	private void registerLoginServiceGrpc() {
 		LoginBusiness loginBusiness = new LoginBusinessImpl();
 		LoginServiceGrpcImpl loginServiceGrpc = new LoginServiceGrpcImpl(loginBusiness);
-		serverStarterRule.getServerStarter().register(loginServiceGrpc);
+		serverStarterRule.registerService(loginServiceGrpc);
 	}
 	
 	private List<LoginService> repeatLoginServiceClientStub(int repeatNum) {

@@ -1,17 +1,15 @@
 package com.harlan.javagrpc.testutil;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 public class ServiceDiscoveryPropertiesFromFile implements IServiceDiscoveryProperties {
 
-	private final String DEFAULT_GRPC_HOST = "127.0.0.1";
-	private final int DEFAULT_GRPC_PORT = 50051;
-	private final int DEFAULT_CONSUL_CLIENT_PORT = 8500;
-	
-	private String grpcHost;
-	private int grpcPort;
+	private List<String> grpcAddressList;
 	private String consulServiceName;
-	private String consulId;
+	private String consulServiceIdPrefix;
 	private String consulHost;
 	private int consulPort;
 	private String consulCheckTcp;
@@ -23,26 +21,30 @@ public class ServiceDiscoveryPropertiesFromFile implements IServiceDiscoveryProp
 		
 		Properties props = PropertiesFromClassLoader.getProperties("service-discovery-test.properties");
 		
-		this.grpcHost = props.getProperty("grpc.host", DEFAULT_GRPC_HOST);
-		this.grpcPort = Integer.parseInt(props.getProperty("grpc.port", String.valueOf(DEFAULT_GRPC_PORT)));
+		this.grpcAddressList = Arrays.asList(props.getProperty("grpc.address.list").split(","))
+				.stream().map( s -> s.trim() ).collect( Collectors.toList() );
 		this.consulServiceName = "grpc-service-test";
-		this.consulId = "server-test-1";
+		this.consulServiceIdPrefix = "id-test_";
 		this.consulHost = props.getProperty("consul.host");
-		this.consulPort = Integer.parseInt(props.getProperty("consul.port", String.valueOf(DEFAULT_CONSUL_CLIENT_PORT)));
+		this.consulPort = Integer.parseInt(props.getProperty("consul.port"));
 		this.consulCheckTcp = props.getProperty("consul.check.tcp");
-		this.consulCheckInterval = "1s"; // if bigger than 1s then you have to wait some seconds before a new registered service gets its check available
+		this.consulCheckInterval = "1s"; // if bigger than 1s then you have to wait some seconds before the new registered service gets its check available
 		this.consulCheckTtl = "30s";
 		this.consulCheckTimeout = "1s";
 	}
 
 	@Override
-	public String getGrpcHost() {
-		return grpcHost;
+	public List<String> getGrpcAddressList() {
+		return grpcAddressList;
 	}
 
 	@Override
-	public int getGrpcPort() {
-		return grpcPort;
+	public String[] splitAddress(String grpcAddress) {
+		String[] split = grpcAddress.split(":");
+		for (int i=0; i < split.length; ++i) {
+			split[i] = split[i].trim();
+		}
+		return split;
 	}
 
 	@Override
@@ -51,8 +53,8 @@ public class ServiceDiscoveryPropertiesFromFile implements IServiceDiscoveryProp
 	}
 
 	@Override
-	public String getConsulId() {
-		return consulId;
+	public String getConsulServiceIdPrefix() {
+		return consulServiceIdPrefix;
 	}
 
 	@Override

@@ -32,10 +32,10 @@ import org.junit.Test;
  */
 public class LoginServiceGrpcTest {
 	
-	@Rule
+	@Rule( order = 1)
 	public GrpcServerStarterRule serverStarterRule = new GrpcServerStarterRule(50051);
 	
-	@Rule
+	@Rule( order = 2)
 	public GrpcManagedChannelRule mangedChannelRule = new GrpcManagedChannelRule(
 			GrpcConfiguration.from("127.0.0.1", 50051));
 	
@@ -99,7 +99,7 @@ public class LoginServiceGrpcTest {
 	private void registerLoginServiceGrpc() {
 		LoginBusiness loginBusiness = new LoginBusinessImpl();
 		LoginServiceGrpcImpl loginServiceGrpc = new LoginServiceGrpcImpl(loginBusiness);
-		serverStarterRule.getServerStarter().register(loginServiceGrpc);
+		serverStarterRule.registerService(loginServiceGrpc);
 	}
 	
 	private LoginService createLoginServiceClientStub() {

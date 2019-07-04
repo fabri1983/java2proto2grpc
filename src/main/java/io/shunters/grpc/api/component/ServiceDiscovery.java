@@ -4,9 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Created by mykidong on 2017-09-13.
- */
 public interface ServiceDiscovery {
 
     void createService(String serviceName, String id, List<String> tags, String address, int port, 

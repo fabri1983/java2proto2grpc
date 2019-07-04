@@ -22,10 +22,10 @@ import org.junit.Test;
  */
 public class LoginServiceSecuredGrpcTest {
 	
-	@Rule
+	@Rule( order = 1)
 	public GrpcServerStarterSecuredRule serverStarterRule = new GrpcServerStarterSecuredRule(50051);
 	
-	@Rule
+	@Rule( order = 2)
 	public GrpcManagedChannelSecuredRule mangedChannelRule = new GrpcManagedChannelSecuredRule(
 			GrpcConfiguration.from("127.0.0.1", 50051));
 	

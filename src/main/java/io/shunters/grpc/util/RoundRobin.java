@@ -3,9 +3,6 @@ package io.shunters.grpc.util;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * Created by mykidong on 2017-09-28.
- */
 public class RoundRobin<T> {
 
     private Iterator<Robin<T>> it;

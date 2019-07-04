@@ -19,15 +19,13 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Provides a custom Load Balancer strategy using a Round Robin policy.
- * 
- * Created by mykidong on 2018-01-11.
  */
-public class GrpcClientCustomLoadBalancer<R, B, A> {
+public class GrpcClientCustomLoadBalancer<G, B, A, F> {
 
-    private static Logger log = LoggerFactory.getLogger(GrpcClientCustomLoadBalancer.class);
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    private RoundRobin<GrpcClient<R, B, A>> roundRobin;
-    private List<RoundRobin.Robin<GrpcClient<R, B, A>>> robinList;
+    private RoundRobin<GrpcClient<G, B, A, F>> roundRobin;
+    private List<RoundRobin.Robin<GrpcClient<G, B, A, F>>> robinList;
 
     private static final int DEFAULT_PAUSE_IN_SECONDS = 5;
 
@@ -37,11 +35,11 @@ public class GrpcClientCustomLoadBalancer<R, B, A> {
     private String consulHost;
     private int consulPort;
     private boolean ignoreConsul;
-    private Class<R> rpcClass;
+    private Class<G> grpcClass;
     private List<String> hostPorts;
     private int pauseInSeconds;
 
-    private ConnectionCheckTimer<R, B, A> connectionCheckTimer;
+    private ConnectionCheckTimer<G, B, A, F> connectionCheckTimer;
 
     /**
      * using consul service discovery.
@@ -49,14 +47,16 @@ public class GrpcClientCustomLoadBalancer<R, B, A> {
      * @param serviceName
      * @param consulHost
      * @param consulPort
-     * @param rpcClass
+     * @param grpcClass
      */
-    public GrpcClientCustomLoadBalancer(String serviceName, String consulHost, int consulPort, Class<R> rpcClass) {
-        this(serviceName, consulHost, consulPort, false, rpcClass, DEFAULT_PAUSE_IN_SECONDS, null);
+    public GrpcClientCustomLoadBalancer(String serviceName, String consulHost, 
+    		int consulPort, Class<G> grpcClass) {
+        this(serviceName, consulHost, consulPort, false, grpcClass, DEFAULT_PAUSE_IN_SECONDS, null);
     }
 
-    public GrpcClientCustomLoadBalancer(String serviceName, String consulHost, int consulPort, Class<R> rpcClass, int pauseInSeconds) {
-        this(serviceName, consulHost, consulPort, false, rpcClass, pauseInSeconds, null);
+    public GrpcClientCustomLoadBalancer(String serviceName, String consulHost, 
+    		int consulPort, Class<G> grpcClass, int pauseInSeconds) {
+        this(serviceName, consulHost, consulPort, false, grpcClass, pauseInSeconds, null);
     }
 
     /**
@@ -65,32 +65,32 @@ public class GrpcClientCustomLoadBalancer<R, B, A> {
      * @param hostPorts
      * @param rpcClass
      */
-    public GrpcClientCustomLoadBalancer(List<String> hostPorts, Class<R> rpcClass) {
+    public GrpcClientCustomLoadBalancer(List<String> hostPorts, Class<G> rpcClass) {
         this(null, null, -1, true, rpcClass, DEFAULT_PAUSE_IN_SECONDS, hostPorts);
     }
 
-    public GrpcClientCustomLoadBalancer(List<String> hostPorts, Class<R> rpcClass, int pauseInSeconds) {
+    public GrpcClientCustomLoadBalancer(List<String> hostPorts, Class<G> rpcClass, int pauseInSeconds) {
         this(null, null, -1, true, rpcClass, pauseInSeconds, hostPorts);
     }
 
 
-    public GrpcClientCustomLoadBalancer(String serviceName, String consulHost, int consulPort, boolean ignoreConsul, Class<R> rpcClass, List<String> hostPorts) {
+    public GrpcClientCustomLoadBalancer(String serviceName, String consulHost, int consulPort, boolean ignoreConsul, Class<G> rpcClass, List<String> hostPorts) {
         this(serviceName, consulHost, consulPort, ignoreConsul, rpcClass, DEFAULT_PAUSE_IN_SECONDS, hostPorts);
     }
 
-    public GrpcClientCustomLoadBalancer(String serviceName, String consulHost, int consulPort, boolean ignoreConsul, Class<R> rpcClass, int pauseInSeconds, List<String> hostPorts) {
+    public GrpcClientCustomLoadBalancer(String serviceName, String consulHost, int consulPort, boolean ignoreConsul, Class<G> rpcClass, int pauseInSeconds, List<String> hostPorts) {
         this.serviceName = serviceName;
         this.consulHost = consulHost;
         this.consulPort = consulPort;
         this.ignoreConsul = ignoreConsul;
-        this.rpcClass = rpcClass;
+        this.grpcClass = rpcClass;
         this.hostPorts = hostPorts;
         this.pauseInSeconds = pauseInSeconds;
 
         loadServiceNodes();
 
         // run connection check timer.
-        this.connectionCheckTimer = new ConnectionCheckTimer<R, B, A>(this, this.pauseInSeconds);
+        this.connectionCheckTimer = new ConnectionCheckTimer<G, B, A, F>(this, this.pauseInSeconds);
         this.connectionCheckTimer.runTimer();
     }
 
@@ -119,20 +119,20 @@ public class GrpcClientCustomLoadBalancer<R, B, A> {
 
                     log.info("ServiceName: [" + serviceName + "], host: [" + host + "], port: [" + port + "]");
 
-                    GrpcClient<R, B, A> client = new GrpcClient<>(host, port, rpcClass);
+                    GrpcClient<G, B, A, F> client = new GrpcClient<>(host, port, grpcClass);
 
-                    robinList.add(new Robin<GrpcClient<R, B, A>>(client));
+                    robinList.add(new Robin<GrpcClient<G, B, A, F>>(client));
                 }
             } else {
                 for (String hostPort : hostPorts) {
                     String[] tokens = hostPort.split(":");
 
-                    GrpcClient<R, B, A> client = new GrpcClient<>(tokens[0], Integer.valueOf(tokens[1]), rpcClass);
-                    robinList.add(new Robin<GrpcClient<R, B, A>>(client));
+                    GrpcClient<G, B, A, F> client = new GrpcClient<>(tokens[0], Integer.valueOf(tokens[1]), grpcClass);
+                    robinList.add(new Robin<GrpcClient<G, B, A, F>>(client));
                 }
             }
 
-            roundRobin = new RoundRobin<GrpcClient<R, B, A>>(robinList);
+            roundRobin = new RoundRobin<GrpcClient<G, B, A, F>>(robinList);
         } finally {
             lock.unlock();
         }
@@ -161,33 +161,33 @@ public class GrpcClientCustomLoadBalancer<R, B, A> {
         }
     }
 
-    public List<RoundRobin.Robin<GrpcClient<R, B, A>>> getRobinList() {
+    public List<RoundRobin.Robin<GrpcClient<G, B, A, F>>> getRobinList() {
         return this.robinList;
     }
 
     public void shutdown() {
-        for (RoundRobin.Robin<GrpcClient<R, B, A>> robin : robinList) {
+        for (RoundRobin.Robin<GrpcClient<G, B, A, F>> robin : robinList) {
             try {
                 robin.call().shutdown();
             } catch (InterruptedException e) {
-                log.error("", e);
+                log.error(e.getClass().getSimpleName() + ". " + e.getMessage());
             }
         }
     }
 
-
-    private static class ConnectionCheckTimer<R, B, A> {
-        private ConnectionCheckTimerTask<R, B, A> timerTask;
+    private static class ConnectionCheckTimer<R, B, A, F> {
+    	
+        private ConnectionCheckTimerTask<R, B, A, F> timerTask;
         private int delay = 1000;
         private int pauseInSeconds;
         private Timer timer;
-        private GrpcClientCustomLoadBalancer<R, B, A> lb;
+        private GrpcClientCustomLoadBalancer<R, B, A, F> lb;
 
-        public ConnectionCheckTimer(GrpcClientCustomLoadBalancer<R, B, A> lb, int pauseInSeconds) {
+        public ConnectionCheckTimer(GrpcClientCustomLoadBalancer<R, B, A, F> lb, int pauseInSeconds) {
             this.lb = lb;
             this.pauseInSeconds = pauseInSeconds;
 
-            this.timerTask = new ConnectionCheckTimerTask<R, B, A>(this.lb);
+            this.timerTask = new ConnectionCheckTimerTask<R, B, A, F>(this.lb);
             this.timer = new Timer();
         }
 
@@ -198,21 +198,24 @@ public class GrpcClientCustomLoadBalancer<R, B, A> {
         public void reset() {
             this.timerTask.cancel();
             this.timer.purge();
-            this.timerTask = new ConnectionCheckTimerTask<R, B, A>(this.lb);
+            this.timerTask = new ConnectionCheckTimerTask<R, B, A, F>(this.lb);
         }
     }
 
-    private static class ConnectionCheckTimerTask<R, B, A> extends TimerTask {
-        private GrpcClientCustomLoadBalancer<R, B, A> lb;
+    private static class ConnectionCheckTimerTask<R, B, A, F> extends TimerTask {
+    	
+    	private final Logger log = LoggerFactory.getLogger(this.getClass());
+    	
+        private GrpcClientCustomLoadBalancer<R, B, A, F> lb;
 
-        public ConnectionCheckTimerTask(GrpcClientCustomLoadBalancer<R, B, A> lb) {
+        public ConnectionCheckTimerTask(GrpcClientCustomLoadBalancer<R, B, A, F> lb) {
             this.lb = lb;
         }
 
         @Override
         public void run() {
 
-            for (RoundRobin.Robin<GrpcClient<R, B, A>> robin : lb.getRobinList()) {
+            for (RoundRobin.Robin<GrpcClient<R, B, A, F>> robin : lb.getRobinList()) {
                 String host = robin.call().getHost();
                 int port = robin.call().getPort();
                 try {
@@ -220,8 +223,8 @@ public class GrpcClientCustomLoadBalancer<R, B, A> {
                     Socket socketClient = new Socket(host, port);
                     socketClient.close();
                 } catch (IOException e) {
-                    log.error(e.getMessage());
-                    log.warn("service nodes being reloaded...");
+                    log.error(e.getClass().getSimpleName() + ". " + e.getMessage());
+                    log.warn("Service nodes being reloaded...");
                     this.lb.loadServiceNodes();
                     break;
                 }

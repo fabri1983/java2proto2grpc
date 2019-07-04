@@ -7,6 +7,7 @@ import com.harlan.javagrpc.testutil.rules.GrpcServerStarterRule;
 
 import io.grpc.examples.helloworld.protobuf.GreeterGrpc;
 import io.grpc.examples.helloworld.protobuf.GreeterGrpc.GreeterBlockingStub;
+import io.grpc.examples.helloworld.protobuf.GreeterGrpc.GreeterFutureStub;
 import io.grpc.examples.helloworld.protobuf.GreeterGrpc.GreeterStub;
 import io.grpc.examples.helloworld.protobuf.SearchRequest;
 import io.grpc.examples.helloworld.protobuf.SearchResponse;
@@ -25,14 +26,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.junit.Assert;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Test Grpc Server and Client (non secured connection) using Client Load Balancing and Consul as Service Discovery.
+ * Test Grpc Server and Client (non secured connection) using Client Load Balancing.
  */
 public class GreeterServiceGrpcClientLoadBalancerTest {
 	
@@ -42,14 +42,13 @@ public class GreeterServiceGrpcClientLoadBalancerTest {
 	private static final IServiceDiscoveryProperties serviceDiscoveryProps = 
 			new ServiceDiscoveryPropertiesFromFile();
 	
-	@ClassRule
-	public static ConsulServiceRegisterRule consulServiceRegisterRule = 
-			new ConsulServiceRegisterRule(serviceDiscoveryProps);
+	@Rule( order = 1)
+	public final GrpcServerStarterRule serverStarterRule = new GrpcServerStarterRule(50051, 50052);
 	
-	@Rule
-	public GrpcServerStarterRule serverStarterRule = new GrpcServerStarterRule(50051);
+	@Rule( order = 2)
+	public final ConsulServiceRegisterRule consulServiceRegisterRule = new ConsulServiceRegisterRule(serviceDiscoveryProps);
 	
-	private List<String> staticGrpcHostPortList = Arrays.asList("localhost:50051");
+	private final List<String> staticGrpcHostPortList = Arrays.asList("localhost:50051", "localhost:50052");
 	
 	/**
 	 * Using Load Balancer with Consul Service Discovery.
@@ -65,13 +64,13 @@ public class GreeterServiceGrpcClientLoadBalancerTest {
 		registerGreeterServiceGrpc();
 		
 		// number of concurrent client stubs calls
-		int repeatNumStubs = 10;
+		int repeatNumStubs = 1000;
 		
 		// create grpc client using Consul as load balancer 
-		GrpcClientCustomLoadBalancer<GreeterGrpc, GreeterBlockingStub, GreeterStub> clientLb = 
+		GrpcClientCustomLoadBalancer<GreeterGrpc, GreeterBlockingStub, GreeterStub, GreeterFutureStub> clientLb = 
 				createClientLoadBalancerWithConsul();
 		// repeat it N times
-		List<GrpcClientCustomLoadBalancer<GreeterGrpc, GreeterBlockingStub, GreeterStub>> clientLoadBalancers = 
+		List<GrpcClientCustomLoadBalancer<GreeterGrpc, GreeterBlockingStub, GreeterStub, GreeterFutureStub>> clientLoadBalancers = 
 				repeatClient(repeatNumStubs, clientLb);
 		
 		// wraps as Callable tasks
@@ -91,13 +90,17 @@ public class GreeterServiceGrpcClientLoadBalancerTest {
         List<Future<Void>> futures = executorService.invokeAll(tasks, 5, TimeUnit.SECONDS);
         
         // block until all tasks are done
-        futures.forEach( f -> {
-				try {
-					f.get();
-				} catch (InterruptedException | ExecutionException ex) {
-					throw new RuntimeException(ex);
-				}
-			});
+        long finishedCount = futures.stream()
+	        	.map( f -> {
+					try {
+						return f.get();
+					} catch (InterruptedException | ExecutionException ex) {
+						throw new RuntimeException(ex);
+					}
+				})
+	        	.count();
+        
+        Assert.assertEquals(repeatNumStubs, finishedCount);
 	}
 
 	/**
@@ -109,13 +112,13 @@ public class GreeterServiceGrpcClientLoadBalancerTest {
 		registerGreeterServiceGrpc();
 		
 		// number of concurrent client stubs calls
-		int repeatNumStubs = 10;
+		int repeatNumStubs = 1000;
 		
 		// create grpc client with load balancer and static grpc nodes
-		GrpcClientCustomLoadBalancer<GreeterGrpc, GreeterBlockingStub, GreeterStub> clientLb = 
+		GrpcClientCustomLoadBalancer<GreeterGrpc, GreeterBlockingStub, GreeterStub, GreeterFutureStub> clientLb = 
 				createClientLoadBalancerStaticGrpcNodes();
 		// repeat it N times
-		List<GrpcClientCustomLoadBalancer<GreeterGrpc, GreeterBlockingStub, GreeterStub>> clientLoadBalancers = 
+		List<GrpcClientCustomLoadBalancer<GreeterGrpc, GreeterBlockingStub, GreeterStub, GreeterFutureStub>> clientLoadBalancers = 
 				repeatClient(repeatNumStubs, clientLb);
 		
 		// wraps as Callable tasks
@@ -135,17 +138,26 @@ public class GreeterServiceGrpcClientLoadBalancerTest {
         List<Future<Void>> futures = executorService.invokeAll(tasks, 5, TimeUnit.SECONDS);
         
         // block until all tasks are done
-        futures.forEach( f -> {
-				try {
-					f.get();
-				} catch (InterruptedException | ExecutionException ex) {
-					throw new RuntimeException(ex);
-				}
-			});
+        long finishedCount = futures.stream()
+            	.map( f -> {
+					try {
+						return f.get();
+					} catch (InterruptedException | ExecutionException ex) {
+						throw new RuntimeException(ex);
+					}
+				})
+            	.count();
+        
+        Assert.assertEquals(repeatNumStubs, finishedCount);
 	}
 
-	private GrpcClientCustomLoadBalancer<GreeterGrpc, GreeterBlockingStub, GreeterStub> createClientLoadBalancerWithConsul() {
-		GrpcClientCustomLoadBalancer<GreeterGrpc, GreeterBlockingStub, GreeterStub> lb = 
+	private void registerGreeterServiceGrpc() {
+		GreeterServiceGrpcImpl greeterServiceGrpc = new GreeterServiceGrpcImpl();
+		serverStarterRule.registerService(greeterServiceGrpc);
+	}
+
+	private GrpcClientCustomLoadBalancer<GreeterGrpc, GreeterBlockingStub, GreeterStub, GreeterFutureStub> createClientLoadBalancerWithConsul() {
+		GrpcClientCustomLoadBalancer<GreeterGrpc, GreeterBlockingStub, GreeterStub, GreeterFutureStub> lb = 
 				new GrpcClientCustomLoadBalancer<>(
 						serviceDiscoveryProps.getConsulServiceName(),
 						serviceDiscoveryProps.getConsulHost(),
@@ -154,27 +166,22 @@ public class GreeterServiceGrpcClientLoadBalancerTest {
 		return lb;
 	}
 
-	private GrpcClientCustomLoadBalancer<GreeterGrpc, GreeterBlockingStub, GreeterStub> createClientLoadBalancerStaticGrpcNodes() {
-		GrpcClientCustomLoadBalancer<GreeterGrpc, GreeterBlockingStub, GreeterStub> clientLb = 
+	private GrpcClientCustomLoadBalancer<GreeterGrpc, GreeterBlockingStub, GreeterStub, GreeterFutureStub> createClientLoadBalancerStaticGrpcNodes() {
+		GrpcClientCustomLoadBalancer<GreeterGrpc, GreeterBlockingStub, GreeterStub, GreeterFutureStub> clientLb = 
 				new GrpcClientCustomLoadBalancer<>(staticGrpcHostPortList, GreeterGrpc.class);
 		return clientLb;
 	}
 
-	private List<GrpcClientCustomLoadBalancer<GreeterGrpc, GreeterBlockingStub, GreeterStub>> repeatClient(int repeatNum, 
-			GrpcClientCustomLoadBalancer<GreeterGrpc, GreeterBlockingStub, GreeterStub> clientLb) {
-		List<GrpcClientCustomLoadBalancer<GreeterGrpc, GreeterBlockingStub, GreeterStub>> list = new ArrayList<>(repeatNum);
+	private List<GrpcClientCustomLoadBalancer<GreeterGrpc, GreeterBlockingStub, GreeterStub, GreeterFutureStub>> repeatClient(int repeatNum, 
+			GrpcClientCustomLoadBalancer<GreeterGrpc, GreeterBlockingStub, GreeterStub, GreeterFutureStub> clientLb) {
+		List<GrpcClientCustomLoadBalancer<GreeterGrpc, GreeterBlockingStub, GreeterStub, GreeterFutureStub>> list = new ArrayList<>(repeatNum);
 		for (int i = 0; i < repeatNum; ++i) {
 			list.add(clientLb);
 		}
 		return list;
 	}
 
-	private void registerGreeterServiceGrpc() {
-		GreeterServiceGrpcImpl greeterServiceGrpc = new GreeterServiceGrpcImpl();
-		serverStarterRule.getServerStarter().register(greeterServiceGrpc);
-	}
-	
-	private String callGreeterService(GrpcClientCustomLoadBalancer<GreeterGrpc, GreeterGrpc.GreeterBlockingStub, GreeterGrpc.GreeterStub> lb) {
+	private String callGreeterService(GrpcClientCustomLoadBalancer<GreeterGrpc, GreeterBlockingStub, GreeterStub, GreeterFutureStub> lb) {
 		try {
 			SearchRequest request = SearchRequest.newBuilder()
 					.addHelloRequest(SearchRequest.HelloRequest.newBuilder().setName(MESSAGE))

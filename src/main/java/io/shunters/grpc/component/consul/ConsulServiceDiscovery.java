@@ -26,15 +26,13 @@ import org.slf4j.LoggerFactory;
 
 public class ConsulServiceDiscovery implements ServiceDiscovery {
 
-    private static Logger log = LoggerFactory.getLogger(ConsulServiceDiscovery.class);
+    private final Logger log = LoggerFactory.getLogger(ConsulServiceDiscovery.class);
+    
+    private static final Object lock = new Object();
+    private static ServiceDiscovery serviceDiscovery;
 
     private ConsulClient client;
-
     private SessionClient sessionClient;
-
-    private static final Object lock = new Object();
-
-    private static ServiceDiscovery serviceDiscovery;
 
     public static ServiceDiscovery singleton(String agentHost, int agentPort) {
         if (serviceDiscovery == null) {
@@ -47,18 +45,17 @@ public class ConsulServiceDiscovery implements ServiceDiscovery {
         return serviceDiscovery;
     }
 
-
     private ConsulServiceDiscovery(String agentHost, int agentPort) {
         client = new ConsulClient(agentHost, agentPort);
         sessionClient = new SessionConsulClient(agentHost, agentPort);
-        log.info("consul client info: " + client.toString());
+        log.info("Consul client info: " + client.toString());
     }
 
     /**
      * @param serviceName
      * @param id
      * @param tags
-     * @param address
+     * @param host
      * @param port
      * @param checkScript
      * @param checkTcp         "localhost:9911"
@@ -68,14 +65,14 @@ public class ConsulServiceDiscovery implements ServiceDiscovery {
      * @see https://www.consul.io/docs/agent/checks.html
      */
     @Override
-    public void createService(String serviceName, String id, List<String> tags, String address, int port, 
+    public void createService(String serviceName, String id, List<String> tags, String host, int port, 
     		String checkScript, String checkHttp, String checkTcp, String checkInterval, String checkTimeout, String checkTtl) {
     	
 		// create new service with associated health check
 		NewService newService = new NewService();
 		newService.setName(serviceName);
 		newService.setId(id);
-		newService.setAddress(address);
+		newService.setAddress(host);
 		newService.setPort(port);
 		if (tags != null)
 			newService.setTags(tags);

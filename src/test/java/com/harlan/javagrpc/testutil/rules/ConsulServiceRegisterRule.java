@@ -2,7 +2,13 @@ package com.harlan.javagrpc.testutil.rules;
 
 import com.harlan.javagrpc.testutil.IServiceDiscoveryProperties;
 
+import io.shunters.grpc.api.component.ServiceDiscovery;
 import io.shunters.grpc.component.consul.ConsulServiceDiscovery;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.LockSupport;
 
 import org.junit.rules.ExternalResource;
 import org.slf4j.Logger;
@@ -14,26 +20,31 @@ public class ConsulServiceRegisterRule extends ExternalResource {
 
 	private IServiceDiscoveryProperties serviceDiscoveryProps;
 	private boolean registered;
-
+	private ServiceDiscovery consulSingleton;
+	private List<String> tempServiceIds = new ArrayList<>(2);
 	
 	public ConsulServiceRegisterRule(IServiceDiscoveryProperties props) {
 		super();
 		this.serviceDiscoveryProps = props;
+		this.consulSingleton = ConsulServiceDiscovery.singleton(
+				serviceDiscoveryProps.getConsulHost(), 
+				serviceDiscoveryProps.getConsulPort());
 	}
 
 	@Override
 	protected void before() throws Throwable {
 		try {
-			// attempt to deregister service
-			deregisterService();
 			// register service
 			registerService();
+			
+			// FIXME [Improvement] Query the health check until is available
+			LockSupport.parkNanos(TimeUnit.SECONDS.toNanos(1));
 			
 			registered = true;
 			log.info("Consul: " + serviceDiscoveryProps.getConsulServiceName() + " registered.");
 		}
 		catch (Exception e) {
-			log.warn(e.getMessage());
+			log.warn(e.getClass().getSimpleName() + ". " + e.getMessage());
 			registered = false;
 		}
 	}
@@ -47,7 +58,7 @@ public class ConsulServiceRegisterRule extends ExternalResource {
 			}
 		}
 		catch (Exception e) {
-			log.warn(e.getMessage());
+			log.warn(e.getClass().getSimpleName() + ". " + e.getMessage());
 		}
 		registered = false;
 	}
@@ -57,26 +68,32 @@ public class ConsulServiceRegisterRule extends ExternalResource {
 	}
 
 	private void registerService() {
-		ConsulServiceDiscovery
-			.singleton(serviceDiscoveryProps.getConsulHost(), serviceDiscoveryProps.getConsulPort())
-			.createService(
+		serviceDiscoveryProps.getGrpcAddressList().forEach( grpcAddress -> {
+			
+			String[] split = serviceDiscoveryProps.splitAddress(grpcAddress);
+			String grpcHost = split[0];
+			int grpcPort = Integer.valueOf(split[1]);
+			
+			String serviceId = serviceDiscoveryProps.getConsulServiceIdPrefix() + grpcAddress;
+			tempServiceIds.add(serviceId);
+			
+			consulSingleton.createService(
 					serviceDiscoveryProps.getConsulServiceName(), 
-					serviceDiscoveryProps.getConsulId(), 
+					serviceId, 
 					null, // tags
-					serviceDiscoveryProps.getGrpcHost(), 
-					serviceDiscoveryProps.getGrpcPort(), 
+					grpcHost, 
+					grpcPort, 
 					null, // serviceDiscoveryProps.getConsulCheckScript(),
 					null, // serviceDiscoveryProps.getConsulCheckHttp(),
 					serviceDiscoveryProps.getConsulCheckTcp(), 
 					serviceDiscoveryProps.getConsulCheckInterval(), 
 					serviceDiscoveryProps.getConsulCheckTimeout(),
 					null); // serviceDiscoveryProps.getConsulCheckTtl()
+		});
 	}
 
 	private void deregisterService() {
-		ConsulServiceDiscovery
-			.singleton(serviceDiscoveryProps.getConsulHost(), serviceDiscoveryProps.getConsulPort())
-			.deregisterService(serviceDiscoveryProps.getConsulId());
+		tempServiceIds.forEach( serviceId -> consulSingleton.deregisterService(serviceId) );
 	}
 
 }

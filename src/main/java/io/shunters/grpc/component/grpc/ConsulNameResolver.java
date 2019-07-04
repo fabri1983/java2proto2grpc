@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 
 public class ConsulNameResolver extends NameResolver {
 
-    private static Logger log = LoggerFactory.getLogger(ConsulNameResolver.class);
+    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private URI uri;
     private String serviceName;
@@ -162,6 +162,8 @@ public class ConsulNameResolver extends NameResolver {
 
     private static class ConnectionCheckTimerTask extends TimerTask {
     	
+    	private final Logger log = LoggerFactory.getLogger(this.getClass());
+    	
         private ConsulNameResolver consulNameResolver;
 
         public ConnectionCheckTimerTask(ConsulNameResolver consulNameResolver) {
@@ -180,8 +182,8 @@ public class ConsulNameResolver extends NameResolver {
                         Socket socketClient = new Socket(host, port);
                         socketClient.close();
                     } catch (IOException e) {
-                        log.error(e.getMessage());
-                        log.warn("service nodes being reloaded...");
+                        log.error(e.getClass().getSimpleName() + ". " + e.getMessage());
+                        log.warn("Service nodes being reloaded...");
                         this.consulNameResolver.loadServiceNodes();
                         break;
                     }

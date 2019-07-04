@@ -11,42 +11,46 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Wraps the access to the different types of Grpc Stub: async, blocking (missing future stub).
- * Created by mykidong on 2018-01-11.
+ * Wraps the access to the different types of Grpc Stub: B (blocking), A (async), F (Future).
+ * G defines the Grpc class.
  */
-public class GrpcClient<R, B, A> {
+public class GrpcClient<G, B, A, F> {
 
 	private static Logger log = LoggerFactory.getLogger(GrpcClientCustomLoadBalancer.class);
 	
     private final ManagedChannel channel;
     private B blockingStub;
     private A asyncStub;
-
+    private F futureStub;
+    
     private String host;
     private int port;
-    private Class<R> rpcClass;
+    private Class<G> grpcClass;
 
-    public GrpcClient(String host, int port, Class<R> rpcClass) {
+    public GrpcClient(String host, int port, Class<G> grpcClass) {
         this(ManagedChannelBuilder.forAddress(host, port)
-        		.usePlaintext().build(), rpcClass);
+        		.usePlaintext().build(), grpcClass);
 
         this.host = host;
         this.port = port;
-        this.rpcClass = rpcClass;
+        this.grpcClass = grpcClass;
     }
 
     @SuppressWarnings("unchecked")
-	private GrpcClient(ManagedChannel channel, Class<R> rpcClass) {
+	public GrpcClient(ManagedChannel channel, Class<G> grpcClass) {
         this.channel = channel;
-
         try {
-            Method blockingStubMethod = rpcClass.getMethod("newBlockingStub", Channel.class);
+            Method blockingStubMethod = grpcClass.getMethod("newBlockingStub", Channel.class);
             blockingStub = (B) blockingStubMethod.invoke(null, channel);
 
-            Method asyncStubMethod = rpcClass.getMethod("newStub", Channel.class);
+            Method asyncStubMethod = grpcClass.getMethod("newStub", Channel.class);
             asyncStub = (A) asyncStubMethod.invoke(null, channel);
-        } catch (Exception e) {
-        	 log.error(e.getMessage());
+            
+            Method futureStubMethod = grpcClass.getMethod("newFutureStub", Channel.class);
+            futureStub = (F) futureStubMethod.invoke(null, channel);
+        }
+        catch (Exception e) {
+        	 log.error(e.getClass().getSimpleName() + ". " + e.getMessage());
         }
     }
 
@@ -62,6 +66,10 @@ public class GrpcClient<R, B, A> {
         return this.asyncStub;
     }
 
+    public F getFutureStub() {
+        return this.futureStub;
+    }
+    
     public String getHost() {
         return host;
     }
@@ -70,7 +78,7 @@ public class GrpcClient<R, B, A> {
         return port;
     }
 
-    public Class<R> getRpcClass() {
-        return rpcClass;
+    public Class<G> getGrpcClass() {
+        return grpcClass;
     }
 }

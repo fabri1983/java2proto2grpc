@@ -1,6 +1,7 @@
 package com.harlan.javagrpc.testutil.rules;
 
 import com.halran.javagrpc.grpc.artifact.GrpcServerStarter;
+import com.halran.javagrpc.grpc.artifact.GrpcServiceMarker;
 import com.halran.javagrpc.grpc.artifact.IGrpcServerStarter;
 
 import java.io.IOException;
@@ -10,30 +11,35 @@ import org.junit.runners.model.Statement;
 
 public class GrpcServerStarterRule extends GrpcCleanupRule {
 
-	private IGrpcServerStarter serverStarter;
-	private int port;
+	private IGrpcServerStarter[] serverStarters;
+	private int[] ports;
 	
-	public GrpcServerStarterRule(int port) {
+	public GrpcServerStarterRule(int ... ports) {
 		super();
-		this.port = port;
+		this.ports = ports;
 	}
 	
 	@Override
 	public Statement apply(final Statement base, Description description) {
 		boolean withShutdownHook = false;
-		serverStarter = new GrpcServerStarter(port, withShutdownHook);
-		startServerOrThrow();
-		register(serverStarter.getServer());
+		serverStarters = new IGrpcServerStarter[ports.length];
+		for (int i=0; i < serverStarters.length; ++i) {
+			serverStarters[i] = new GrpcServerStarter(ports[i], withShutdownHook);
+			startServerOrThrow(i);
+			register(serverStarters[i].getServer());
+		}
 		return super.apply(base, description);
 	}
 
-	public IGrpcServerStarter getServerStarter() {
-		return serverStarter;
+	public void registerService(GrpcServiceMarker grpcService) {
+		for (IGrpcServerStarter serverStarter : serverStarters) {
+			serverStarter.register(grpcService);
+		}
 	}
 	
-	private void startServerOrThrow() {
+	private void startServerOrThrow(int i) {
 		try {
-			serverStarter.start();
+			serverStarters[i].start();
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
