@@ -13,7 +13,7 @@ import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc.LoginServi
 import com.harlan.javagrpc.testutil.IServiceDiscoveryProperties;
 import com.harlan.javagrpc.testutil.ServiceDiscoveryPropertiesFromFile;
 import com.harlan.javagrpc.testutil.rules.ConsulServiceRegisterRule;
-import com.harlan.javagrpc.testutil.rules.GrpcManagedChannelWithConsulRule;
+import com.harlan.javagrpc.testutil.rules.GrpcManagedChannelServiceDiscoveryRule;
 import com.harlan.javagrpc.testutil.rules.GrpcServerStarterRule;
 
 import java.util.ArrayList;
@@ -51,12 +51,14 @@ public class LoginServiceGrpcClientConsulServiceDiscoveryTest {
 	public GrpcServerStarterRule serverStarterRule = new GrpcServerStarterRule(50051);
 	
 	@Rule
-	public GrpcManagedChannelWithConsulRule mangedChannelRule = new GrpcManagedChannelWithConsulRule(
+	public GrpcManagedChannelServiceDiscoveryRule managedChannelRule = new GrpcManagedChannelServiceDiscoveryRule(
 			GrpcConfiguration.fromConsulServiceDiscovery(
 					serviceDiscoveryProps.getConsulServiceName(),
 					serviceDiscoveryProps.getConsulHost(),
 					serviceDiscoveryProps.getConsulPort(),
-					0) /* 0 secs = disable health check */);
+					0, // 0 secs = disable health check
+					false // do not use grpc load balancing
+			));
 
 	@Test
 	public void testMultiClientWithServiceDiscovery() throws InterruptedException {
@@ -121,7 +123,7 @@ public class LoginServiceGrpcClientConsulServiceDiscoveryTest {
 	}
 	
 	private LoginService createLoginServiceClientStub() {
-		LoginServiceFutureStub stub = LoginServiceGrpc.newFutureStub(mangedChannelRule.getChannel());
+		LoginServiceFutureStub stub = LoginServiceGrpc.newFutureStub(managedChannelRule.getChannel());
 		LoginService loginService = new LoginServiceGrpcClientProxy(stub);
 		return loginService;
 	}

@@ -37,7 +37,7 @@ have a class hierarchy and you want to skip one or several of them.
 - Use async grpc calls by *ListenableFuture*.
 - Use of java compiler *-parameter* option to expose parameters name in signature definition, so we can get the real parameter name and 
 so improve the *.proto* file readablity.
-- Provides a **ManagedChannelServiceDiscovery** with Consul Service Discovery capability, 
+- Provides a **ManagedChannelServiceDiscovery** with Consul Service Discovery and Load Balancer capability, 
 from [grpc-java-load-balancer-using-consul](https://github.com/mykidong/grpc-java-load-balancer-using-consul). See tests.
 
 
@@ -157,18 +157,19 @@ See this [link](https://docs.docker.com/samples/library/consul/#running-consul-f
 	- run *Consul* on *Windows* with *Docker Tool Box*:
 	```sh
 	Development mode:
-	docker run -d -p 8500:8500 -p 172.17.0.1:53:8600/udp -p 8400:8400 -p 8300:8300 --name=dev-consul -e CONSUL_BIND_INTERFACE=eth0 consul
-	Agent Server mode:
-	docker run -d -p 8500:8500 -p 172.17.0.1:53:8600/udp -p 8400:8400 -p 8300:8300 --name=consul consul agent -server -bootstrap -ui -node=docker-1 -client=172.17.0.2 -advertise=172.17.0.2 -data-dir=/tmp/node
+	docker run -d -p 8500:8500 -p 172.17.0.1:53:8600/udp -p 8400:8400 -p 8300:8300 --name=consul-dev -e CONSUL_BIND_INTERFACE=eth0 consul
+	or
+	Agent in Client mode:
+	docker run -d -p 8500:8500 -p 172.17.0.1:53:8600/udp -p 8400:8400 -p 8300:8300 --name=consul-agent consul agent -server -bootstrap -ui -node=docker-1 -client=0.0.0.0 -data-dir=/tmp/node
 	```
 		- Within Consul:
-			- port 8300 is used by servers to handle incoming requests from other agents (TCP only).
-			- port 8400 is used for Client requests
+			- port 8300 is used by Consul servers to handle incoming requests from other agents (TCP only).
+			- port 8400 is used for Client requests.
 			- port 8500 is used for HTTP Api.
 			- port 8600 is used for answer DNS queries. By using *-p* option, we are exposing these ports to the host machine.
+		- *-client=0.0.0.0* binds to all interfaces (docker network and host network).
 		- 172.17.0.1 is the Docker bridge IP address. We are remapping Consul Container’s port 8600 to host machine’s Docker bridge port 53 so that Containers on that host can use Consul for DNS.
 		- *-bootstrap* means consul runs in a standalone mode.
-		- 172.17.0.2 is the Docker IP assigned to the network interface.
 
 - Considerations on *Docker Tool Box*:
 *Docker Tool Box* is exposed at IP 192.168.99.100.

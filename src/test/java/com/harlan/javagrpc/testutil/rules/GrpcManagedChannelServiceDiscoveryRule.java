@@ -9,12 +9,12 @@ import io.grpc.ManagedChannel;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
-public class GrpcManagedChannelWithConsulRule extends GrpcCleanupRule {
+public class GrpcManagedChannelServiceDiscoveryRule extends GrpcCleanupRule {
 
 	private IGrpcManagedChannel managedChannel;
 	private GrpcConfiguration config;
 	
-	public GrpcManagedChannelWithConsulRule(GrpcConfiguration config) {
+	public GrpcManagedChannelServiceDiscoveryRule(GrpcConfiguration config) {
 		super();
 		this.config = config;
 	}

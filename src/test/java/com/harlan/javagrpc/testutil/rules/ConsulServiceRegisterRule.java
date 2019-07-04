@@ -64,7 +64,7 @@ public class ConsulServiceRegisterRule extends ExternalResource {
 			.createService(
 					serviceDiscoveryProps.getConsulServiceName(), 
 					serviceDiscoveryProps.getConsulId(), 
-					null, 
+					null, // tags
 					serviceDiscoveryProps.getGrpcHost(), 
 					serviceDiscoveryProps.getGrpcPort(), 
 					null, // serviceDiscoveryProps.getConsulCheckScript(),

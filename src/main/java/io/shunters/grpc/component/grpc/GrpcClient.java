@@ -11,11 +11,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Wraps the access to the different types of Grpc Stub: async, blocking (missing future stub).
  * Created by mykidong on 2018-01-11.
  */
 public class GrpcClient<R, B, A> {
 
-	private static Logger log = LoggerFactory.getLogger(GrpcClientLoadBalancer.class);
+	private static Logger log = LoggerFactory.getLogger(GrpcClientCustomLoadBalancer.class);
 	
     private final ManagedChannel channel;
     private B blockingStub;
@@ -45,7 +46,7 @@ public class GrpcClient<R, B, A> {
             Method asyncStubMethod = rpcClass.getMethod("newStub", Channel.class);
             asyncStub = (A) asyncStubMethod.invoke(null, channel);
         } catch (Exception e) {
-        	 log.error("", e);
+        	 log.error(e.getMessage());
         }
     }
 

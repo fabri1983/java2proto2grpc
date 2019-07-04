@@ -21,22 +21,28 @@ public class GrpcManagedChannelServiceDiscovery extends GrpcManagedChannel {
 		List<String> staticGrpcHostPorts = config.getStaticGrpcHostPorts();
         int timerCheckPeriodInSeconds = config.getTimerCheckPeriodInSeconds();
         
+        // create dynamic or static service discovery resolver
         ConsulNameResolver.ConsulNameResolverProvider consulNameResolverProvider = 
         		new ConsulNameResolver.ConsulNameResolverProvider(consulServiceName, timerCheckPeriodInSeconds, 
         				ignoreConsul, staticGrpcHostPorts);
 
-        // use round robin policy
-        String loadBalancerPolicyName = LoadBalancerRegistry.getDefaultRegistry()
-        		.getProvider("round_robin")
-        		.getPolicyName(); 
-        
-        return ManagedChannelBuilder
+        ManagedChannelBuilder<?> builder = ManagedChannelBuilder
         		.forTarget(consulAddr)
                 .nameResolverFactory(consulNameResolverProvider)
-                .defaultLoadBalancingPolicy(loadBalancerPolicyName)
                 // use plain text if your entire microservice ecosystem is inside a controlled network, 
                 // otherwise setup your security artifacts such as key/trust stores
                 .usePlaintext();
+        
+        // grpc load balancing?
+        if (config.isUseGrpcLoadBalancing()) {
+        	// use round robin policy
+            String loadBalancerPolicyName = LoadBalancerRegistry.getDefaultRegistry()
+            		.getProvider("round_robin")
+            		.getPolicyName();
+            builder.defaultLoadBalancingPolicy(loadBalancerPolicyName);
+        }
+        
+		return builder;
 	}
 	
 }
