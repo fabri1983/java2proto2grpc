@@ -72,20 +72,21 @@ public class LoginServiceGrpcClientConsulServiceDiscoveryTest {
 		registerLoginServiceGrpc();
 		
 		// number of concurrent client stubs calls
-		int repeatNumStubs = 10;
+		int repeatNumStubs = 1000;
 		
 		// create login service proxy (stub)
 		List<LoginService> loginServices = repeatLoginServiceClientStub(repeatNumStubs);
 		
 		// create some testing data
 		User[] users = createUsers();
+		int usersCount = users.length;
 		
         // wraps as Callable tasks
      	List<Callable<Void>> tasks = loginServices.stream()
      			.map( loginService -> new Callable<Void>() {
      				@Override
      	            public Void call() {
-     					int randomIndex = (int) (Math.random() * users.length);
+     					int randomIndex = (int) (Math.random() * usersCount);
      					User user = users[randomIndex];
      					callAndAssert(loginService, user);
      	                return null;
@@ -98,13 +99,17 @@ public class LoginServiceGrpcClientConsulServiceDiscoveryTest {
         List<Future<Void>> futures = executorService.invokeAll(tasks, 5, TimeUnit.SECONDS);
         
         // block until all tasks are done
-        futures.forEach( f -> {
+        long finishedCount = futures.stream()
+        	.map( f -> {
 				try {
-					f.get();
+					return f.get();
 				} catch (InterruptedException | ExecutionException ex) {
 					throw new RuntimeException(ex);
 				}
-			});
+			})
+        	.count();
+        
+        Assert.assertEquals(repeatNumStubs, finishedCount);
 	}
 
 	private void registerLoginServiceGrpc() {

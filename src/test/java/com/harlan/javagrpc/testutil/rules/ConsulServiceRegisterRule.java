@@ -29,8 +29,6 @@ public class ConsulServiceRegisterRule extends ExternalResource {
 			// register service
 			registerService();
 			
-			// TODO wait until health check is ok. Currently health check is omitted in ConsulServiceDiscovery.java line 109
-			
 			registered = true;
 			log.info("Consul: " + serviceDiscoveryProps.getConsulServiceName() + " registered.");
 		}

@@ -20,6 +20,7 @@ public class ServiceDiscoveryPropertiesFromFile implements IServiceDiscoveryProp
 	private String consulCheckTimeout;
 	
 	public ServiceDiscoveryPropertiesFromFile() {
+		
 		Properties props = PropertiesFromClassLoader.getProperties("service-discovery-test.properties");
 		
 		this.grpcHost = props.getProperty("grpc.host", DEFAULT_GRPC_HOST);
@@ -29,8 +30,8 @@ public class ServiceDiscoveryPropertiesFromFile implements IServiceDiscoveryProp
 		this.consulHost = props.getProperty("consul.host");
 		this.consulPort = Integer.parseInt(props.getProperty("consul.port", String.valueOf(DEFAULT_CONSUL_CLIENT_PORT)));
 		this.consulCheckTcp = props.getProperty("consul.check.tcp");
-		this.consulCheckInterval = "10s";
-		this.consulCheckTtl = "30s"; // Consul internally does a curl every 10 seconds
+		this.consulCheckInterval = "1s"; // if bigger than 1s then you have to wait some seconds before a new registered service gets its check available
+		this.consulCheckTtl = "30s";
 		this.consulCheckTimeout = "1s";
 	}
 
