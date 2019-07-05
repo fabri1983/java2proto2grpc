@@ -37,7 +37,7 @@ have a class hierarchy and you want to skip one or several of them.
 - Use async grpc calls by *ListenableFuture*.
 - Use of java compiler *-parameter* option to expose parameters name in signature definition, so we can get the real parameter name and 
 so improve the *.proto* file readablity.
-- Provides a **ManagedChannelServiceDiscovery** with Consul Service Discovery and Load Balancer capability, 
+- Provides a **ManagedChannelServiceDiscovery** with a **Consul Service Discovery** client and **Load Balancer** capability, 
 from [grpc-java-load-balancer-using-consul](https://github.com/mykidong/grpc-java-load-balancer-using-consul). See tests.
 
 
