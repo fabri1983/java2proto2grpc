@@ -138,38 +138,37 @@ Useful tips
 
 - I have some tracked files which potentially can be modified.  
 I don't want to untrack them, I just don't want them to appear as modified and I don't want them to be staged when I git add.  
-
-Solution:
-```sh
-git update-index --assume-unchanged <file>
-```
-To undo and start tracking again:
-```sh
-git update-index --no-assume-unchanged [<file> ...]
-```
+	Solution:
+	```sh
+	git update-index --assume-unchanged <file>
+	```
+	To undo and start tracking again:
+	```sh
+	git update-index --no-assume-unchanged [<file> ...]
+	```
 
 - Running Consul in Docker:
 See this [link](https://docs.docker.com/samples/library/consul/#running-consul-for-development)
 	- download docker *Consul image* if not already:
-	```sh
-	docker pull consul
-	```
+		```sh
+		docker pull consul
+		```
 	- run *Consul* on *Windows* with *Docker Tool Box*:
-	```sh
-	Development mode:
-	docker run -d -p 8500:8500 -p 172.17.0.1:53:8600/udp -p 8400:8400 -p 8300:8300 --name=consul-dev -e CONSUL_BIND_INTERFACE=eth0 consul
-	or
-	Agent in Client mode:
-	docker run -d -p 8500:8500 -p 172.17.0.1:53:8600/udp -p 8400:8400 -p 8300:8300 --name=consul-agent consul agent -server -bootstrap -ui -node=docker-1 -client=0.0.0.0 -data-dir=/tmp/node
-	```
-		- Within Consul:
-			- port 8300 is used by Consul servers to handle incoming requests from other agents (TCP only).
-			- port 8400 is used for Client requests.
-			- port 8500 is used for HTTP Api.
-			- port 8600 is used for answer DNS queries. By using *-p* option, we are exposing these ports to the host machine.
-		- *-client=0.0.0.0* binds to all interfaces (docker network and host network).
-		- 172.17.0.1 is the Docker bridge IP address. We are remapping Consul Container’s port 8600 to host machine’s Docker bridge port 53 so that Containers on that host can use Consul for DNS.
-		- *-bootstrap* means consul runs in a standalone mode.
+		```sh
+		Development mode:
+		docker run -d -p 8500:8500 -p 172.17.0.1:53:8600/udp -p 8400:8400 -p 8300:8300 --name=consul-dev -e CONSUL_BIND_INTERFACE=eth0 consul
+		or
+		Agent in Client mode:
+		docker run -d -p 8500:8500 -p 172.17.0.1:53:8600/udp -p 8400:8400 -p 8300:8300 --name=consul-agent consul agent -server -bootstrap -ui -node=docker-1 -client=0.0.0.0 -data-dir=/tmp/node
+		```
+	- Within Consul:
+		- port 8300 is used by Consul servers to handle incoming requests from other agents (TCP only).
+		- port 8400 is used for Client requests.
+		- port 8500 is used for HTTP Api.
+		- port 8600 is used for answer DNS queries. By using *-p* option, we are exposing these ports to the host machine.
+	- *-client=0.0.0.0* binds to all interfaces (docker network and host network).
+	- 172.17.0.1 is the Docker bridge IP address. We are remapping Consul Container’s port 8600 to host machine’s Docker bridge port 53 so that Containers on that host can use Consul for DNS.
+	- *-bootstrap* means consul runs in a standalone mode.
 
 - Considerations on *Docker Tool Box*:
 *Docker Tool Box* is exposed at IP 192.168.99.100.
