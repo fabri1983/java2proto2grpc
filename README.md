@@ -115,8 +115,6 @@ You need to setup the current consul ip address in order to test run **LoginServ
 TODO
 ---
 - Modularize JavaToProtoNew. Code is written in a very imperative way, and hard to mantain.
-- Use more than one static gRPC server on junit *GreeterServiceGrpcClientLoadBalancerTest*.
-- Add ability to use *GrpcClientLoadBalancer* with current gRPC clients.
 - Add converters similar to *net.badata.protobuf.converter.type.XxxConverter* for fields with types: Duration. 
 See [this](https://github.com/google/qrisp/blob/master/google/protobuf/java/util/src/main/java/com/google/protobuf/util/TimeUtil.java).
 - Replace custom protobuf-converter solution by [MapStruct](http://mapstruct.org/). It's faster and reflection free.
