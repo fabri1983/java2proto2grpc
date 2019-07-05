@@ -1,16 +1,14 @@
 package com.harlan.javagrpc.main.login;
 
 import com.halran.javagrpc.grpc.artifact.GrpcConfiguration;
-import com.halran.javagrpc.grpc.artifact.GrpcManagedChannelSecured;
-import com.halran.javagrpc.grpc.artifact.IGrpcManagedChannel;
+import com.halran.javagrpc.grpc.artifact.client.GrpcManagedChannelSecured;
+import com.halran.javagrpc.grpc.artifact.client.IGrpcManagedChannel;
 import com.halran.javagrpc.model.Corpus;
 import com.halran.javagrpc.model.Request;
 import com.halran.javagrpc.model.Request2;
 import com.halran.javagrpc.model.Response;
 import com.harlan.javagrpc.service.LoginServiceGrpcClientProxy;
 import com.harlan.javagrpc.service.contract.LoginService;
-import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc;
-import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc.LoginServiceFutureStub;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,8 +25,7 @@ public class LoginClientMain {
 		IGrpcManagedChannel managedChannel = new GrpcManagedChannelSecured(GrpcConfiguration.from(host, port));
 		
 		// create login service proxy (stub)
-		LoginServiceFutureStub futureStub = LoginServiceGrpc.newFutureStub(managedChannel.getChannel());
-		LoginService loginService = new LoginServiceGrpcClientProxy(futureStub);
+		LoginService loginService = new LoginServiceGrpcClientProxy(managedChannel);
 		
 		// create some testing data
 		User[] users = new User[] { 

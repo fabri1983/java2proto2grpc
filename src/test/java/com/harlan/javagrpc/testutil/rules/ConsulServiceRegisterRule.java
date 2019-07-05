@@ -1,9 +1,8 @@
 package com.harlan.javagrpc.testutil.rules;
 
+import com.harlan.javagrpc.grpc.artifact.discovery.ConsulServiceDiscovery;
+import com.harlan.javagrpc.grpc.artifact.discovery.IServiceDiscovery;
 import com.harlan.javagrpc.testutil.IServiceDiscoveryProperties;
-
-import io.shunters.grpc.api.component.ServiceDiscovery;
-import io.shunters.grpc.component.consul.ConsulServiceDiscovery;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +19,7 @@ public class ConsulServiceRegisterRule extends ExternalResource {
 
 	private IServiceDiscoveryProperties serviceDiscoveryProps;
 	private boolean registered;
-	private ServiceDiscovery consulClient;
+	private IServiceDiscovery consulClient;
 	private List<String> grpcAddressList;
 	private List<String> tempServiceIds = new ArrayList<>(2);
 	

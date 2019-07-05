@@ -6,6 +6,8 @@ import com.halran.javagrpc.model.Request2;
 import com.halran.javagrpc.model.TestList;
 import com.halran.javagrpc.model.TestMap;
 import com.harlan.javagrpc.service.contract.protobuf.RequestProto;
+import com.harlan.javagrpc.testutil.rules.JunitPrintTestName;
+import com.harlan.javagrpc.testutil.rules.JunitStopWatch;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -13,12 +15,23 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.badata.protobuf.converter.Converter;
 
 public class JavaToProtoNewTest {
 
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	
+	@Rule
+	public JunitStopWatch stopwatch = new JunitStopWatch(log);
+	
+	@Rule
+	public JunitPrintTestName testName = new JunitPrintTestName(log);
+	
 	@Test
 	public void domainModelToProtoAndViceversaTest() {
 		

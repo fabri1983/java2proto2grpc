@@ -1,4 +1,6 @@
-package com.halran.javagrpc.grpc.artifact;
+package com.halran.javagrpc.grpc.artifact.client;
+
+import com.halran.javagrpc.grpc.artifact.GrpcConfiguration;
 
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;

@@ -1,4 +1,4 @@
-package io.shunters.grpc.component.consul;
+package com.harlan.javagrpc.grpc.artifact.discovery;
 
 import com.ecwid.consul.v1.ConsulClient;
 import com.ecwid.consul.v1.QueryParams;
@@ -12,8 +12,6 @@ import com.ecwid.consul.v1.session.SessionClient;
 import com.ecwid.consul.v1.session.SessionConsulClient;
 import com.ecwid.consul.v1.session.model.NewSession;
 
-import io.shunters.grpc.api.component.ServiceDiscovery;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,25 +22,33 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ConsulServiceDiscovery implements ServiceDiscovery {
+public class ConsulServiceDiscovery implements IServiceDiscovery {
 
     private final Logger log = LoggerFactory.getLogger(ConsulServiceDiscovery.class);
     
     private static final Object lock = new Object();
-    private static ServiceDiscovery serviceDiscovery;
+    private static volatile IServiceDiscovery instance;
 
     private ConsulClient client;
     private SessionClient sessionClient;
 
-    public static ServiceDiscovery singleton(String agentHost, int agentPort) {
-        if (serviceDiscovery == null) {
-            synchronized (lock) {
-                if (serviceDiscovery == null) {
-                    serviceDiscovery = new ConsulServiceDiscovery(agentHost, agentPort);
-                }
-            }
-        }
-        return serviceDiscovery;
+    public static IServiceDiscovery singleton(String agentHost, int agentPort) {
+    	// Double-check lock: this is a correct usage for a lazy initialization Singleton
+    	
+    	// Minimize slow accesses to volatile member
+    	IServiceDiscovery result = instance;
+    	
+    	// First check (no locking)
+		if (result != null) { 
+			return result;
+		}
+		synchronized (lock) {
+			// Second check (with locking)
+			if (instance == null) {
+				instance = new ConsulServiceDiscovery(agentHost, agentPort);
+			}
+			return instance;
+		}
     }
 
     private ConsulServiceDiscovery(String agentHost, int agentPort) {

@@ -1,10 +1,10 @@
-package io.shunters.grpc.api.component;
+package com.harlan.javagrpc.grpc.artifact.discovery;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public interface ServiceDiscovery {
+public interface IServiceDiscovery {
 
     void createService(String serviceName, String id, List<String> tags, String address, int port, 
     		String script, String http, String tcp, String checkInterval, String checkTimeout, String checkTtl);

@@ -8,13 +8,13 @@ import com.halran.javagrpc.model.Response;
 import com.harlan.javagrpc.business.LoginBusinessImpl;
 import com.harlan.javagrpc.business.contract.LoginBusiness;
 import com.harlan.javagrpc.service.contract.LoginService;
-import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc;
-import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc.LoginServiceFutureStub;
 import com.harlan.javagrpc.testutil.IServiceDiscoveryProperties;
 import com.harlan.javagrpc.testutil.ServiceDiscoveryPropertiesFromFile;
 import com.harlan.javagrpc.testutil.rules.ConsulServiceRegisterRule;
 import com.harlan.javagrpc.testutil.rules.GrpcManagedChannelServiceDiscoveryRule;
 import com.harlan.javagrpc.testutil.rules.GrpcServerStarterRule;
+import com.harlan.javagrpc.testutil.rules.JunitPrintTestName;
+import com.harlan.javagrpc.testutil.rules.JunitStopWatch;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,7 +42,7 @@ public class LoginServiceGrpcClientConsulServiceDiscoveryTest {
 	
 	private static final IServiceDiscoveryProperties serviceDiscoveryProps = 
 			new ServiceDiscoveryPropertiesFromFile();
-	
+
 	@Rule( order = 1)
 	public GrpcServerStarterRule serverStarterRule = new GrpcServerStarterRule(50051);
 	
@@ -60,6 +60,12 @@ public class LoginServiceGrpcClientConsulServiceDiscoveryTest {
 					false // do not use grpc load balancing
 			));
 
+	@Rule( order = 100)
+	public JunitStopWatch stopwatch = new JunitStopWatch(log);
+	
+	@Rule( order = 101)
+	public JunitPrintTestName testName = new JunitPrintTestName(log);
+	
 	@Test
 	public void testMultiClientWithServiceDiscovery() throws InterruptedException {
 		if (!consulServiceRegisterRule.isRegistered()) {
@@ -104,6 +110,7 @@ public class LoginServiceGrpcClientConsulServiceDiscoveryTest {
 					try {
 						return f.get();
 					} catch (InterruptedException | ExecutionException ex) {
+						log.error("{}. {}", ex.getClass().getSimpleName(), ex.getMessage());
 						throw new RuntimeException(ex);
 					}
 				})
@@ -128,8 +135,7 @@ public class LoginServiceGrpcClientConsulServiceDiscoveryTest {
 	}
 	
 	private LoginService createLoginServiceClientStub() {
-		LoginServiceFutureStub stub = LoginServiceGrpc.newFutureStub(managedChannelRule.getChannel());
-		LoginService loginService = new LoginServiceGrpcClientProxy(stub);
+		LoginService loginService = new LoginServiceGrpcClientProxy(managedChannelRule.getManagedChannel());
 		return loginService;
 	}
 

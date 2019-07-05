@@ -1,13 +1,18 @@
-package com.halran.javagrpc.grpc.artifact;
+package com.halran.javagrpc.grpc.artifact.discovery;
+
+import com.halran.javagrpc.grpc.artifact.GrpcConfiguration;
+import com.halran.javagrpc.grpc.artifact.client.GrpcManagedChannel;
+import com.harlan.javagrpc.grpc.artifact.discovery.ConsulNameResolver;
 
 import io.grpc.LoadBalancerRegistry;
 import io.grpc.ManagedChannelBuilder;
-import io.shunters.grpc.component.grpc.ConsulNameResolver;
 
 import java.util.List;
 
 public class GrpcManagedChannelServiceDiscovery extends GrpcManagedChannel {
 
+	private String targetAddress;
+	
 	public GrpcManagedChannelServiceDiscovery(GrpcConfiguration config) {
 		super(config);
 	}
@@ -15,7 +20,7 @@ public class GrpcManagedChannelServiceDiscovery extends GrpcManagedChannel {
 	@Override
 	protected ManagedChannelBuilder<?> createManagedChannelBuilder(GrpcConfiguration config) {
 		
-		String consulAddr = "consul://" + config.getConsulHost() + ":" + config.getConsulPort();
+		targetAddress = "consul://" + config.getConsulHost() + ":" + config.getConsulPort();
 		String consulServiceName = config.getConsulServiceName();
 		boolean ignoreConsul = config.isIgnoreConsul();
 		List<String> staticGrpcHostPorts = config.getStaticGrpcHostPorts();
@@ -27,7 +32,7 @@ public class GrpcManagedChannelServiceDiscovery extends GrpcManagedChannel {
         				ignoreConsul, staticGrpcHostPorts);
 
         ManagedChannelBuilder<?> builder = ManagedChannelBuilder
-        		.forTarget(consulAddr)
+        		.forTarget(targetAddress)
                 .nameResolverFactory(consulNameResolverProvider)
                 // use plain text if your entire microservice ecosystem is inside a controlled network, 
                 // otherwise setup your security artifacts such as key/trust stores
@@ -43,6 +48,11 @@ public class GrpcManagedChannelServiceDiscovery extends GrpcManagedChannel {
         }
         
 		return builder;
+	}
+	
+	@Override
+	public String getTargetAddress() {
+		return targetAddress;
 	}
 	
 }

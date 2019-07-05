@@ -1,8 +1,8 @@
 package com.harlan.javagrpc.testutil.rules;
 
-import com.halran.javagrpc.grpc.artifact.GrpcServerStarter;
-import com.halran.javagrpc.grpc.artifact.GrpcServiceMarker;
-import com.halran.javagrpc.grpc.artifact.IGrpcServerStarter;
+import com.halran.javagrpc.grpc.artifact.server.GrpcServerStarter;
+import com.halran.javagrpc.grpc.artifact.server.GrpcServiceMarker;
+import com.halran.javagrpc.grpc.artifact.server.IGrpcServerStarter;
 
 import java.io.IOException;
 

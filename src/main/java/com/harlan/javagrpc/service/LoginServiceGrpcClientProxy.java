@@ -1,7 +1,8 @@
 package com.harlan.javagrpc.service;
 
 import com.google.protobuf.Empty;
-import com.halran.javagrpc.grpc.artifact.GrpcClientProxyLimited;
+import com.halran.javagrpc.grpc.artifact.client.GrpcClientStubProxy;
+import com.halran.javagrpc.grpc.artifact.client.IGrpcManagedChannel;
 import com.halran.javagrpc.model.Request;
 import com.halran.javagrpc.model.Request2;
 import com.halran.javagrpc.model.Response;
@@ -10,19 +11,21 @@ import com.harlan.javagrpc.service.contract.protobuf.GetResProtoIn;
 import com.harlan.javagrpc.service.contract.protobuf.GetResProtoOut;
 import com.harlan.javagrpc.service.contract.protobuf.LoginProtoIn;
 import com.harlan.javagrpc.service.contract.protobuf.LoginProtoOut;
+import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc;
+import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc.LoginServiceBlockingStub;
 import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc.LoginServiceFutureStub;
+import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc.LoginServiceStub;
 import com.harlan.javagrpc.service.contract.protobuf.Request2Proto;
 import com.harlan.javagrpc.service.contract.protobuf.RequestProto;
 
 import net.badata.protobuf.converter.Converter;
 
-public class LoginServiceGrpcClientProxy extends GrpcClientProxyLimited implements LoginService {
+public class LoginServiceGrpcClientProxy 
+	extends GrpcClientStubProxy<LoginServiceGrpc, LoginServiceBlockingStub, LoginServiceStub, LoginServiceFutureStub> 
+	implements LoginService {
 
-	private LoginServiceFutureStub futureStub;
-	
-	public LoginServiceGrpcClientProxy(LoginServiceFutureStub futureStub) {
-		super();
-		this.futureStub = futureStub;
+	public LoginServiceGrpcClientProxy(IGrpcManagedChannel managedChannel) {
+		super(managedChannel, LoginServiceGrpc.class);
 	}
 	
 	@Override
@@ -31,7 +34,7 @@ public class LoginServiceGrpcClientProxy extends GrpcClientProxyLimited implemen
 			
 			Empty request = Empty.newBuilder().build();
 			// use the grpc client to call loginVoid()
-			return futureStub.loginVoid(request);
+			return getFutureStub().loginVoid(request);
 		});
 	}
 
@@ -48,7 +51,7 @@ public class LoginServiceGrpcClientProxy extends GrpcClientProxyLimited implemen
 					.build();
 			
 			// use the grpc client to call login()
-			return futureStub.login(loginRequestProto);
+			return getFutureStub().login(loginRequestProto);
 		});
 		
 		// no protobuf to domain model conversion since we expect an int
@@ -73,7 +76,7 @@ public class LoginServiceGrpcClientProxy extends GrpcClientProxyLimited implemen
 					.build();
 			
 			// use the grpc client to call getRes()
-			return futureStub.getRes(resRequest);
+			return getFutureStub().getRes(resRequest);
 		});
 		
 		// convert protobuf to domain model objects

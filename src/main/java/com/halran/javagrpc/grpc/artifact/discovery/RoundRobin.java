@@ -1,4 +1,4 @@
-package io.shunters.grpc.util;
+package com.halran.javagrpc.grpc.artifact.discovery;
 
 import java.util.Iterator;
 import java.util.List;
@@ -20,7 +20,7 @@ public class RoundRobin<T> {
         }
         Robin<T> robin = it.next();
 
-        return robin.call();
+        return robin.get();
     }
 
     public static class Robin<T> {
@@ -30,7 +30,7 @@ public class RoundRobin<T> {
             this.i = i;
         }
 
-        public T call() {
+        public T get() {
             return i;
         }
     }

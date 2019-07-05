@@ -1,7 +1,7 @@
 package com.harlan.javagrpc.service;
 
 import com.google.protobuf.Empty;
-import com.halran.javagrpc.grpc.artifact.GrpcServiceMarker;
+import com.halran.javagrpc.grpc.artifact.server.GrpcServiceMarker;
 import com.halran.javagrpc.model.Request;
 import com.halran.javagrpc.model.Request2;
 import com.harlan.javagrpc.business.contract.LoginBusiness;

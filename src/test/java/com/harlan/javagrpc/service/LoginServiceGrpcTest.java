@@ -8,10 +8,10 @@ import com.halran.javagrpc.model.Response;
 import com.harlan.javagrpc.business.LoginBusinessImpl;
 import com.harlan.javagrpc.business.contract.LoginBusiness;
 import com.harlan.javagrpc.service.contract.LoginService;
-import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc;
-import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc.LoginServiceFutureStub;
 import com.harlan.javagrpc.testutil.rules.GrpcManagedChannelRule;
 import com.harlan.javagrpc.testutil.rules.GrpcServerStarterRule;
+import com.harlan.javagrpc.testutil.rules.JunitPrintTestName;
+import com.harlan.javagrpc.testutil.rules.JunitStopWatch;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,11 +26,15 @@ import java.util.stream.Collectors;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Test Grpc Server and Client (non secured connection). 
  */
 public class LoginServiceGrpcTest {
+	
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	
 	@Rule( order = 1)
 	public GrpcServerStarterRule serverStarterRule = new GrpcServerStarterRule(50051);
@@ -38,6 +42,12 @@ public class LoginServiceGrpcTest {
 	@Rule( order = 2)
 	public GrpcManagedChannelRule mangedChannelRule = new GrpcManagedChannelRule(
 			GrpcConfiguration.from("127.0.0.1", 50051));
+
+	@Rule
+	public JunitStopWatch stopwatch = new JunitStopWatch(log);
+	
+	@Rule
+	public JunitPrintTestName testName = new JunitPrintTestName(log);
 	
 	@Test
 	public void testNonSecured() {
@@ -103,8 +113,7 @@ public class LoginServiceGrpcTest {
 	}
 	
 	private LoginService createLoginServiceClientStub() {
-		LoginServiceFutureStub stub = LoginServiceGrpc.newFutureStub(mangedChannelRule.getChannel());
-		LoginService loginService = new LoginServiceGrpcClientProxy(stub);
+		LoginService loginService = new LoginServiceGrpcClientProxy(mangedChannelRule.getManagedChannel());
 		return loginService;
 	}
 

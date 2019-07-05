@@ -1,10 +1,8 @@
 package com.harlan.javagrpc.testutil.rules;
 
 import com.halran.javagrpc.grpc.artifact.GrpcConfiguration;
-import com.halran.javagrpc.grpc.artifact.GrpcManagedChannel;
-import com.halran.javagrpc.grpc.artifact.IGrpcManagedChannel;
-
-import io.grpc.ManagedChannel;
+import com.halran.javagrpc.grpc.artifact.client.GrpcManagedChannel;
+import com.halran.javagrpc.grpc.artifact.client.IGrpcManagedChannel;
 
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -26,8 +24,8 @@ public class GrpcManagedChannelRule extends GrpcCleanupRule {
 		return super.apply(base, description);
 	}
 
-	public ManagedChannel getChannel() {
-		return managedChannel.getChannel();
+	public IGrpcManagedChannel getManagedChannel() {
+		return managedChannel;
 	}
 	
 }
