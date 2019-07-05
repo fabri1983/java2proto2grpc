@@ -1,13 +1,9 @@
 package com.harlan.javagrpc.testutil;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 public class ServiceDiscoveryPropertiesFromFile implements IServiceDiscoveryProperties {
 
-	private List<String> grpcAddressList;
 	private String consulServiceName;
 	private String consulServiceIdPrefix;
 	private String consulHost;
@@ -21,8 +17,6 @@ public class ServiceDiscoveryPropertiesFromFile implements IServiceDiscoveryProp
 		
 		Properties props = PropertiesFromClassLoader.getProperties("service-discovery-test.properties");
 		
-		this.grpcAddressList = Arrays.asList(props.getProperty("grpc.address.list").split(","))
-				.stream().map( s -> s.trim() ).collect( Collectors.toList() );
 		this.consulServiceName = "grpc-service-test";
 		this.consulServiceIdPrefix = "id-test_";
 		this.consulHost = props.getProperty("consul.host");
@@ -31,20 +25,6 @@ public class ServiceDiscoveryPropertiesFromFile implements IServiceDiscoveryProp
 		this.consulCheckInterval = "1s"; // if bigger than 1s then you have to wait some seconds before the new registered service gets its check available
 		this.consulCheckTtl = "30s";
 		this.consulCheckTimeout = "1s";
-	}
-
-	@Override
-	public List<String> getGrpcAddressList() {
-		return grpcAddressList;
-	}
-
-	@Override
-	public String[] splitAddress(String grpcAddress) {
-		String[] split = grpcAddress.split(":");
-		for (int i=0; i < split.length; ++i) {
-			split[i] = split[i].trim();
-		}
-		return split;
 	}
 
 	@Override

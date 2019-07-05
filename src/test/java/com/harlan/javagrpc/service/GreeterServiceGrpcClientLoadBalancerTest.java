@@ -37,7 +37,6 @@ import org.slf4j.LoggerFactory;
 public class GreeterServiceGrpcClientLoadBalancerTest {
 	
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
-	private final String MESSAGE = "grpc load balancer";
 
 	private static final IServiceDiscoveryProperties serviceDiscoveryProps = 
 			new ServiceDiscoveryPropertiesFromFile();
@@ -46,7 +45,8 @@ public class GreeterServiceGrpcClientLoadBalancerTest {
 	public final GrpcServerStarterRule serverStarterRule = new GrpcServerStarterRule(50051, 50052);
 	
 	@Rule( order = 2)
-	public final ConsulServiceRegisterRule consulServiceRegisterRule = new ConsulServiceRegisterRule(serviceDiscoveryProps);
+	public final ConsulServiceRegisterRule consulServiceRegisterRule = 
+			new ConsulServiceRegisterRule(serviceDiscoveryProps, Arrays.asList("localhost:50051", "localhost:50052"));
 	
 	private final List<String> staticGrpcHostPortList = Arrays.asList("localhost:50051", "localhost:50052");
 	
@@ -60,6 +60,8 @@ public class GreeterServiceGrpcClientLoadBalancerTest {
 			Assert.assertTrue(true);
 			return;
 		}
+		
+		String message = "grpc load balancer";
 		
 		registerGreeterServiceGrpc();
 		
@@ -78,8 +80,8 @@ public class GreeterServiceGrpcClientLoadBalancerTest {
      			.map( lb -> new Callable<Void>() {
      				@Override
      	            public Void call() {
-     					String message = callGreeterService(lb);
-     					Assert.assertEquals(MESSAGE, message);
+     					String messageResult = callGreeterService(lb, message);
+     					Assert.assertEquals(message, messageResult);
      	                return null;
      	            }
      			})
@@ -109,6 +111,8 @@ public class GreeterServiceGrpcClientLoadBalancerTest {
 	@Test
 	public void greeterServiceWithLoadBalancerWithStaticGrpcHostsTest() throws Exception {
 		
+		String message = "grpc load balancer";
+		
 		registerGreeterServiceGrpc();
 		
 		// number of concurrent client stubs calls
@@ -126,8 +130,8 @@ public class GreeterServiceGrpcClientLoadBalancerTest {
      			.map( lb -> new Callable<Void>() {
      				@Override
      	            public Void call() {
-     					String message = callGreeterService(lb);
-     					Assert.assertEquals(MESSAGE, message);
+     					String messageResult = callGreeterService(lb, message);
+     					Assert.assertEquals(message, messageResult);
      	                return null;
      	            }
      			})
@@ -181,16 +185,18 @@ public class GreeterServiceGrpcClientLoadBalancerTest {
 		return list;
 	}
 
-	private String callGreeterService(GrpcClientCustomLoadBalancer<GreeterGrpc, GreeterBlockingStub, GreeterStub, GreeterFutureStub> lb) {
+	private String callGreeterService(GrpcClientCustomLoadBalancer<GreeterGrpc, GreeterBlockingStub, GreeterStub, GreeterFutureStub> lb,
+			String message) {
 		try {
 			SearchRequest request = SearchRequest.newBuilder()
-					.addHelloRequest(SearchRequest.HelloRequest.newBuilder().setName(MESSAGE))
+					.addHelloRequest(
+							SearchRequest.HelloRequest.newBuilder().setName(message))
 					.build();
 	
 			SearchResponse response = lb.getBlockingStub().sayHello(request);
 			HelloReply helloReply = response.getHelloReply(0);
-			String message = helloReply.getMessage();
-			return message;
+			String messageResult = helloReply.getMessage();
+			return messageResult;
 		}
 		catch (Exception e) {
 			log.error(e.getMessage());

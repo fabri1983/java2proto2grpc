@@ -76,7 +76,7 @@ public class GrpcServerStarter implements IGrpcServerStarter {
 			log.info("Grpc Server started. Listening on port " + port);
 		}
 		catch (IOException e) {
-			log.error("*** Could not start gRPC Server. " + e.getMessage());
+			log.error("*** Could not start gRPC Server. {}. {}", e.getClass().getSimpleName(), e.getMessage());
 			throw e;
 		}
 

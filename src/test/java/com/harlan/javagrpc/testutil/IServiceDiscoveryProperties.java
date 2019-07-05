@@ -1,13 +1,7 @@
 package com.harlan.javagrpc.testutil;
 
-import java.util.List;
-
 public interface IServiceDiscoveryProperties {
 	
-	List<String> getGrpcAddressList();
-	
-	String[] splitAddress(String grpcAddress);
-
 	String getConsulServiceName();
 
 	String getConsulServiceIdPrefix();

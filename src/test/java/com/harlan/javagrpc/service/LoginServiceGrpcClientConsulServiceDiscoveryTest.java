@@ -17,6 +17,7 @@ import com.harlan.javagrpc.testutil.rules.GrpcManagedChannelServiceDiscoveryRule
 import com.harlan.javagrpc.testutil.rules.GrpcServerStarterRule;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -43,10 +44,11 @@ public class LoginServiceGrpcClientConsulServiceDiscoveryTest {
 			new ServiceDiscoveryPropertiesFromFile();
 	
 	@Rule( order = 1)
-	public GrpcServerStarterRule serverStarterRule = new GrpcServerStarterRule(50051, 50052);
+	public GrpcServerStarterRule serverStarterRule = new GrpcServerStarterRule(50051);
 	
 	@Rule( order = 2)
-	public ConsulServiceRegisterRule consulServiceRegisterRule = new ConsulServiceRegisterRule(serviceDiscoveryProps);
+	public ConsulServiceRegisterRule consulServiceRegisterRule = 
+			new ConsulServiceRegisterRule(serviceDiscoveryProps, Arrays.asList("localhost:50051"));
 	
 	@Rule( order = 3)
 	public GrpcManagedChannelServiceDiscoveryRule managedChannelRule = new GrpcManagedChannelServiceDiscoveryRule(

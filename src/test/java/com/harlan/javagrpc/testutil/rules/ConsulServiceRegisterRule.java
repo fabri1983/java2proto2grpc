@@ -20,13 +20,15 @@ public class ConsulServiceRegisterRule extends ExternalResource {
 
 	private IServiceDiscoveryProperties serviceDiscoveryProps;
 	private boolean registered;
-	private ServiceDiscovery consulSingleton;
+	private ServiceDiscovery consulClient;
+	private List<String> grpcAddressList;
 	private List<String> tempServiceIds = new ArrayList<>(2);
 	
-	public ConsulServiceRegisterRule(IServiceDiscoveryProperties props) {
+	public ConsulServiceRegisterRule(IServiceDiscoveryProperties props, List<String> grpcAddressList) {
 		super();
 		this.serviceDiscoveryProps = props;
-		this.consulSingleton = ConsulServiceDiscovery.singleton(
+		this.grpcAddressList = grpcAddressList;
+		this.consulClient = ConsulServiceDiscovery.singleton(
 				serviceDiscoveryProps.getConsulHost(), 
 				serviceDiscoveryProps.getConsulPort());
 	}
@@ -37,7 +39,8 @@ public class ConsulServiceRegisterRule extends ExternalResource {
 			// register service
 			registerService();
 			
-			// FIXME [Improvement] Query the health check until is available
+			// FIXME [Improvement] Use consul client to query the health check until is available
+			log.warn("Waiting 1 sec for new added services start their health check service.");
 			LockSupport.parkNanos(TimeUnit.SECONDS.toNanos(1));
 			
 			registered = true;
@@ -68,16 +71,16 @@ public class ConsulServiceRegisterRule extends ExternalResource {
 	}
 
 	private void registerService() {
-		serviceDiscoveryProps.getGrpcAddressList().forEach( grpcAddress -> {
+		grpcAddressList.forEach( grpcAddress -> {
 			
-			String[] split = serviceDiscoveryProps.splitAddress(grpcAddress);
+			String[] split = splitAddress(grpcAddress);
 			String grpcHost = split[0];
 			int grpcPort = Integer.valueOf(split[1]);
 			
 			String serviceId = serviceDiscoveryProps.getConsulServiceIdPrefix() + grpcAddress;
 			tempServiceIds.add(serviceId);
 			
-			consulSingleton.createService(
+			consulClient.createService(
 					serviceDiscoveryProps.getConsulServiceName(), 
 					serviceId, 
 					null, // tags
@@ -93,7 +96,15 @@ public class ConsulServiceRegisterRule extends ExternalResource {
 	}
 
 	private void deregisterService() {
-		tempServiceIds.forEach( serviceId -> consulSingleton.deregisterService(serviceId) );
+		tempServiceIds.forEach( serviceId -> consulClient.deregisterService(serviceId) );
+	}
+
+	private String[] splitAddress(String grpcAddress) {
+		String[] split = grpcAddress.split(":");
+		for (int i=0; i < split.length; ++i) {
+			split[i] = split[i].trim();
+		}
+		return split;
 	}
 
 }
