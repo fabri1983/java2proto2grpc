@@ -13,7 +13,7 @@ This project is a modification from original projects https://github.com/jhrgitg
 Credits belong to the creators of the mentioned projects.  
 I just renamed some packages, fixed some bugs, add LoginService client and server examples and tests, extended and fixed api 
 [protobuf-converter](https://github.com/BAData/protobuf-converter "protobuf-converter") with custom modifications to transform domain 
-model objects to protobuf messages and viceversa, and more.
+model objects to protobuf messages and viceversa, added Service Discovery capability, and many more.
 
 
 Features:
@@ -168,10 +168,10 @@ See this [link](https://docs.docker.com/samples/library/consul/#running-consul-f
 	- 172.17.0.1 is the Docker bridge IP address. We are remapping Consul Container’s port 8600 to host machine’s Docker bridge port 53 so that Containers on that host can use Consul for DNS.
 	- *-bootstrap* means consul runs in a standalone mode.
 
-- Considerations on *Docker Tool Box*:
-*Docker Tool Box* is exposed at IP 192.168.99.100.
+- Considerations on *Docker Tool Box*:  
+*Docker Tool Box* is exposed at IP 192.168.99.100.  
 If by any reason you are in a situation that your app needs to route request made to Docker's internal IP 172.17.x.x to the exposed IP 192.168.99.100 then:
-	- you will have to add an entry in the route table:
+	- you will have to add an entry in the Windows routing table:
 	```sh
 	Open a privileged console
 	route add 172.17.0.0 mask 255.255.0.0 192.168.99.100 -p
