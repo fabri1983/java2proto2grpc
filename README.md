@@ -103,13 +103,13 @@ You need to setup the current consul ip address in order to test run **LoginServ
 	192.168.99.100
 	```
 	and put that ip in the file **src/test/resources/service-discovery.properties**.
-- If you are running docker as standalone app in another server then you can get the consul app ip with:
+- Another way you can get the consul app ip:
 	```sh
 	docker inspect -f "{{ .NetworkSettings.IPAddress }}" consul
 	```
 	and put that ip in the file **src/test/resources/service-discovery-test.properties**.
-- If running consul standalone then usually the consul ip is 127.0.0.1 (or localhost).
-	In this case put 127.0.0.1 in the file **src/test/resources/service-discovery-test.properties**.
+- If running consul as a standalone app then then get your machines's local IP.
+	In this case put 127.0.0.1 (if local) or external IP (if in another server) in the file **src/test/resources/service-discovery-test.properties**.
 
 
 TODO
