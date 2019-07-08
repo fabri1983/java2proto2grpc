@@ -1,11 +1,11 @@
 package com.harlan.javagrpc.service;
 
 import com.google.protobuf.Empty;
-import com.halran.javagrpc.grpc.artifact.client.GrpcClientStubProxy;
-import com.halran.javagrpc.grpc.artifact.client.IGrpcManagedChannel;
-import com.halran.javagrpc.model.Request;
-import com.halran.javagrpc.model.Request2;
-import com.halran.javagrpc.model.Response;
+import com.harlan.javagrpc.grpc.artifact.client.GrpcClientStubProxy;
+import com.harlan.javagrpc.grpc.artifact.client.IGrpcManagedChannel;
+import com.harlan.javagrpc.model.Request;
+import com.harlan.javagrpc.model.Request2;
+import com.harlan.javagrpc.model.Response;
 import com.harlan.javagrpc.service.contract.LoginService;
 import com.harlan.javagrpc.service.contract.protobuf.GetResProtoIn;
 import com.harlan.javagrpc.service.contract.protobuf.GetResProtoOut;

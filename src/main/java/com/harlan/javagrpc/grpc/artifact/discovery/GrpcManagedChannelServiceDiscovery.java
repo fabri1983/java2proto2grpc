@@ -1,8 +1,7 @@
-package com.halran.javagrpc.grpc.artifact.discovery;
+package com.harlan.javagrpc.grpc.artifact.discovery;
 
-import com.halran.javagrpc.grpc.artifact.GrpcConfiguration;
-import com.halran.javagrpc.grpc.artifact.client.GrpcManagedChannel;
-import com.harlan.javagrpc.grpc.artifact.discovery.ConsulNameResolver;
+import com.harlan.javagrpc.grpc.artifact.GrpcConfiguration;
+import com.harlan.javagrpc.grpc.artifact.client.GrpcManagedChannel;
 
 import io.grpc.LoadBalancerRegistry;
 import io.grpc.ManagedChannelBuilder;

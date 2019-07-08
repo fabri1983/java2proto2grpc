@@ -1,6 +1,6 @@
 package com.harlan.javagrpc.service;
 
-import com.halran.javagrpc.grpc.artifact.server.GrpcServiceMarker;
+import com.harlan.javagrpc.grpc.artifact.server.GrpcServiceMarker;
 
 import io.grpc.examples.helloworld.protobuf.GreeterGrpc;
 import io.grpc.examples.helloworld.protobuf.SearchRequest;

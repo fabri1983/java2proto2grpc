@@ -1,10 +1,10 @@
 package com.harlan.javagrpc.converter;
 
-import com.halran.javagrpc.model.Corpus;
-import com.halran.javagrpc.model.Request;
-import com.halran.javagrpc.model.Request2;
-import com.halran.javagrpc.model.TestList;
-import com.halran.javagrpc.model.TestMap;
+import com.harlan.javagrpc.model.Corpus;
+import com.harlan.javagrpc.model.Request;
+import com.harlan.javagrpc.model.Request2;
+import com.harlan.javagrpc.model.TestList;
+import com.harlan.javagrpc.model.TestMap;
 import com.harlan.javagrpc.service.contract.protobuf.RequestProto;
 import com.harlan.javagrpc.testutil.rules.JunitPrintTestName;
 import com.harlan.javagrpc.testutil.rules.JunitStopWatch;

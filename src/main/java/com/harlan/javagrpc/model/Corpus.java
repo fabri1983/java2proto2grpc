@@ -1,4 +1,4 @@
-package com.halran.javagrpc.model;
+package com.harlan.javagrpc.model;
 
 public enum Corpus {
     UNIVERSAL,

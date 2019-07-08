@@ -1,4 +1,4 @@
-package com.halran.javagrpc.model;
+package com.harlan.javagrpc.model;
 
 import com.harlan.javagrpc.service.contract.protobuf.TestMapProto;
 

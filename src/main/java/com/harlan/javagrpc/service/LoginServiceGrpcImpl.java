@@ -1,10 +1,10 @@
 package com.harlan.javagrpc.service;
 
 import com.google.protobuf.Empty;
-import com.halran.javagrpc.grpc.artifact.server.GrpcServiceMarker;
-import com.halran.javagrpc.model.Request;
-import com.halran.javagrpc.model.Request2;
 import com.harlan.javagrpc.business.contract.LoginBusiness;
+import com.harlan.javagrpc.grpc.artifact.server.GrpcServiceMarker;
+import com.harlan.javagrpc.model.Request;
+import com.harlan.javagrpc.model.Request2;
 import com.harlan.javagrpc.service.contract.protobuf.GetResProtoIn;
 import com.harlan.javagrpc.service.contract.protobuf.GetResProtoOut;
 import com.harlan.javagrpc.service.contract.protobuf.LoginProtoIn;
@@ -79,7 +79,7 @@ public class LoginServiceGrpcImpl extends LoginServiceImplBase implements GrpcSe
 			Request2 request2Model = Converter.create().toDomain(Request2.class, request2Proto);
 			
 			// Here you can use your domain model objects and call your business layer
-			com.halran.javagrpc.model.Response responseModel = loginBusiness.getRes(requestModel, request2Model);
+			com.harlan.javagrpc.model.Response responseModel = loginBusiness.getRes(requestModel, request2Model);
 			
 			// convert domain model into protobuf object
 			ResponseProto responseProto = Converter.create().toProtobuf(ResponseProto.class, responseModel);

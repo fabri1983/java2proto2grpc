@@ -1,4 +1,4 @@
-package com.halran.javagrpc.grpc.artifact.client;
+package com.harlan.javagrpc.grpc.artifact.client;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;

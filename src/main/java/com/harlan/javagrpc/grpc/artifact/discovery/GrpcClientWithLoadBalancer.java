@@ -1,12 +1,10 @@
-package com.halran.javagrpc.grpc.artifact.discovery;
+package com.harlan.javagrpc.grpc.artifact.discovery;
 
-import com.halran.javagrpc.grpc.artifact.GrpcConfiguration;
-import com.halran.javagrpc.grpc.artifact.client.GrpcClientStubProxy;
-import com.halran.javagrpc.grpc.artifact.client.GrpcManagedChannel;
-import com.halran.javagrpc.grpc.artifact.client.IGrpcManagedChannel;
-import com.halran.javagrpc.grpc.artifact.discovery.RoundRobin.Robin;
-import com.harlan.javagrpc.grpc.artifact.discovery.ConsulServiceDiscovery;
-import com.harlan.javagrpc.grpc.artifact.discovery.IServiceDiscovery;
+import com.harlan.javagrpc.grpc.artifact.GrpcConfiguration;
+import com.harlan.javagrpc.grpc.artifact.client.GrpcClientStubProxy;
+import com.harlan.javagrpc.grpc.artifact.client.GrpcManagedChannel;
+import com.harlan.javagrpc.grpc.artifact.client.IGrpcManagedChannel;
+import com.harlan.javagrpc.grpc.artifact.discovery.RoundRobin.Robin;
 
 import java.io.IOException;
 import java.net.Socket;

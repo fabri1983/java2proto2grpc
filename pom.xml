@@ -83,7 +83,7 @@
 				<artifactId>grpc-core</artifactId>
 				<version>${io.grpc.version}</version>
 			</dependency>
-			<!-- Consul Service Discovery client api -->
+			<!-- Consul Service Discovery Client -->
 			<dependency>
 				<groupId>com.ecwid.consul</groupId>
 				<artifactId>consul-api</artifactId>

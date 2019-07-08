@@ -1,8 +1,8 @@
 package com.harlan.javagrpc.testutil.rules;
 
-import com.halran.javagrpc.grpc.artifact.GrpcConfiguration;
-import com.halran.javagrpc.grpc.artifact.client.GrpcManagedChannelSecured;
-import com.halran.javagrpc.grpc.artifact.client.IGrpcManagedChannel;
+import com.harlan.javagrpc.grpc.artifact.GrpcConfiguration;
+import com.harlan.javagrpc.grpc.artifact.client.GrpcManagedChannelSecured;
+import com.harlan.javagrpc.grpc.artifact.client.IGrpcManagedChannel;
 
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;

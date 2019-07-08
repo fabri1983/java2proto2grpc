@@ -1,8 +1,8 @@
 package com.harlan.javagrpc.main.helloworld;
 
-import com.halran.javagrpc.grpc.artifact.GrpcConfiguration;
-import com.halran.javagrpc.grpc.artifact.client.GrpcManagedChannel;
-import com.halran.javagrpc.grpc.artifact.client.IGrpcManagedChannel;
+import com.harlan.javagrpc.grpc.artifact.GrpcConfiguration;
+import com.harlan.javagrpc.grpc.artifact.client.GrpcManagedChannel;
+import com.harlan.javagrpc.grpc.artifact.client.IGrpcManagedChannel;
 
 import io.grpc.examples.helloworld.protobuf.GreeterGrpc;
 import io.grpc.examples.helloworld.protobuf.SearchRequest;

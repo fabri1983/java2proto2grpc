@@ -1,6 +1,6 @@
 package com.harlan.javagrpc.service;
 
-import com.halran.javagrpc.grpc.artifact.discovery.GrpcClientWithLoadBalancer;
+import com.harlan.javagrpc.grpc.artifact.discovery.GrpcClientWithLoadBalancer;
 import com.harlan.javagrpc.testutil.IServiceDiscoveryProperties;
 import com.harlan.javagrpc.testutil.ServiceDiscoveryPropertiesFromFile;
 import com.harlan.javagrpc.testutil.rules.ConsulServiceRegisterRule;

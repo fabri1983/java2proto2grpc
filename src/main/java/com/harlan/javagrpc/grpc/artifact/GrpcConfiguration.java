@@ -1,4 +1,4 @@
-package com.halran.javagrpc.grpc.artifact;
+package com.harlan.javagrpc.grpc.artifact;
 
 import java.util.List;
 

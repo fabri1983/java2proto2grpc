@@ -1,6 +1,6 @@
-package com.halran.javagrpc.model.converter.type;
+package com.harlan.javagrpc.model.converter.type;
 
-import com.halran.javagrpc.model.Corpus;
+import com.harlan.javagrpc.model.Corpus;
 
 import net.badata.protobuf.converter.type.EnumStringConverter;
 

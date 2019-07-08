@@ -1,4 +1,4 @@
-package com.halran.javagrpc.grpc.artifact.discovery;
+package com.harlan.javagrpc.grpc.artifact.discovery;
 
 import java.util.Iterator;
 import java.util.List;

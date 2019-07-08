@@ -1,12 +1,12 @@
 package com.harlan.javagrpc.main.login;
 
-import com.halran.javagrpc.grpc.artifact.GrpcConfiguration;
-import com.halran.javagrpc.grpc.artifact.client.GrpcManagedChannelSecured;
-import com.halran.javagrpc.grpc.artifact.client.IGrpcManagedChannel;
-import com.halran.javagrpc.model.Corpus;
-import com.halran.javagrpc.model.Request;
-import com.halran.javagrpc.model.Request2;
-import com.halran.javagrpc.model.Response;
+import com.harlan.javagrpc.grpc.artifact.GrpcConfiguration;
+import com.harlan.javagrpc.grpc.artifact.client.GrpcManagedChannelSecured;
+import com.harlan.javagrpc.grpc.artifact.client.IGrpcManagedChannel;
+import com.harlan.javagrpc.model.Corpus;
+import com.harlan.javagrpc.model.Request;
+import com.harlan.javagrpc.model.Request2;
+import com.harlan.javagrpc.model.Response;
 import com.harlan.javagrpc.service.LoginServiceGrpcClientProxy;
 import com.harlan.javagrpc.service.contract.LoginService;
 
