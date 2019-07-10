@@ -149,15 +149,15 @@ I don't want to untrack them, I just don't want them to appear as modified and I
 See this [link](https://docs.docker.com/samples/library/consul/#running-consul-for-development)
 	- download docker *Consul image* if not already:
 		```sh
-		docker pull consul
+		docker image pull consul
 		```
 	- run *Consul* on *Windows* with *Docker Tool Box*:
 		```sh
 		Development mode:
-		docker run -d -p 8500:8500 -p 172.17.0.1:53:8600/udp -p 8400:8400 -p 8300:8300 --name=consul-dev -e CONSUL_BIND_INTERFACE=eth0 consul
+		docker container run -d -p 8500:8500 -p 172.17.0.1:53:8600/udp -p 8400:8400 -p 8300:8300 --name=consul-dev -e CONSUL_BIND_INTERFACE=eth0 consul
 		or
 		Agent in Client mode:
-		docker run -d -p 8500:8500 -p 172.17.0.1:53:8600/udp -p 8400:8400 -p 8300:8300 --name=consul-agent consul agent -server -bootstrap -ui -node=docker-1 -client=0.0.0.0 -data-dir=/tmp/node
+		docker container run -d -p 8500:8500 -p 172.17.0.1:53:8600/udp -p 8400:8400 -p 8300:8300 --name=consul-agent consul agent -server -bootstrap -ui -node=docker-1 -client=0.0.0.0 -data-dir=/tmp/node
 		```
 	- Within Consul:
 		- port 8300 is used by Consul servers to handle incoming requests from other agents (TCP only).
