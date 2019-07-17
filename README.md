@@ -9,10 +9,10 @@
 [![Libraries.io for GitHub](https://badgen.net/badge/libraries.io/fabri1983/blue)](https://libraries.io/github/fabri1983/java2proto2grpc)
 
 
-This project is a modification from original projects https://github.com/jhrgitgit/java2proto and https://github.com/lloydsparkes/java-proto-generator.  
+This project is a modification from original projects [java2proto](https://github.com/jhrgitgit/java2proto) and [https://github.com/lloydsparkes/java-proto-generator](java-proto-generator).  
 Credits belong to the creators of the mentioned projects.  
 I just renamed some packages, fixed some bugs, add LoginService client and server examples and tests, extended and fixed api 
-[protobuf-converter](https://github.com/BAData/protobuf-converter "protobuf-converter") with custom modifications to transform domain 
+[protobuf-converter](https://github.com/BAData/protobuf-converter) with custom modifications to transform domain 
 model objects to protobuf messages and viceversa, added Service Discovery capability, and many more.
 
 
@@ -34,7 +34,7 @@ have a class hierarchy and you want to skip one or several of them.
 	and set it as *converter* attribute. See **Request** and **Response** example classes.
 - Provides two gRPC examples: *Helloworld* and *LoginService*.
 - Provides non secured and TLS-secured grpc server and client.
-- Use async grpc calls by *ListenableFuture*.
+- Use async grpc calls by *ListenableFuture* and with *rate limiter*.
 - Use of java compiler *-parameter* option to expose parameters name in signature definition, so we can get the real parameter name and 
 so improve the *.proto* file readablity.
 - Provides a **ManagedChannelServiceDiscovery** with a **Consul Service Discovery** client and **Load Balancer** capability, 
