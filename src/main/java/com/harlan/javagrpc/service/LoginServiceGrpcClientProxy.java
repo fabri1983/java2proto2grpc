@@ -30,7 +30,7 @@ public class LoginServiceGrpcClientProxy
 	
 	@Override
 	public void loginVoid() {
-		withLimitUse( () -> {
+		withRateLimiter( () -> {
 			
 			Empty request = Empty.newBuilder().build();
 			// use the grpc client to call loginVoid()
@@ -40,7 +40,7 @@ public class LoginServiceGrpcClientProxy
 
 	@Override
 	public int login(Request req) {
-		LoginProtoOut loginResponse = withLimitUse( () -> {
+		LoginProtoOut loginResponse = withRateLimiter( () -> {
 			
 			// convert domain model into protobuf object
 			RequestProto requestProto = Converter.create().toProtobuf(RequestProto.class, req);
@@ -61,7 +61,7 @@ public class LoginServiceGrpcClientProxy
 
 	@Override
 	public Response getRes(Request req, Request2 req2) {
-		GetResProtoOut resResponse = withLimitUse( () -> {
+		GetResProtoOut resResponse = withRateLimiter( () -> {
 			
 			// convert domain model into protobuf object
 			RequestProto requestProto = Converter.create().toProtobuf(RequestProto.class, req);

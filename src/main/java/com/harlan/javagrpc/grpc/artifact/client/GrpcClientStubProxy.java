@@ -29,7 +29,7 @@ public class GrpcClientStubProxy<G, B, A, F> {
 	private F futureStub;
 	
 	// limit rpc calls made to the stub
-	private final Semaphore limiter = new Semaphore(100);
+	private final Semaphore rateLimiter = new Semaphore(100);
 	
 	@SuppressWarnings("unchecked")
 	public GrpcClientStubProxy(IGrpcManagedChannel managedChannel, Class<G> grpcClass) {
@@ -75,11 +75,11 @@ public class GrpcClientStubProxy<G, B, A, F> {
 		return managedChannel.getPort();
 	}
 
-	protected <T> T withLimitUse(Supplier<ListenableFuture<T>> process) {
+	protected <T> T withRateLimiter(Supplier<ListenableFuture<T>> process) {
 		try {
-			limiter.acquire();
+			rateLimiter.acquire();
 			ListenableFuture<T> future = process.get();
-			future.addListener(() -> limiter.release(), MoreExecutors.directExecutor());
+			future.addListener(() -> rateLimiter.release(), MoreExecutors.directExecutor());
 			Futures.addCallback(future, callback(), MoreExecutors.directExecutor());
 			return future.get();
 		}
