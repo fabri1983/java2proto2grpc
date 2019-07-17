@@ -2,7 +2,7 @@ package com.harlan.javagrpc.service;
 
 import com.harlan.javagrpc.business.GreeterBusinessImpl;
 import com.harlan.javagrpc.business.contract.GreeterBusiness;
-import com.harlan.javagrpc.grpc.artifact.discovery.GrpcClientWithLoadBalancer;
+import com.harlan.javagrpc.grpc.artifact.client.GrpcClientWithLoadBalancer;
 import com.harlan.javagrpc.testutil.IServiceDiscoveryProperties;
 import com.harlan.javagrpc.testutil.ServiceDiscoveryPropertiesFromFile;
 import com.harlan.javagrpc.testutil.rules.ConsulServiceRegisterRule;
@@ -79,18 +79,18 @@ public class GreeterServiceGrpcClientLoadBalancerTest {
 		int repeatNumStubs = 1000;
 
 		// create grpc client using Consul as load balancer
-		GrpcClientWithLoadBalancer<GreeterGrpc, GreeterBlockingStub, GreeterStub, GreeterFutureStub> clientLb = 
+		GrpcClientWithLoadBalancer<GreeterGrpc, GreeterBlockingStub, GreeterStub, GreeterFutureStub> clientLbs = 
 				createClientLoadBalancerWithConsul(GreeterGrpc.class);
 		// repeat it N times
 		List<GrpcClientWithLoadBalancer<GreeterGrpc, GreeterBlockingStub, GreeterStub, GreeterFutureStub>> clientLoadBalancers = 
-				repeatClient(repeatNumStubs, clientLb);
+				repeatClient(repeatNumStubs, clientLbs);
 
 		// wraps as Callable tasks
      	List<Callable<Void>> tasks = clientLoadBalancers.stream()
-     			.map( lb -> new Callable<Void>() {
+     			.map( clientLb -> new Callable<Void>() {
      				@Override
      	            public Void call() {
-     					String messageResult = callGreeterService(lb, message);
+     					String messageResult = callGreeterService(clientLb, message);
      					Assert.assertEquals(message, messageResult);
      	                return null;
      	            }
@@ -133,18 +133,18 @@ public class GreeterServiceGrpcClientLoadBalancerTest {
 		int repeatNumStubs = 1000;
 
 		// create grpc client with load balancer and static grpc nodes
-		GrpcClientWithLoadBalancer<GreeterGrpc, GreeterBlockingStub, GreeterStub, GreeterFutureStub> clientLb = 
+		GrpcClientWithLoadBalancer<GreeterGrpc, GreeterBlockingStub, GreeterStub, GreeterFutureStub> clientLbs = 
 				createClientLoadBalancerStaticGrpcNodes(GreeterGrpc.class);
 		// repeat it N times
 		List<GrpcClientWithLoadBalancer<GreeterGrpc, GreeterBlockingStub, GreeterStub, GreeterFutureStub>> clientLoadBalancers = 
-				repeatClient(repeatNumStubs, clientLb);
+				repeatClient(repeatNumStubs, clientLbs);
 
 		// wraps as Callable tasks
 		List<Callable<Void>> tasks = clientLoadBalancers.stream()
-     			.map( lb -> new Callable<Void>() {
+     			.map( clientLb -> new Callable<Void>() {
      				@Override
      	            public Void call() {
-     					String messageResult = callGreeterService(lb, message);
+     					String messageResult = callGreeterService(clientLb, message);
      					Assert.assertEquals(message, messageResult);
      	                return null;
      	            }
@@ -204,7 +204,7 @@ public class GreeterServiceGrpcClientLoadBalancerTest {
 		return list;
 	}
 
-	private String callGreeterService(GrpcClientWithLoadBalancer<GreeterGrpc, GreeterBlockingStub, GreeterStub, GreeterFutureStub> lb,
+	private String callGreeterService(GrpcClientWithLoadBalancer<GreeterGrpc, GreeterBlockingStub, GreeterStub, GreeterFutureStub> clientLb,
 			String message) {
 		try {
 			SearchRequest request = SearchRequest.newBuilder()
@@ -212,7 +212,7 @@ public class GreeterServiceGrpcClientLoadBalancerTest {
 							SearchRequest.HelloRequest.newBuilder().setName(message))
 					.build();
 	
-			SearchResponse response = lb.getBlockingStub().sayHello(request);
+			SearchResponse response = clientLb.getBlockingStub().sayHello(request);
 			HelloReply helloReply = response.getHelloReply(0);
 			String messageResult = helloReply.getMessage();
 			return messageResult;

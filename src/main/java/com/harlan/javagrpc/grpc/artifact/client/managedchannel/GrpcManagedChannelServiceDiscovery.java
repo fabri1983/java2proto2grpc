@@ -1,7 +1,7 @@
-package com.harlan.javagrpc.grpc.artifact.discovery;
+package com.harlan.javagrpc.grpc.artifact.client.managedchannel;
 
 import com.harlan.javagrpc.grpc.artifact.GrpcConfiguration;
-import com.harlan.javagrpc.grpc.artifact.client.GrpcManagedChannel;
+import com.harlan.javagrpc.grpc.artifact.discovery.ConsulNameResolver;
 
 import io.grpc.LoadBalancerRegistry;
 import io.grpc.ManagedChannelBuilder;
@@ -33,7 +33,7 @@ public class GrpcManagedChannelServiceDiscovery extends GrpcManagedChannel {
         ManagedChannelBuilder<?> builder = ManagedChannelBuilder
         		.forTarget(targetAddress)
                 .nameResolverFactory(consulNameResolverProvider)
-                // use plain text if your entire microservice ecosystem is inside a controlled network, 
+                // use plain text if your entire microservice ecosystem is inside a closed network or behind a firewall, 
                 // otherwise setup your security artifacts such as key/trust stores
                 .usePlaintext();
         

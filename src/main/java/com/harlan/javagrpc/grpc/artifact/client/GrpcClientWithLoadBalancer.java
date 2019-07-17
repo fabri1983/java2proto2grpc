@@ -1,10 +1,11 @@
-package com.harlan.javagrpc.grpc.artifact.discovery;
+package com.harlan.javagrpc.grpc.artifact.client;
 
 import com.harlan.javagrpc.grpc.artifact.GrpcConfiguration;
-import com.harlan.javagrpc.grpc.artifact.client.GrpcClientStubProxy;
-import com.harlan.javagrpc.grpc.artifact.client.GrpcManagedChannel;
-import com.harlan.javagrpc.grpc.artifact.client.IGrpcManagedChannel;
-import com.harlan.javagrpc.grpc.artifact.discovery.RoundRobin.Robin;
+import com.harlan.javagrpc.grpc.artifact.client.RoundRobin.Robin;
+import com.harlan.javagrpc.grpc.artifact.client.managedchannel.GrpcManagedChannel;
+import com.harlan.javagrpc.grpc.artifact.client.managedchannel.IGrpcManagedChannel;
+import com.harlan.javagrpc.grpc.artifact.discovery.ConsulServiceDiscovery;
+import com.harlan.javagrpc.grpc.artifact.discovery.IServiceDiscovery;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -22,14 +23,14 @@ import org.slf4j.LoggerFactory;
 /**
  * Provides a custom Load Balancer strategy using a Round Robin policy.
  */
-public class GrpcClientWithLoadBalancer<G, B, A, F> {
+public class GrpcClientWithLoadBalancer<G, B, A, F> implements IGrpcClient<G, B, A, F> {
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	
 	private static final int DEFAULT_PAUSE_IN_SECONDS = 5;
 
-	private RoundRobin<GrpcClientStubProxy<G, B, A, F>> roundRobin;
-	private List<RoundRobin.Robin<GrpcClientStubProxy<G, B, A, F>>> robinList;
+	private RoundRobin<GrpcClientStub<G, B, A, F>> roundRobin;
+	private List<RoundRobin.Robin<GrpcClientStub<G, B, A, F>>> robinList;
 	private ConnectionCheckTimer<G, B, A, F> connectionCheckTimer;
 	private ReentrantLock lock = new ReentrantLock();
 
@@ -117,12 +118,13 @@ public class GrpcClientWithLoadBalancer<G, B, A, F> {
 					String host = node.getHost();
 					int port = node.getPort();
 
-					log.info("Found serviceName: [{}], host: [{}], port: [{}]", serviceName, host, port);
+					log.info("Found service. name: [{}], host: [{}], port: [{}]", serviceName, host, port);
 
+					// TODO [Improvement] use a Factory to decide which managed channel to use
 					IGrpcManagedChannel managedChannel = new GrpcManagedChannel(GrpcConfiguration.from(host, port));
-					GrpcClientStubProxy<G, B, A, F> client = new GrpcClientStubProxy<>(managedChannel, grpcClass);
+					GrpcClientStub<G, B, A, F> client = new GrpcClientStub<>(managedChannel, grpcClass);
 
-					robinList.add(new Robin<GrpcClientStubProxy<G, B, A, F>>(client));
+					robinList.add(new Robin<GrpcClientStub<G, B, A, F>>(client));
 				}
 			} else {
 				for (String hostPort : hostPorts) {
@@ -130,14 +132,17 @@ public class GrpcClientWithLoadBalancer<G, B, A, F> {
 					String host = tokens[0].trim();
 					Integer port = Integer.valueOf(tokens[1].trim());
 
+					log.info("Static node. host: [{}], port: [{}]", host, port);
+					
+					// TODO [Improvement] use a Factory to decide which managed channel to use
 					IGrpcManagedChannel managedChannel = new GrpcManagedChannel(GrpcConfiguration.from(host, port));
-					GrpcClientStubProxy<G, B, A, F> client = new GrpcClientStubProxy<>(managedChannel, grpcClass);
+					GrpcClientStub<G, B, A, F> client = new GrpcClientStub<>(managedChannel, grpcClass);
 
-					robinList.add(new Robin<GrpcClientStubProxy<G, B, A, F>>(client));
+					robinList.add(new Robin<GrpcClientStub<G, B, A, F>>(client));
 				}
 			}
 
-			roundRobin = new RoundRobin<GrpcClientStubProxy<G, B, A, F>>(robinList);
+			roundRobin = new RoundRobin<GrpcClientStub<G, B, A, F>>(robinList);
 		} finally {
 			lock.unlock();
 		}
@@ -148,6 +153,7 @@ public class GrpcClientWithLoadBalancer<G, B, A, F> {
 		return serviceDiscovery.getHealthServices(serviceName);
 	}
 
+	@Override
 	public B getBlockingStub() {
 		lock.lock();
 		try {
@@ -157,6 +163,7 @@ public class GrpcClientWithLoadBalancer<G, B, A, F> {
 		}
 	}
 
+	@Override
 	public A getAsyncStub() {
 		lock.lock();
 		try {
@@ -166,6 +173,7 @@ public class GrpcClientWithLoadBalancer<G, B, A, F> {
 		}
 	}
 
+	@Override
 	public F getFutureStub() {
 		lock.lock();
 		try {
@@ -175,21 +183,22 @@ public class GrpcClientWithLoadBalancer<G, B, A, F> {
 		}
 	}
 	
-	public List<RoundRobin.Robin<GrpcClientStubProxy<G, B, A, F>>> getRobinList() {
+	public List<RoundRobin.Robin<GrpcClientStub<G, B, A, F>>> getRobinList() {
 		return this.robinList;
 	}
 
+	@Override
 	public void shutdown() {
 		if (connectionCheckTimer != null) {
 			connectionCheckTimer.shutdown();
 		}
 		
-		for (RoundRobin.Robin<GrpcClientStubProxy<G, B, A, F>> robin : robinList) {
+		for (RoundRobin.Robin<GrpcClientStub<G, B, A, F>> robin : robinList) {
 			robin.get().shutdown();
 		}
 	}
 
-	public void sleep(long sleepInSeconds) {
+	private void sleep(long sleepInSeconds) {
 		try {
 			Thread.sleep(TimeUnit.SECONDS.toMillis(sleepInSeconds));
 		} catch (Exception e) {
@@ -237,7 +246,7 @@ public class GrpcClientWithLoadBalancer<G, B, A, F> {
 		@Override
 		public void run() {
 
-			for (RoundRobin.Robin<GrpcClientStubProxy<R, B, A, F>> robin : clientWithLb.getRobinList()) {
+			for (RoundRobin.Robin<GrpcClientStub<R, B, A, F>> robin : clientWithLb.getRobinList()) {
 				String host = robin.get().getHost();
 				int port = robin.get().getPort();
 				try {

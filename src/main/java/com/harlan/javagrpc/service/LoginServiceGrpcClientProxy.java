@@ -2,8 +2,8 @@ package com.harlan.javagrpc.service;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.protobuf.Empty;
-import com.harlan.javagrpc.grpc.artifact.client.GrpcClientStubProxy;
-import com.harlan.javagrpc.grpc.artifact.client.IGrpcManagedChannel;
+import com.harlan.javagrpc.grpc.artifact.client.GrpcClientStub;
+import com.harlan.javagrpc.grpc.artifact.client.managedchannel.IGrpcManagedChannel;
 import com.harlan.javagrpc.model.Request;
 import com.harlan.javagrpc.model.Request2;
 import com.harlan.javagrpc.model.Response;
@@ -22,7 +22,7 @@ import com.harlan.javagrpc.service.contract.protobuf.RequestProto;
 import net.badata.protobuf.converter.Converter;
 
 public class LoginServiceGrpcClientProxy 
-	extends GrpcClientStubProxy<LoginServiceGrpc, LoginServiceBlockingStub, LoginServiceStub, LoginServiceFutureStub> 
+	extends GrpcClientStub<LoginServiceGrpc, LoginServiceBlockingStub, LoginServiceStub, LoginServiceFutureStub> 
 	implements LoginService {
 
 	public LoginServiceGrpcClientProxy(IGrpcManagedChannel managedChannel) {

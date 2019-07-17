@@ -1,4 +1,4 @@
-package com.harlan.javagrpc.grpc.artifact.client;
+package com.harlan.javagrpc.grpc.artifact.client.managedchannel;
 
 import com.harlan.javagrpc.grpc.artifact.GrpcConfiguration;
 

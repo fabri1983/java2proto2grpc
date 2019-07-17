@@ -4,6 +4,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.harlan.javagrpc.grpc.artifact.client.managedchannel.IGrpcManagedChannel;
 
 import io.grpc.Channel;
 import io.grpc.ManagedChannel;
@@ -19,7 +20,7 @@ import org.slf4j.LoggerFactory;
  * Wraps the access to the different types of Grpc Stub: B (blocking), A (async), F (Future).
  * G defines the Grpc class.
  */
-public class GrpcClientStubProxy<G, B, A, F> {
+public class GrpcClientStub<G, B, A, F> implements IGrpcClient<G, B, A, F> {
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	
@@ -32,7 +33,7 @@ public class GrpcClientStubProxy<G, B, A, F> {
 	private final Semaphore rateLimiter = new Semaphore(100);
 	
 	@SuppressWarnings("unchecked")
-	public GrpcClientStubProxy(IGrpcManagedChannel managedChannel, Class<G> grpcClass) {
+	public GrpcClientStub(IGrpcManagedChannel managedChannel, Class<G> grpcClass) {
 		this.managedChannel = managedChannel;
 		try {
 			ManagedChannel channel = managedChannel.getChannel();
@@ -51,18 +52,22 @@ public class GrpcClientStubProxy<G, B, A, F> {
 		}
 	}
 	
+	@Override
 	public void shutdown() {
 		managedChannel.shutdown();
 	}
 
+	@Override
 	public B getBlockingStub() {
 		return this.blockingStub;
 	}
 
+	@Override
 	public A getAsyncStub() {
 		return this.asyncStub;
 	}
 
+	@Override
 	public F getFutureStub() {
 		return this.futureStub;
 	}
