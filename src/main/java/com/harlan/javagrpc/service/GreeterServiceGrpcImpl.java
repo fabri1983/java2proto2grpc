@@ -1,18 +1,21 @@
 package com.harlan.javagrpc.service;
 
+import com.harlan.javagrpc.business.contract.GreeterBusiness;
 import com.harlan.javagrpc.grpc.artifact.server.GrpcServiceMarker;
 
-import io.grpc.examples.helloworld.protobuf.GreeterGrpc;
+import io.grpc.examples.helloworld.protobuf.GreeterGrpc.GreeterImplBase;
 import io.grpc.examples.helloworld.protobuf.SearchRequest;
 import io.grpc.examples.helloworld.protobuf.SearchResponse;
 import io.grpc.examples.helloworld.protobuf.SearchResponse.HelloReply.Builder;
 import io.grpc.stub.StreamObserver;
-
-// 实现 定义一个实现服务接口的类 
-public class GreeterServiceGrpcImpl extends GreeterGrpc.GreeterImplBase implements GrpcServiceMarker {
+ 
+public class GreeterServiceGrpcImpl extends GreeterImplBase implements GrpcServiceMarker {
 	
-	public GreeterServiceGrpcImpl() {
+	private GreeterBusiness greeterBusiness;
+	
+	public GreeterServiceGrpcImpl(GreeterBusiness greeterBusiness) {
 		super();
+		this.greeterBusiness = greeterBusiness;
 	}
 
 	@Override
@@ -20,8 +23,10 @@ public class GreeterServiceGrpcImpl extends GreeterGrpc.GreeterImplBase implemen
 		grcpTryCatch( responseObserver, () -> {
 			
 			String message = request.getHelloRequest(0).getName();
+			String messageReply = greeterBusiness.sayHello(message);
+			
 			Builder replyProto = SearchResponse.HelloReply.newBuilder()
-					.setMessage(message);
+					.setMessage(messageReply);
 			SearchResponse reply = SearchResponse.newBuilder()
 					.addHelloReply(replyProto)
 					.build();
@@ -30,26 +35,6 @@ public class GreeterServiceGrpcImpl extends GreeterGrpc.GreeterImplBase implemen
 			responseObserver.onCompleted();
 		});
 	}
-
-//	public void sayHello(HelloRequest req, StreamObserver<HelloReply> responseObserver) {
-//		grcpTryCatch( responseObserver, () -> {
-//
-//			HelloReply reply = HelloReply.newBuilder().setMessage((req.getName())).build();
-	
-//			responseObserver.onNext(reply);
-//			responseObserver.onCompleted();
-//		});
-//	}
-//
-//	public void sayWorld(HelloRequest request, StreamObserver<HelloReply> responseObserver) {
-//		grcpTryCatch( responseObserver, () -> {
-//
-//			HelloReply reply = HelloReply.newBuilder().setMessage((request.getName())).build();
-	
-//			responseObserver.onNext(reply);
-//			responseObserver.onCompleted();
-//		});
-//	}
 	
 }
 

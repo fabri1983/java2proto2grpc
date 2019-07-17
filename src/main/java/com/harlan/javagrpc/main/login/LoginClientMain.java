@@ -24,7 +24,7 @@ public class LoginClientMain {
 		int port = 50051;
 		IGrpcManagedChannel managedChannel = new GrpcManagedChannelSecured(GrpcConfiguration.from(host, port));
 		
-		// create login service proxy (stub)
+		// create login service client proxy
 		LoginService loginService = new LoginServiceGrpcClientProxy(managedChannel);
 		
 		// create some testing data

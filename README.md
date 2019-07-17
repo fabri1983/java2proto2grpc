@@ -32,7 +32,7 @@ have a class hierarchy and you want to skip one or several of them.
 	- *java.lang.Enum* is defined as *string* when generating proto file. 
 	So when using *@net.badata.protobuf.converter.annotation.ProtoField* you need to extend *net.badata.protobuf.converter.type.EnumStringConverter* 
 	and set it as *converter* attribute. See **Request** and **Response** example classes.
-- Provides two gRPC examples: *Helloworld* and *LoginService*.
+- Provides two gRPC examples: *GreeterService* and *LoginService*.
 - Provides non secured and TLS-secured grpc server and client.
 - Use async grpc calls by *ListenableFuture* and with *rate limiter*.
 - Use of java compiler *-parameter* option to expose parameters name in signature definition, so we can get the real parameter name and 
@@ -63,18 +63,18 @@ in order to generate the protobuf java classes and gRPC stubs for client and ser
 Generated code is located at *target/generated-sources/protobuf/* and *target/generated-test-sources/protobuf/*.
 
 
-Helloworld and LoginService examples:
+GreeterService and LoginService examples:
 ---
-Folder **src/main/proto** contains two commited files named *helloworld.proto* and *LoginService.proto*. If you plan to make modificaitons 
+Folder **src/main/proto** contains two commited files named *Greeter.proto* and *LoginService.proto*. If you plan to make modifications 
 on them you can use next commands in order to ignore track any change:
 ```sh
-git update-index --assume-unchanged src/main/proto/helloworld.proto
+git update-index --assume-unchanged src/main/proto/Greeter.proto
 git update-index --assume-unchanged src/main/proto/LoginService.proto
 ```
 
-The file *helloworld.proto* is used to generated grpc-java example classes as per https://github.com/grpc/grpc-java/tree/master/examples, 
-so you can make some testing running *com.harlan.javagrpc.main.helloworld.HelloWorldClientMain* 
-and *com.harlan.javagrpc.main.helloworld.HelloWorldServerMain*.
+The file *Greeter.proto* is used to generated grpc-java example classes as per https://github.com/grpc/grpc-java/tree/master/examples, 
+so you can make some testing running *com.harlan.javagrpc.main.greeter.GreeterClientMain* 
+and *com.harlan.javagrpc.main.greeter.GreeterServerMain*.
 
 The file *LoginService.proto* is the one you can generate running *com.harlan.javagrpc.main.converter.JavaToProtoMainNew*, and it generates 
 protobuf classes and grpc stubs to make some testing running *com.harlan.javagrpc.main.login.LoginClientMain* 

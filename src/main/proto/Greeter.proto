@@ -29,7 +29,7 @@ message SearchRequest {
     repeated HelloRequest2 helloRequest2 = 2;
 }
 
-message SearchResponse{
+message SearchResponse {
 	
 	message HelloReply { 
 	   string message = 1; 

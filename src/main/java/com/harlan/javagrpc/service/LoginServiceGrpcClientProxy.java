@@ -1,5 +1,6 @@
 package com.harlan.javagrpc.service;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.protobuf.Empty;
 import com.harlan.javagrpc.grpc.artifact.client.GrpcClientStubProxy;
 import com.harlan.javagrpc.grpc.artifact.client.IGrpcManagedChannel;
@@ -32,9 +33,11 @@ public class LoginServiceGrpcClientProxy
 	public void loginVoid() {
 		withRateLimiter( () -> {
 			
-			Empty request = Empty.newBuilder().build();
+			Empty requestProto = Empty.newBuilder().build();
+			
 			// use the grpc client to call loginVoid()
-			return getFutureStub().loginVoid(request);
+			ListenableFuture<Empty> responseProto = getFutureStub().loginVoid(requestProto);
+			return responseProto;
 		});
 	}
 
@@ -51,7 +54,8 @@ public class LoginServiceGrpcClientProxy
 					.build();
 			
 			// use the grpc client to call login()
-			return getFutureStub().login(loginRequestProto);
+			ListenableFuture<LoginProtoOut> responseProto = getFutureStub().login(loginRequestProto);
+			return responseProto;
 		});
 		
 		// no protobuf to domain model conversion since we expect an int
@@ -76,7 +80,8 @@ public class LoginServiceGrpcClientProxy
 					.build();
 			
 			// use the grpc client to call getRes()
-			return getFutureStub().getRes(resRequest);
+			ListenableFuture<GetResProtoOut> responseProto = getFutureStub().getRes(resRequest);
+			return responseProto;
 		});
 		
 		// convert protobuf to domain model objects

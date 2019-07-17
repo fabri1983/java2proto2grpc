@@ -69,7 +69,7 @@ public class JavaToProtoNew {
 	}
 
 	private Method[] getDeclaredMethods(Class<?> clazz) {
-		//服务
+		
 		Method[] methods = clazz.getDeclaredMethods(); // excludes inherited methods
 		
 		// sort methods by name and parameters type (in the declared order)
@@ -254,11 +254,6 @@ public class JavaToProtoNew {
 		return s.replace("[]", "");
 	}
 	
-	/**
-	 * 判断是否为自定义对象类型
-	 * @param clz
-	 * @return
-	 */
 	private boolean isJavaClass(Class<?> clz) {
 		return clz != null && getProtobufFieldType(clz) != null;
 //		return clz != null && clz.getClassLoader() == null;

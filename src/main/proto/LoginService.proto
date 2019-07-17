@@ -29,24 +29,22 @@ message LoginProtoIn {
 message LoginProtoOut {
 	sint32 int = 1;
 }
+message Request2InnerMapObjProto {
+	sint32 request2InnerMapObjId = 1;
+	string request2InnerMapObjName = 2;
+}
+message ResponseProto {
+	string corpus = 1;
+	sint32 id = 2;
+	string name = 3;
+}
 message Req2innerListObjProto {
 	sint32 req2innerListObjId = 1;
 	string req2innerListObjName = 2;
 }
-message TestListProto {
-	sint32 listId = 1;
-	string listName = 2;
-}
 message TestMapProto {
 	sint32 mapId = 1;
 	string mapName = 2;
-}
-message Request2InnerProto {
-	sint32 req2InnerId = 1;
-	string req2InnerName = 2;
-	repeated string req2InnerString = 3;
-	repeated Req2InnerListProto req2InnerList = 4;
-	map<string, Request2InnerMapProto> request2InnerMap = 5;
 }
 message RequestProto {
 	string corpus = 1;
@@ -67,19 +65,14 @@ message RequestProto {
 	map<string, TestMapProto> map = 16;
 	repeated sint32 intArray = 17;
 }
-message Request2InnerMapObjProto {
-	sint32 request2InnerMapObjId = 1;
-	string request2InnerMapObjName = 2;
-}
 message Req2InnerListProto {
 	sint32 req2InnerListId = 1;
 	string req2InnerListName = 2;
 	Req2innerListObjProto req2innerListObj = 3;
 }
-message Request2InnerMapProto {
-	sint32 request2InnerMapId = 1;
-	string request2InnerMapName = 2;
-	Request2InnerMapObjProto request2InnerMapObj = 3;
+message TestListProto {
+	sint32 listId = 1;
+	string listName = 2;
 }
 message Request2Proto {
 	sint32 id = 1;
@@ -89,8 +82,15 @@ message Request2Proto {
 	repeated sint32 integer = 5;
 	repeated ResponseProto resps = 6;
 }
-message ResponseProto {
-	string corpus = 1;
-	sint32 id = 2;
-	string name = 3;
+message Request2InnerProto {
+	sint32 req2InnerId = 1;
+	string req2InnerName = 2;
+	repeated string req2InnerString = 3;
+	repeated Req2InnerListProto req2InnerList = 4;
+	map<string, Request2InnerMapProto> request2InnerMap = 5;
+}
+message Request2InnerMapProto {
+	sint32 request2InnerMapId = 1;
+	string request2InnerMapName = 2;
+	Request2InnerMapObjProto request2InnerMapObj = 3;
 }
