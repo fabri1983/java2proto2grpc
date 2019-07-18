@@ -22,6 +22,7 @@
 		<!-- protobuf version 3.8.0 needs protobuf-java dependency to avoid code generation error -->
 		<google.protobuf.version>3.8.0</google.protobuf.version>
 		<consul.client.version>1.4.2</consul.client.version>
+		<resilience4j.version>0.16.0</resilience4j.version>
 		<junit.version>4.13-beta-3</junit.version>
 	</properties>
 	
@@ -92,6 +93,27 @@
 				<artifactId>consul-api</artifactId>
 				<version>${consul.client.version}</version>
 			</dependency>
+			<!-- Resilience4j modules -->
+			<dependency>
+				<groupId>io.github.resilience4j</groupId>
+				<artifactId>resilience4j-circuitbreaker</artifactId>
+				<version>${resilience4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.github.resilience4j</groupId>
+				<artifactId>resilience4j-ratelimiter</artifactId>
+				<version>${resilience4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.github.resilience4j</groupId>
+				<artifactId>resilience4j-retry</artifactId>
+				<version>${resilience4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.github.resilience4j</groupId>
+				<artifactId>resilience4j-bulkhead</artifactId>
+				<version>${resilience4j.version}</version>
+			</dependency>
 			<!-- JUnit -->
 			<dependency>
 				<groupId>junit</groupId>
@@ -156,6 +178,23 @@
 		<dependency>
 			<groupId>com.ecwid.consul</groupId>
 			<artifactId>consul-api</artifactId>
+		</dependency>
+		<!-- Resilience4j modules -->
+		<dependency>
+			<groupId>io.github.resilience4j</groupId>
+			<artifactId>resilience4j-circuitbreaker</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.github.resilience4j</groupId>
+			<artifactId>resilience4j-ratelimiter</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.github.resilience4j</groupId>
+			<artifactId>resilience4j-retry</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.github.resilience4j</groupId>
+			<artifactId>resilience4j-bulkhead</artifactId>
 		</dependency>
 		<!-- JUnit -->
 		<dependency>
