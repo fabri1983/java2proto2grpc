@@ -19,11 +19,11 @@ import com.harlan.javagrpc.service.contract.protobuf.RequestProto;
 
 import net.badata.protobuf.converter.Converter;
 
-public class LoginServiceGrpcClientProxy 
+public class LoginServiceGrpcClientStub 
 	extends GrpcClientStub<LoginServiceBlockingStub, LoginServiceStub, LoginServiceFutureStub> 
 	implements LoginService {
 
-	public LoginServiceGrpcClientProxy(IGrpcManagedChannel managedChannel) {
+	public LoginServiceGrpcClientStub(IGrpcManagedChannel managedChannel) {
 		super(managedChannel, new LoginServiceGrpcClientStubFactory());
 	}
 	

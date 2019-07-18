@@ -4,7 +4,7 @@ import com.harlan.javagrpc.business.GreeterBusinessImpl;
 import com.harlan.javagrpc.business.contract.GreeterBusiness;
 import com.harlan.javagrpc.grpc.artifact.client.GrpcClientWithLoadBalancer;
 import com.harlan.javagrpc.grpc.artifact.client.IGrpcClientStubFactory;
-import com.harlan.javagrpc.service.grpc.client.GreeterGrpcClientStubFactory;
+import com.harlan.javagrpc.service.grpc.client.GreeterServiceGrpcClientStubFactory;
 import com.harlan.javagrpc.service.grpc.server.GreeterServiceGrpcImpl;
 import com.harlan.javagrpc.testutil.IServiceDiscoveryProperties;
 import com.harlan.javagrpc.testutil.ServiceDiscoveryPropertiesFromFile;
@@ -82,7 +82,7 @@ public class GreeterServiceGrpcClientLoadBalancerTest {
 
 		// create grpc client using Consul as load balancer
 		GrpcClientWithLoadBalancer<GreeterBlockingStub, GreeterStub, GreeterFutureStub> clientLbs = 
-				createClientLoadBalancerWithConsul(new GreeterGrpcClientStubFactory());
+				createClientLoadBalancerWithConsul(new GreeterServiceGrpcClientStubFactory());
 		// repeat it N times
 		List<GrpcClientWithLoadBalancer<GreeterBlockingStub, GreeterStub, GreeterFutureStub>> clientLoadBalancers = 
 				repeatClient(repeatNumStubs, clientLbs);
@@ -136,7 +136,7 @@ public class GreeterServiceGrpcClientLoadBalancerTest {
 
 		// create grpc client with load balancer and static grpc nodes
 		GrpcClientWithLoadBalancer<GreeterBlockingStub, GreeterStub, GreeterFutureStub> clientLbs = 
-				createClientLoadBalancerStaticGrpcNodes(new GreeterGrpcClientStubFactory());
+				createClientLoadBalancerStaticGrpcNodes(new GreeterServiceGrpcClientStubFactory());
 		// repeat it N times
 		List<GrpcClientWithLoadBalancer<GreeterBlockingStub, GreeterStub, GreeterFutureStub>> clientLoadBalancers = 
 				repeatClient(repeatNumStubs, clientLbs);

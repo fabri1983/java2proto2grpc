@@ -10,12 +10,12 @@ import io.grpc.examples.helloworld.protobuf.GreeterGrpc.GreeterStub;
 import io.grpc.examples.helloworld.protobuf.SearchRequest;
 import io.grpc.examples.helloworld.protobuf.SearchResponse;
 
-public class GreeterServiceGrpcClientProxy 
+public class GreeterServiceGrpcClientStub 
 		extends GrpcClientStub<GreeterBlockingStub, GreeterStub, GreeterFutureStub> 
 		implements GreeterService {
 
-	public GreeterServiceGrpcClientProxy(IGrpcManagedChannel managedChannel) {
-		super(managedChannel, new GreeterGrpcClientStubFactory());
+	public GreeterServiceGrpcClientStub(IGrpcManagedChannel managedChannel) {
+		super(managedChannel, new GreeterServiceGrpcClientStubFactory());
 	}
 
 	@Override

@@ -8,7 +8,7 @@ import com.harlan.javagrpc.model.Request;
 import com.harlan.javagrpc.model.Request2;
 import com.harlan.javagrpc.model.Response;
 import com.harlan.javagrpc.service.contract.LoginService;
-import com.harlan.javagrpc.service.grpc.client.LoginServiceGrpcClientProxy;
+import com.harlan.javagrpc.service.grpc.client.LoginServiceGrpcClientStub;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +24,8 @@ public class LoginClientMain {
 		int port = 50051;
 		IGrpcManagedChannel managedChannel = new GrpcManagedChannelSecured(GrpcConfiguration.from(host, port));
 		
-		// create login service client proxy
-		LoginService loginService = new LoginServiceGrpcClientProxy(managedChannel);
+		// create login service client stub
+		LoginService loginService = new LoginServiceGrpcClientStub(managedChannel);
 		
 		// create some testing data
 		User[] users = new User[] { 

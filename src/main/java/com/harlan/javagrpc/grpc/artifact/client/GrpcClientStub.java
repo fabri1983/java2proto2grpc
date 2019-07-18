@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Wraps the access to the different types of Grpc Stub: B (blocking), A (async), F (Future).
+ * Wraps the access to the different types of gRPC stubs: B (blocking), A (async), F (future).
  */
 public class GrpcClientStub<B, A, F> implements IGrpcClient<B, A, F> {
 
@@ -27,15 +27,15 @@ public class GrpcClientStub<B, A, F> implements IGrpcClient<B, A, F> {
 	private F futureStub;
 	
 	// limit rpc calls made to the stub
-	private final Semaphore rateLimiter = new Semaphore(100);
+	private final Semaphore callLimiter = new Semaphore(1000);
 	
-	public GrpcClientStub(IGrpcManagedChannel managedChannel, IGrpcClientStubFactory<B, A, F> factory) {
+	public GrpcClientStub(IGrpcManagedChannel managedChannel, IGrpcClientStubFactory<B, A, F> stubFactory) {
 		this.managedChannel = managedChannel;
 		try {
 			ManagedChannel channel = managedChannel.getChannel();
-			blockingStub = factory.newBlockingStub(channel);
-			asyncStub = factory.newAsyncStub(channel);
-			futureStub = factory.newFutureStub(channel);
+			blockingStub = stubFactory.newBlockingStub(channel);
+			asyncStub = stubFactory.newAsyncStub(channel);
+			futureStub = stubFactory.newFutureStub(channel);
 		}
 		catch (Exception e) {
 			log.error("{}. {}", e.getClass().getSimpleName(), e.getMessage());
@@ -93,11 +93,25 @@ public class GrpcClientStub<B, A, F> implements IGrpcClient<B, A, F> {
 		}
 	}
 	
-	protected <T> T justFutureWithRateLimiter(Supplier<ListenableFuture<T>> process) {
+	protected <T> T justWithLimiter(Supplier<T> process) {
 		try {
-			rateLimiter.acquire();
+			callLimiter.acquire();
+			return process.get();
+		}
+		catch (Exception ex) {
+			log.error(ex.getMessage());
+			throw new RuntimeException(ex);
+		}
+		finally {
+			callLimiter.release();
+		}
+	}
+	
+	protected <T> T justFutureWithLimiter(Supplier<ListenableFuture<T>> process) {
+		try {
+			callLimiter.acquire();
 			ListenableFuture<T> future = process.get();
-			future.addListener(() -> rateLimiter.release(), MoreExecutors.directExecutor());
+			future.addListener(() -> callLimiter.release(), MoreExecutors.directExecutor());
 			Futures.addCallback(future, callback(), MoreExecutors.directExecutor());
 			return future.get();
 		}

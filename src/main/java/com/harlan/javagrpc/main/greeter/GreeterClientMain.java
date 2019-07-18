@@ -4,7 +4,7 @@ import com.harlan.javagrpc.grpc.artifact.GrpcConfiguration;
 import com.harlan.javagrpc.grpc.artifact.client.managedchannel.GrpcManagedChannel;
 import com.harlan.javagrpc.grpc.artifact.client.managedchannel.IGrpcManagedChannel;
 import com.harlan.javagrpc.service.contract.GreeterService;
-import com.harlan.javagrpc.service.grpc.client.GreeterServiceGrpcClientProxy;
+import com.harlan.javagrpc.service.grpc.client.GreeterServiceGrpcClientStub;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +20,8 @@ public class GreeterClientMain {
 		int port = 50051;
 		IGrpcManagedChannel managedChannel = new GrpcManagedChannel(GrpcConfiguration.from(host, port));
 		
-		// create greeter service client proxy
-		GreeterService greeterService = new GreeterServiceGrpcClientProxy(managedChannel);
+		// create greeter service client stub
+		GreeterService greeterService = new GreeterServiceGrpcClientStub(managedChannel);
 		
 		// call grpc stub
 		for (int i = 0; i < 5; i++) {

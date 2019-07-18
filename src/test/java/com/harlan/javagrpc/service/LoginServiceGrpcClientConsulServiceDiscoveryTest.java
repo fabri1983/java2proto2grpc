@@ -8,7 +8,7 @@ import com.harlan.javagrpc.model.Request;
 import com.harlan.javagrpc.model.Request2;
 import com.harlan.javagrpc.model.Response;
 import com.harlan.javagrpc.service.contract.LoginService;
-import com.harlan.javagrpc.service.grpc.client.LoginServiceGrpcClientProxy;
+import com.harlan.javagrpc.service.grpc.client.LoginServiceGrpcClientStub;
 import com.harlan.javagrpc.service.grpc.server.LoginServiceGrpcImpl;
 import com.harlan.javagrpc.testutil.IServiceDiscoveryProperties;
 import com.harlan.javagrpc.testutil.ServiceDiscoveryPropertiesFromFile;
@@ -82,7 +82,7 @@ public class LoginServiceGrpcClientConsulServiceDiscoveryTest {
 		// number of concurrent client stubs calls
 		int repeatNumStubs = 1000;
 		
-		// create login service proxy (stub)
+		// create login service stub
 		List<LoginService> loginServices = repeatLoginServiceClientStub(repeatNumStubs);
 		
 		// create some testing data
@@ -137,7 +137,7 @@ public class LoginServiceGrpcClientConsulServiceDiscoveryTest {
 	}
 	
 	private LoginService createLoginServiceClientStub() {
-		LoginService loginService = new LoginServiceGrpcClientProxy(managedChannelRule.getManagedChannel());
+		LoginService loginService = new LoginServiceGrpcClientStub(managedChannelRule.getManagedChannel());
 		return loginService;
 	}
 

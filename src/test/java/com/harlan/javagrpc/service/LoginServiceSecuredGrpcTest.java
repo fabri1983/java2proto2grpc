@@ -8,7 +8,7 @@ import com.harlan.javagrpc.model.Request;
 import com.harlan.javagrpc.model.Request2;
 import com.harlan.javagrpc.model.Response;
 import com.harlan.javagrpc.service.contract.LoginService;
-import com.harlan.javagrpc.service.grpc.client.LoginServiceGrpcClientProxy;
+import com.harlan.javagrpc.service.grpc.client.LoginServiceGrpcClientStub;
 import com.harlan.javagrpc.service.grpc.server.LoginServiceGrpcImpl;
 import com.harlan.javagrpc.testutil.rules.GrpcManagedChannelSecuredRule;
 import com.harlan.javagrpc.testutil.rules.GrpcServerStarterSecuredRule;
@@ -64,7 +64,7 @@ public class LoginServiceSecuredGrpcTest {
 	}
 
 	private LoginService createLoginServiceClientStub() {
-		LoginService loginService = new LoginServiceGrpcClientProxy(mangedChannelRule.getManagedChannel());
+		LoginService loginService = new LoginServiceGrpcClientStub(mangedChannelRule.getManagedChannel());
 		return loginService;
 	}
 

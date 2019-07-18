@@ -8,7 +8,7 @@ import io.grpc.examples.helloworld.protobuf.GreeterGrpc.GreeterBlockingStub;
 import io.grpc.examples.helloworld.protobuf.GreeterGrpc.GreeterFutureStub;
 import io.grpc.examples.helloworld.protobuf.GreeterGrpc.GreeterStub;
 
-public class GreeterGrpcClientStubFactory
+public class GreeterServiceGrpcClientStubFactory
 		implements IGrpcClientStubFactory<GreeterBlockingStub, GreeterStub, GreeterFutureStub> {
 
 	@Override
