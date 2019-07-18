@@ -93,7 +93,7 @@ on client side using *static gRPC nodes* and also *Consul service discovery*. No
 
 Consul can be obtained as a stand alone app or as a **docker image**:  
 - stand alone app: https://www.consul.io/downloads.html  
-- docker image: *docker pull consul*
+- docker image: *docker image pull consul*
 	- See *Useful Tips* section for instruciton on docker Consul execution.
 
 You need to setup the current consul ip address in order to test run **LoginServiceGrpcClientConsulServiceDiscoveryTest** correctly:

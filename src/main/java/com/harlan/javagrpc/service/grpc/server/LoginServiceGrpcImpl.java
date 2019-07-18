@@ -1,4 +1,4 @@
-package com.harlan.javagrpc.service;
+package com.harlan.javagrpc.service.grpc.server;
 
 import com.google.protobuf.Empty;
 import com.harlan.javagrpc.business.contract.LoginBusiness;

@@ -1,4 +1,4 @@
-package com.harlan.javagrpc.service;
+package com.harlan.javagrpc.service.grpc.server;
 
 import com.harlan.javagrpc.business.contract.GreeterBusiness;
 import com.harlan.javagrpc.grpc.artifact.server.GrpcServiceMarker;

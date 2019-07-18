@@ -4,7 +4,7 @@ import com.harlan.javagrpc.business.GreeterBusinessImpl;
 import com.harlan.javagrpc.business.contract.GreeterBusiness;
 import com.harlan.javagrpc.grpc.artifact.server.GrpcServerStarter;
 import com.harlan.javagrpc.grpc.artifact.server.IGrpcServerStarter;
-import com.harlan.javagrpc.service.GreeterServiceGrpcImpl;
+import com.harlan.javagrpc.service.grpc.server.GreeterServiceGrpcImpl;
 
 import java.io.IOException;
 

@@ -40,7 +40,7 @@ public class JunitStopWatch extends Stopwatch {
 		String testName = description.getMethodName();
 		long micros = TimeUnit.NANOSECONDS.toMicros(nanos);
 		long millis = TimeUnit.NANOSECONDS.toMillis(nanos);
-		if (micros < 1000000) {
+		if (micros < 1000) {
 			log.info("{}() {}, spent {} micros", testName, status, micros);
 		} else {
 			log.info("{}() {}, spent {} millis", testName, status, millis);

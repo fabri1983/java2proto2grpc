@@ -88,7 +88,7 @@ public class ConsulNameResolver extends NameResolver {
 				String host = node.getHost();
 				int port = node.getPort();
 
-				log.info("Found serviceName: [{}], host: [{}], port: [{}]", serviceName, host, port);
+				log.info("Found Service. name: [{}], host: [{}], port: [{}]", serviceName, host, port);
 
 				List<SocketAddress> sockaddrsList = new ArrayList<SocketAddress>(2);
 				sockaddrsList.add(new InetSocketAddress(host, port));
@@ -98,10 +98,10 @@ public class ConsulNameResolver extends NameResolver {
 			nodes = new ArrayList<>(5);
 			for (String hostPort : this.hostPorts) {
 				String[] tokens = hostPort.split(":");
-
 				String host = tokens[0];
 				int port = Integer.valueOf(tokens[1]);
-				log.info("Static host: [" + host + "], port: [" + port + "]");
+				
+				log.info("Static Node. host: [{}], port: [{}]", host, port);
 
 				nodes.add(new IServiceDiscovery.ServiceNode("", host, port));
 

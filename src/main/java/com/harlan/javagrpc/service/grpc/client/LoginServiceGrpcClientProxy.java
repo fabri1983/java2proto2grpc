@@ -1,6 +1,5 @@
-package com.harlan.javagrpc.service;
+package com.harlan.javagrpc.service.grpc.client;
 
-import com.google.common.util.concurrent.ListenableFuture;
 import com.google.protobuf.Empty;
 import com.harlan.javagrpc.grpc.artifact.client.GrpcClientStub;
 import com.harlan.javagrpc.grpc.artifact.client.managedchannel.IGrpcManagedChannel;
@@ -12,7 +11,6 @@ import com.harlan.javagrpc.service.contract.protobuf.GetResProtoIn;
 import com.harlan.javagrpc.service.contract.protobuf.GetResProtoOut;
 import com.harlan.javagrpc.service.contract.protobuf.LoginProtoIn;
 import com.harlan.javagrpc.service.contract.protobuf.LoginProtoOut;
-import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc;
 import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc.LoginServiceBlockingStub;
 import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc.LoginServiceFutureStub;
 import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc.LoginServiceStub;
@@ -22,28 +20,28 @@ import com.harlan.javagrpc.service.contract.protobuf.RequestProto;
 import net.badata.protobuf.converter.Converter;
 
 public class LoginServiceGrpcClientProxy 
-	extends GrpcClientStub<LoginServiceGrpc, LoginServiceBlockingStub, LoginServiceStub, LoginServiceFutureStub> 
+	extends GrpcClientStub<LoginServiceBlockingStub, LoginServiceStub, LoginServiceFutureStub> 
 	implements LoginService {
 
 	public LoginServiceGrpcClientProxy(IGrpcManagedChannel managedChannel) {
-		super(managedChannel, LoginServiceGrpc.class);
+		super(managedChannel, new LoginServiceGrpcClientStubFactory());
 	}
 	
 	@Override
 	public void loginVoid() {
-		withRateLimiter( () -> {
+		just( () -> {
 			
 			Empty requestProto = Empty.newBuilder().build();
 			
 			// use the grpc client to call loginVoid()
-			ListenableFuture<Empty> responseProto = getFutureStub().loginVoid(requestProto);
+			Empty responseProto = getBlockingStub().loginVoid(requestProto);
 			return responseProto;
 		});
 	}
 
 	@Override
 	public int login(Request req) {
-		LoginProtoOut loginResponse = withRateLimiter( () -> {
+		LoginProtoOut loginResponse = just( () -> {
 			
 			// convert domain model into protobuf object
 			RequestProto requestProto = Converter.create().toProtobuf(RequestProto.class, req);
@@ -54,7 +52,7 @@ public class LoginServiceGrpcClientProxy
 					.build();
 			
 			// use the grpc client to call login()
-			ListenableFuture<LoginProtoOut> responseProto = getFutureStub().login(loginRequestProto);
+			LoginProtoOut responseProto = getBlockingStub().login(loginRequestProto);
 			return responseProto;
 		});
 		
@@ -65,7 +63,7 @@ public class LoginServiceGrpcClientProxy
 
 	@Override
 	public Response getRes(Request req, Request2 req2) {
-		GetResProtoOut resResponse = withRateLimiter( () -> {
+		GetResProtoOut resResponse = just( () -> {
 			
 			// convert domain model into protobuf object
 			RequestProto requestProto = Converter.create().toProtobuf(RequestProto.class, req);
@@ -80,7 +78,7 @@ public class LoginServiceGrpcClientProxy
 					.build();
 			
 			// use the grpc client to call getRes()
-			ListenableFuture<GetResProtoOut> responseProto = getFutureStub().getRes(resRequest);
+			GetResProtoOut responseProto = getBlockingStub().getRes(resRequest);
 			return responseProto;
 		});
 		

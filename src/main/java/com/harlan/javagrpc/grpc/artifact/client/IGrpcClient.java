@@ -1,6 +1,6 @@
 package com.harlan.javagrpc.grpc.artifact.client;
 
-public interface IGrpcClient<G, B, A, F> {
+public interface IGrpcClient<B, A, F> {
 
 	void shutdown();
 

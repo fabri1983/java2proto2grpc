@@ -8,6 +8,8 @@ import com.harlan.javagrpc.model.Request;
 import com.harlan.javagrpc.model.Request2;
 import com.harlan.javagrpc.model.Response;
 import com.harlan.javagrpc.service.contract.LoginService;
+import com.harlan.javagrpc.service.grpc.client.LoginServiceGrpcClientProxy;
+import com.harlan.javagrpc.service.grpc.server.LoginServiceGrpcImpl;
 import com.harlan.javagrpc.testutil.rules.GrpcManagedChannelRule;
 import com.harlan.javagrpc.testutil.rules.GrpcServerStarterRule;
 import com.harlan.javagrpc.testutil.rules.JunitPrintTestName;
@@ -71,7 +73,7 @@ public class LoginServiceGrpcTest {
 		registerLoginServiceGrpc();
 		
 		// number of concurrent client stubs calls
-		int repeatNumStubs = 10;
+		int repeatNumStubs = 1000;
 		
 		// create login service proxy (stub)
 		List<LoginService> loginServices = repeatLoginServiceClientStub(repeatNumStubs);
@@ -97,13 +99,17 @@ public class LoginServiceGrpcTest {
         List<Future<Void>> futures = executorService.invokeAll(tasks, 5, TimeUnit.SECONDS);
         
         // block until all tasks are done
-        futures.forEach( f -> {
-				try {
-					f.get();
-				} catch (InterruptedException | ExecutionException ex) {
-					throw new RuntimeException(ex);
-				}
-			});
+        long finishedCount = futures.stream()
+	        	.map( f -> {
+					try {
+						return f.get();
+					} catch (InterruptedException | ExecutionException ex) {
+						throw new RuntimeException(ex);
+					}
+				})
+	        	.count();
+        
+        Assert.assertEquals(repeatNumStubs, finishedCount);
 	}
 	
 	private void registerLoginServiceGrpc() {

@@ -3,8 +3,8 @@ package com.harlan.javagrpc.main.greeter;
 import com.harlan.javagrpc.grpc.artifact.GrpcConfiguration;
 import com.harlan.javagrpc.grpc.artifact.client.managedchannel.GrpcManagedChannel;
 import com.harlan.javagrpc.grpc.artifact.client.managedchannel.IGrpcManagedChannel;
-import com.harlan.javagrpc.service.GreeterServiceGrpcClientProxy;
 import com.harlan.javagrpc.service.contract.GreeterService;
+import com.harlan.javagrpc.service.grpc.client.GreeterServiceGrpcClientProxy;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

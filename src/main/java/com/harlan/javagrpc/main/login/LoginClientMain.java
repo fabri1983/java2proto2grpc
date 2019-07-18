@@ -7,8 +7,8 @@ import com.harlan.javagrpc.model.Corpus;
 import com.harlan.javagrpc.model.Request;
 import com.harlan.javagrpc.model.Request2;
 import com.harlan.javagrpc.model.Response;
-import com.harlan.javagrpc.service.LoginServiceGrpcClientProxy;
 import com.harlan.javagrpc.service.contract.LoginService;
+import com.harlan.javagrpc.service.grpc.client.LoginServiceGrpcClientProxy;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

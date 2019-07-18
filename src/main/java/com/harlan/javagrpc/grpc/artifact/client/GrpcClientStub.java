@@ -6,10 +6,8 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.harlan.javagrpc.grpc.artifact.client.managedchannel.IGrpcManagedChannel;
 
-import io.grpc.Channel;
 import io.grpc.ManagedChannel;
 
-import java.lang.reflect.Method;
 import java.util.concurrent.Semaphore;
 import java.util.function.Supplier;
 
@@ -18,9 +16,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Wraps the access to the different types of Grpc Stub: B (blocking), A (async), F (Future).
- * G defines the Grpc class.
  */
-public class GrpcClientStub<G, B, A, F> implements IGrpcClient<G, B, A, F> {
+public class GrpcClientStub<B, A, F> implements IGrpcClient<B, A, F> {
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	
@@ -32,21 +29,15 @@ public class GrpcClientStub<G, B, A, F> implements IGrpcClient<G, B, A, F> {
 	// limit rpc calls made to the stub
 	private final Semaphore rateLimiter = new Semaphore(100);
 	
-	@SuppressWarnings("unchecked")
-	public GrpcClientStub(IGrpcManagedChannel managedChannel, Class<G> grpcClass) {
+	public GrpcClientStub(IGrpcManagedChannel managedChannel, IGrpcClientStubFactory<B, A, F> factory) {
 		this.managedChannel = managedChannel;
 		try {
 			ManagedChannel channel = managedChannel.getChannel();
-			
-			Method blockingStubMethod = grpcClass.getMethod("newBlockingStub", Channel.class);
-			blockingStub = (B) blockingStubMethod.invoke(null, channel);
-
-			Method asyncStubMethod = grpcClass.getMethod("newStub", Channel.class);
-			asyncStub = (A) asyncStubMethod.invoke(null, channel);
-
-			Method futureStubMethod = grpcClass.getMethod("newFutureStub", Channel.class);
-			futureStub = (F) futureStubMethod.invoke(null, channel);
-		} catch (Exception e) {
+			blockingStub = factory.newBlockingStub(channel);
+			asyncStub = factory.newAsyncStub(channel);
+			futureStub = factory.newFutureStub(channel);
+		}
+		catch (Exception e) {
 			log.error("{}. {}", e.getClass().getSimpleName(), e.getMessage());
 			throw new RuntimeException(e);
 		}
@@ -80,7 +71,29 @@ public class GrpcClientStub<G, B, A, F> implements IGrpcClient<G, B, A, F> {
 		return managedChannel.getPort();
 	}
 
-	protected <T> T withRateLimiter(Supplier<ListenableFuture<T>> process) {
+	protected <T> T just(Supplier<T> process) {
+		try {
+			return process.get();
+		}
+		catch (Exception ex) {
+			log.error(ex.getMessage());
+			throw new RuntimeException(ex);
+		}
+	}
+
+	protected <T> T justFuture(Supplier<ListenableFuture<T>> process) {
+		try {
+			ListenableFuture<T> future = process.get();
+			Futures.addCallback(future, callback(), MoreExecutors.directExecutor());
+			return future.get();
+		}
+		catch (Exception ex) {
+			log.error(ex.getMessage());
+			throw new RuntimeException(ex);
+		}
+	}
+	
+	protected <T> T justFutureWithRateLimiter(Supplier<ListenableFuture<T>> process) {
 		try {
 			rateLimiter.acquire();
 			ListenableFuture<T> future = process.get();
@@ -93,17 +106,7 @@ public class GrpcClientStub<G, B, A, F> implements IGrpcClient<G, B, A, F> {
 			throw new RuntimeException(ex);
 		}
 	}
-	
-	protected <T> T just(Supplier<T> process) {
-		try {
-			return process.get();
-		}
-		catch (Exception ex) {
-			log.error(ex.getMessage());
-			throw new RuntimeException(ex);
-		}
-	}
-	
+
 	private <T> FutureCallback<T> callback() {
 		return new FutureCallback<T>() {
 			@Override
