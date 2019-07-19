@@ -114,8 +114,7 @@ You need to setup the current consul ip address in order to test run **LoginServ
 
 TODO
 ---
-- GrpcClientWithLoadBalancer: use a factory to instance a desired managed channel.
-- Remove usage of call limiter in GrpcClientStub and instead use *resilience4j* api.
+- Remove usage of call limiter in GrpcClientStub and instead use *resilience4j* api (WIP).
 - Modularize JavaToProtoNew. Code is written in a very imperative way, and hard to mantain.
 - Add converters similar to *net.badata.protobuf.converter.type.XxxConverter* for fields with types: Duration. 
 See [this](https://github.com/google/qrisp/blob/master/google/protobuf/java/util/src/main/java/com/google/protobuf/util/TimeUtil.java).

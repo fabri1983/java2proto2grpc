@@ -3,7 +3,9 @@ package com.harlan.javagrpc.service;
 import com.harlan.javagrpc.business.GreeterBusinessImpl;
 import com.harlan.javagrpc.business.contract.GreeterBusiness;
 import com.harlan.javagrpc.grpc.artifact.client.GrpcClientWithLoadBalancer;
-import com.harlan.javagrpc.grpc.artifact.client.GrpcClientStubFactory;
+import com.harlan.javagrpc.grpc.artifact.client.IGrpcClientStubFactory;
+import com.harlan.javagrpc.grpc.artifact.client.managedchannel.IGrpcManagedChannelFactory;
+import com.harlan.javagrpc.grpc.artifact.client.managedchannel.IGrpcManagedChannelFactory.GrpcManagedChannelNonSecuredFactory;
 import com.harlan.javagrpc.service.grpc.client.GreeterServiceGrpcClientStubFactory;
 import com.harlan.javagrpc.service.grpc.server.GreeterServiceGrpcImpl;
 import com.harlan.javagrpc.testutil.IServiceDiscoveryProperties;
@@ -46,20 +48,20 @@ public class GreeterServiceGrpcClientLoadBalancerTest {
 
 	private static final IServiceDiscoveryProperties serviceDiscoveryProps = 
 			new ServiceDiscoveryPropertiesFromFile();
-	
-	@Rule( order = 1)
+
+	@Rule(order = 1)
 	public final GrpcServerStarterRule serverStarterRule = new GrpcServerStarterRule(50051, 50052);
-	
-	@Rule( order = 2)
-	public final ConsulServiceRegisterRule consulServiceRegisterRule = 
-			new ConsulServiceRegisterRule(serviceDiscoveryProps, Arrays.asList("localhost:50051", "localhost:50052"));
-	
+
+	@Rule(order = 2)
+	public final ConsulServiceRegisterRule consulServiceRegisterRule = new ConsulServiceRegisterRule(
+			serviceDiscoveryProps, Arrays.asList("localhost:50051", "localhost:50052"));
+
 	private final List<String> staticGrpcHostPortList = Arrays.asList("localhost:50051", "localhost:50052");
-	
-	@Rule
+
+	@Rule(order = 100)
 	public JunitStopWatch stopwatch = new JunitStopWatch(log);
 	
-	@Rule
+	@Rule(order = 101)
 	public JunitPrintTestName testName = new JunitPrintTestName(log);
 	
 	/**
@@ -82,7 +84,9 @@ public class GreeterServiceGrpcClientLoadBalancerTest {
 
 		// create grpc client using Consul as load balancer
 		GrpcClientWithLoadBalancer<GreeterBlockingStub, GreeterStub, GreeterFutureStub> clientLbs = 
-				createClientLoadBalancerWithConsul(new GreeterServiceGrpcClientStubFactory());
+				createClientLoadBalancerWithConsul(
+						new GrpcManagedChannelNonSecuredFactory(),
+						new GreeterServiceGrpcClientStubFactory());
 		// repeat it N times
 		List<GrpcClientWithLoadBalancer<GreeterBlockingStub, GreeterStub, GreeterFutureStub>> clientLoadBalancers = 
 				repeatClient(repeatNumStubs, clientLbs);
@@ -136,7 +140,9 @@ public class GreeterServiceGrpcClientLoadBalancerTest {
 
 		// create grpc client with load balancer and static grpc nodes
 		GrpcClientWithLoadBalancer<GreeterBlockingStub, GreeterStub, GreeterFutureStub> clientLbs = 
-				createClientLoadBalancerStaticGrpcNodes(new GreeterServiceGrpcClientStubFactory());
+				createClientLoadBalancerStaticGrpcNodes(
+						new GrpcManagedChannelNonSecuredFactory(),
+						new GreeterServiceGrpcClientStubFactory());
 		// repeat it N times
 		List<GrpcClientWithLoadBalancer<GreeterBlockingStub, GreeterStub, GreeterFutureStub>> clientLoadBalancers = 
 				repeatClient(repeatNumStubs, clientLbs);
@@ -182,20 +188,22 @@ public class GreeterServiceGrpcClientLoadBalancerTest {
 	}
 
 	private <B, A, F> GrpcClientWithLoadBalancer<B, A, F> createClientLoadBalancerWithConsul(
-			GrpcClientStubFactory<B, A, F> factory) {
+			IGrpcManagedChannelFactory managedChannelFactory, IGrpcClientStubFactory<B, A, F> stubFactory) {
 		GrpcClientWithLoadBalancer<B, A, F> lb = 
 				new GrpcClientWithLoadBalancer<>(
 						serviceDiscoveryProps.getConsulServiceName(),
 						serviceDiscoveryProps.getConsulHost(),
 						serviceDiscoveryProps.getConsulPort(),
-						factory);
+						managedChannelFactory,
+						stubFactory);
 		return lb;
 	}
 
 	private <B, A, F> GrpcClientWithLoadBalancer<B, A, F> createClientLoadBalancerStaticGrpcNodes(
-			GrpcClientStubFactory<B, A, F> factory) {
+			IGrpcManagedChannelFactory managedChannelFactory, IGrpcClientStubFactory<B, A, F> stubFactory) {
 		GrpcClientWithLoadBalancer<B, A, F> clientLb = 
-				new GrpcClientWithLoadBalancer<>(staticGrpcHostPortList, factory);
+				new GrpcClientWithLoadBalancer<>(
+						staticGrpcHostPortList, managedChannelFactory, stubFactory);
 		return clientLb;
 	}
 

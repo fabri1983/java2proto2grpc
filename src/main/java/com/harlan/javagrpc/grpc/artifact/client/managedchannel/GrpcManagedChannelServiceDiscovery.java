@@ -37,8 +37,8 @@ public class GrpcManagedChannelServiceDiscovery extends GrpcManagedChannel {
                 // otherwise setup your security artifacts such as key/trust stores
                 .usePlaintext();
         
-        // grpc load balancing?
-        if (config.isUseGrpcLoadBalancing()) {
+        // use grpc internal load balancing?
+        if (config.isUseInternalGrpcLoadBalancing()) {
         	// use round robin policy
             String loadBalancerPolicyName = LoadBalancerRegistry.getDefaultRegistry()
             		.getProvider("round_robin")

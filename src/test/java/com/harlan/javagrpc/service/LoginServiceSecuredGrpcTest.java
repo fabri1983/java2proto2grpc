@@ -3,6 +3,7 @@ package com.harlan.javagrpc.service;
 import com.harlan.javagrpc.business.LoginBusinessImpl;
 import com.harlan.javagrpc.business.contract.LoginBusiness;
 import com.harlan.javagrpc.grpc.artifact.GrpcConfiguration;
+import com.harlan.javagrpc.grpc.artifact.client.managedchannel.IGrpcManagedChannelFactory.GrpcManagedChannelSecuredFactory;
 import com.harlan.javagrpc.model.Corpus;
 import com.harlan.javagrpc.model.Request;
 import com.harlan.javagrpc.model.Request2;
@@ -10,7 +11,7 @@ import com.harlan.javagrpc.model.Response;
 import com.harlan.javagrpc.service.contract.LoginService;
 import com.harlan.javagrpc.service.grpc.client.LoginServiceGrpcClientStub;
 import com.harlan.javagrpc.service.grpc.server.LoginServiceGrpcImpl;
-import com.harlan.javagrpc.testutil.rules.GrpcManagedChannelSecuredRule;
+import com.harlan.javagrpc.testutil.rules.GrpcManagedChannelRule;
 import com.harlan.javagrpc.testutil.rules.GrpcServerStarterSecuredRule;
 import com.harlan.javagrpc.testutil.rules.JunitPrintTestName;
 import com.harlan.javagrpc.testutil.rules.JunitStopWatch;
@@ -27,18 +28,18 @@ import org.slf4j.LoggerFactory;
 public class LoginServiceSecuredGrpcTest {
 	
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
-	
-	@Rule( order = 1)
+
+	@Rule(order = 1)
 	public GrpcServerStarterSecuredRule serverStarterRule = new GrpcServerStarterSecuredRule(50051);
-	
-	@Rule( order = 2)
-	public GrpcManagedChannelSecuredRule mangedChannelRule = new GrpcManagedChannelSecuredRule(
-			GrpcConfiguration.from("127.0.0.1", 50051));
-	
-	@Rule
+
+	@Rule(order = 2)
+	public GrpcManagedChannelRule managedChannelRule = new GrpcManagedChannelRule(
+			new GrpcManagedChannelSecuredFactory(), GrpcConfiguration.from("127.0.0.1", 50051));
+
+	@Rule(order = 100)
 	public JunitStopWatch stopwatch = new JunitStopWatch(log);
 	
-	@Rule
+	@Rule(order = 101)
 	public JunitPrintTestName testName = new JunitPrintTestName(log);
 	
 	@Test
@@ -64,7 +65,7 @@ public class LoginServiceSecuredGrpcTest {
 	}
 
 	private LoginService createLoginServiceClientStub() {
-		LoginService loginService = new LoginServiceGrpcClientStub(mangedChannelRule.getManagedChannel());
+		LoginService loginService = new LoginServiceGrpcClientStub(managedChannelRule.getManagedChannel());
 		return loginService;
 	}
 

@@ -3,6 +3,7 @@ package com.harlan.javagrpc.service;
 import com.harlan.javagrpc.business.LoginBusinessImpl;
 import com.harlan.javagrpc.business.contract.LoginBusiness;
 import com.harlan.javagrpc.grpc.artifact.GrpcConfiguration;
+import com.harlan.javagrpc.grpc.artifact.client.managedchannel.IGrpcManagedChannelFactory.GrpcManagedChannelServiceDiscoveryFactory;
 import com.harlan.javagrpc.model.Corpus;
 import com.harlan.javagrpc.model.Request;
 import com.harlan.javagrpc.model.Request2;
@@ -13,7 +14,7 @@ import com.harlan.javagrpc.service.grpc.server.LoginServiceGrpcImpl;
 import com.harlan.javagrpc.testutil.IServiceDiscoveryProperties;
 import com.harlan.javagrpc.testutil.ServiceDiscoveryPropertiesFromFile;
 import com.harlan.javagrpc.testutil.rules.ConsulServiceRegisterRule;
-import com.harlan.javagrpc.testutil.rules.GrpcManagedChannelServiceDiscoveryRule;
+import com.harlan.javagrpc.testutil.rules.GrpcManagedChannelRule;
 import com.harlan.javagrpc.testutil.rules.GrpcServerStarterRule;
 import com.harlan.javagrpc.testutil.rules.JunitPrintTestName;
 import com.harlan.javagrpc.testutil.rules.JunitStopWatch;
@@ -45,27 +46,28 @@ public class LoginServiceGrpcClientConsulServiceDiscoveryTest {
 	private static final IServiceDiscoveryProperties serviceDiscoveryProps = 
 			new ServiceDiscoveryPropertiesFromFile();
 
-	@Rule( order = 1)
+	@Rule(order = 1)
 	public GrpcServerStarterRule serverStarterRule = new GrpcServerStarterRule(50051);
 	
-	@Rule( order = 2)
+	@Rule(order = 2)
 	public ConsulServiceRegisterRule consulServiceRegisterRule = 
 			new ConsulServiceRegisterRule(serviceDiscoveryProps, Arrays.asList("localhost:50051"));
 	
-	@Rule( order = 3)
-	public GrpcManagedChannelServiceDiscoveryRule managedChannelRule = new GrpcManagedChannelServiceDiscoveryRule(
+	@Rule(order = 3)
+	public GrpcManagedChannelRule managedChannelRule = new GrpcManagedChannelRule(
+			new GrpcManagedChannelServiceDiscoveryFactory(),
 			GrpcConfiguration.fromConsulServiceDiscovery(
 					serviceDiscoveryProps.getConsulServiceName(),
 					serviceDiscoveryProps.getConsulHost(),
 					serviceDiscoveryProps.getConsulPort(),
 					0, // 0 secs = disable health check
-					false // do not use grpc load balancing
+					false // do not use internal grpc load balancing
 			));
 
-	@Rule( order = 100)
+	@Rule(order = 100)
 	public JunitStopWatch stopwatch = new JunitStopWatch(log);
 	
-	@Rule( order = 101)
+	@Rule(order = 101)
 	public JunitPrintTestName testName = new JunitPrintTestName(log);
 	
 	@Test

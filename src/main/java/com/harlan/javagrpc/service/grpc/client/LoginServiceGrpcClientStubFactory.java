@@ -1,7 +1,7 @@
 package com.harlan.javagrpc.service.grpc.client;
 
 import com.harlan.javagrpc.grpc.artifact.client.ClientInterceptorApplier;
-import com.harlan.javagrpc.grpc.artifact.client.GrpcClientStubFactory;
+import com.harlan.javagrpc.grpc.artifact.client.GrpcClientStubFactoryAbstract;
 import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc;
 import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc.LoginServiceBlockingStub;
 import com.harlan.javagrpc.service.contract.protobuf.LoginServiceGrpc.LoginServiceFutureStub;
@@ -11,10 +11,10 @@ import io.grpc.ClientInterceptor;
 import io.grpc.ManagedChannel;
 
 public class LoginServiceGrpcClientStubFactory 
-		extends GrpcClientStubFactory<LoginServiceBlockingStub, LoginServiceStub, LoginServiceFutureStub> {
+		extends GrpcClientStubFactoryAbstract<LoginServiceBlockingStub, LoginServiceStub, LoginServiceFutureStub> {
 
 	public LoginServiceGrpcClientStubFactory() {
-		super((ClientInterceptor[])null);
+		super();
 	}
 	
 	public LoginServiceGrpcClientStubFactory(ClientInterceptor... interceptors) {

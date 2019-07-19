@@ -3,6 +3,7 @@ package com.harlan.javagrpc.service;
 import com.harlan.javagrpc.business.LoginBusinessImpl;
 import com.harlan.javagrpc.business.contract.LoginBusiness;
 import com.harlan.javagrpc.grpc.artifact.GrpcConfiguration;
+import com.harlan.javagrpc.grpc.artifact.client.managedchannel.IGrpcManagedChannelFactory.GrpcManagedChannelNonSecuredFactory;
 import com.harlan.javagrpc.model.Corpus;
 import com.harlan.javagrpc.model.Request;
 import com.harlan.javagrpc.model.Request2;
@@ -37,18 +38,18 @@ import org.slf4j.LoggerFactory;
 public class LoginServiceGrpcTest {
 	
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
-	
-	@Rule( order = 1)
-	public GrpcServerStarterRule serverStarterRule = new GrpcServerStarterRule(50051);
-	
-	@Rule( order = 2)
-	public GrpcManagedChannelRule mangedChannelRule = new GrpcManagedChannelRule(
-			GrpcConfiguration.from("127.0.0.1", 50051));
 
-	@Rule
+	@Rule(order = 1)
+	public GrpcServerStarterRule serverStarterRule = new GrpcServerStarterRule(50051);
+
+	@Rule(order = 2)
+	public GrpcManagedChannelRule managedChannelRule = new GrpcManagedChannelRule(
+			new GrpcManagedChannelNonSecuredFactory(), GrpcConfiguration.from("127.0.0.1", 50051));
+
+	@Rule(order = 100)
 	public JunitStopWatch stopwatch = new JunitStopWatch(log);
 	
-	@Rule
+	@Rule(order = 101)
 	public JunitPrintTestName testName = new JunitPrintTestName(log);
 	
 	@Test
@@ -119,7 +120,7 @@ public class LoginServiceGrpcTest {
 	}
 	
 	private LoginService createLoginServiceClientStub() {
-		LoginService loginService = new LoginServiceGrpcClientStub(mangedChannelRule.getManagedChannel());
+		LoginService loginService = new LoginServiceGrpcClientStub(managedChannelRule.getManagedChannel());
 		return loginService;
 	}
 

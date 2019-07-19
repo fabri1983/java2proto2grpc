@@ -1,7 +1,7 @@
 package com.harlan.javagrpc.service.grpc.client;
 
 import com.harlan.javagrpc.grpc.artifact.client.ClientInterceptorApplier;
-import com.harlan.javagrpc.grpc.artifact.client.GrpcClientStubFactory;
+import com.harlan.javagrpc.grpc.artifact.client.GrpcClientStubFactoryAbstract;
 
 import io.grpc.ClientInterceptor;
 import io.grpc.ManagedChannel;
@@ -11,10 +11,10 @@ import io.grpc.examples.helloworld.protobuf.GreeterGrpc.GreeterFutureStub;
 import io.grpc.examples.helloworld.protobuf.GreeterGrpc.GreeterStub;
 
 public class GreeterServiceGrpcClientStubFactory
-		extends GrpcClientStubFactory<GreeterBlockingStub, GreeterStub, GreeterFutureStub> {
+		extends GrpcClientStubFactoryAbstract<GreeterBlockingStub, GreeterStub, GreeterFutureStub> {
 
 	public GreeterServiceGrpcClientStubFactory() {
-		super((ClientInterceptor[])null);
+		super();
 	}
 	
 	public GreeterServiceGrpcClientStubFactory(ClientInterceptor... interceptors) {

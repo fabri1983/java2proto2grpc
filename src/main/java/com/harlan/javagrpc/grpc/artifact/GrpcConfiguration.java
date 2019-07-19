@@ -12,7 +12,7 @@ public class GrpcConfiguration {
 	private boolean ignoreConsul;
 	private List<String> staticGrpcHostPorts;
 	private int timerCheckPeriodInSeconds;
-	private boolean useGrpcLoadBalancing;
+	private boolean useInternalGrpcLoadBalancing;
 	
 	public static GrpcConfiguration from(String host, int port) {
 		GrpcConfiguration newObj = new GrpcConfiguration();
@@ -22,24 +22,24 @@ public class GrpcConfiguration {
 	}
 	
 	public static GrpcConfiguration fromConsulServiceDiscovery(String consulServiceName, 
-			String consulHost, int consulPort, int timerCheckPeriodInSeconds, boolean useGrpcLoadBalancing) {
+			String consulHost, int consulPort, int timerCheckPeriodInSeconds, boolean useInternalGrpcLoadBalancing) {
 		GrpcConfiguration newObj = new GrpcConfiguration();
 		newObj.consulServiceName = consulServiceName;
 		newObj.consulHost = consulHost;
 		newObj.consulPort = consulPort;
 		newObj.timerCheckPeriodInSeconds = timerCheckPeriodInSeconds;
 		newObj.ignoreConsul = false;
-		newObj.useGrpcLoadBalancing = useGrpcLoadBalancing;
+		newObj.useInternalGrpcLoadBalancing = useInternalGrpcLoadBalancing;
 		return newObj;
 	}
 
 	public GrpcConfiguration fromConsulStaticHosts(List<String> staticHostPorts, 
-			int timerCheckPeriodInSeconds, boolean useGrpcLoadBalancing) {
+			int timerCheckPeriodInSeconds, boolean useInternalGrpcLoadBalancing) {
 		GrpcConfiguration newObj = new GrpcConfiguration();
 		newObj.staticGrpcHostPorts = staticHostPorts;
 		newObj.timerCheckPeriodInSeconds = timerCheckPeriodInSeconds;
 		newObj.ignoreConsul = true;
-		newObj.useGrpcLoadBalancing = useGrpcLoadBalancing;
+		newObj.useInternalGrpcLoadBalancing = useInternalGrpcLoadBalancing;
 		return newObj;
 	}
 	
@@ -75,8 +75,8 @@ public class GrpcConfiguration {
 		return timerCheckPeriodInSeconds;
 	}
 
-	public boolean isUseGrpcLoadBalancing() {
-		return useGrpcLoadBalancing;
+	public boolean isUseInternalGrpcLoadBalancing() {
+		return useInternalGrpcLoadBalancing;
 	}
 
 }

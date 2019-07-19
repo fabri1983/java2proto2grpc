@@ -29,7 +29,7 @@ public class GrpcClientStub<B, A, F> implements IGrpcClient<B, A, F> {
 	// limit rpc calls made to the stub
 	private final Semaphore callLimiter = new Semaphore(1000);
 	
-	public GrpcClientStub(IGrpcManagedChannel managedChannel, GrpcClientStubFactory<B, A, F> stubFactory) {
+	public GrpcClientStub(IGrpcManagedChannel managedChannel, IGrpcClientStubFactory<B, A, F> stubFactory) {
 		this.managedChannel = managedChannel;
 		try {
 			ManagedChannel channel = managedChannel.getChannel();

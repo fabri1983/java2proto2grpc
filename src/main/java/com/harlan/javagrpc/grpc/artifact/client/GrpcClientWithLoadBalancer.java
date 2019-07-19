@@ -2,7 +2,7 @@ package com.harlan.javagrpc.grpc.artifact.client;
 
 import com.harlan.javagrpc.grpc.artifact.GrpcConfiguration;
 import com.harlan.javagrpc.grpc.artifact.client.RoundRobin.Robin;
-import com.harlan.javagrpc.grpc.artifact.client.managedchannel.GrpcManagedChannel;
+import com.harlan.javagrpc.grpc.artifact.client.managedchannel.IGrpcManagedChannelFactory;
 import com.harlan.javagrpc.grpc.artifact.client.managedchannel.IGrpcManagedChannel;
 import com.harlan.javagrpc.grpc.artifact.discovery.ConsulServiceDiscovery;
 import com.harlan.javagrpc.grpc.artifact.discovery.IServiceDiscovery;
@@ -41,7 +41,8 @@ public class GrpcClientWithLoadBalancer<B, A, F> implements IGrpcClient<B, A, F>
 	private boolean ignoreConsul;
 	private List<String> hostPorts;
 	private int pauseInSeconds;
-	private GrpcClientStubFactory<B, A, F> stubFactory;
+	private IGrpcManagedChannelFactory managedChannelFactory;
+	private IGrpcClientStubFactory<B, A, F> stubFactory;
 	
 	/**
 	 * using consul service discovery.
@@ -51,13 +52,16 @@ public class GrpcClientWithLoadBalancer<B, A, F> implements IGrpcClient<B, A, F>
 	 * @param consulPort
 	 * @param stubFactory
 	 */
-	public GrpcClientWithLoadBalancer(String serviceName, String consulHost, int consulPort, GrpcClientStubFactory<B, A, F> stubFactory) {
-		this(serviceName, consulHost, consulPort, false, stubFactory, DEFAULT_PAUSE_IN_SECONDS, null);
+	public GrpcClientWithLoadBalancer(String serviceName, String consulHost, int consulPort,
+			IGrpcManagedChannelFactory managedChannelFactory, IGrpcClientStubFactory<B, A, F> stubFactory) {
+		this(serviceName, consulHost, consulPort, false, managedChannelFactory, stubFactory, DEFAULT_PAUSE_IN_SECONDS,
+				null);
 	}
 
-	public GrpcClientWithLoadBalancer(String serviceName, String consulHost, int consulPort, GrpcClientStubFactory<B, A, F> stubFactory,
+	public GrpcClientWithLoadBalancer(String serviceName, String consulHost, int consulPort,
+			IGrpcManagedChannelFactory managedChannelFactory, IGrpcClientStubFactory<B, A, F> stubFactory,
 			int pauseInSeconds) {
-		this(serviceName, consulHost, consulPort, false, stubFactory, pauseInSeconds, null);
+		this(serviceName, consulHost, consulPort, false, managedChannelFactory, stubFactory, pauseInSeconds, null);
 	}
 
 	/**
@@ -66,34 +70,57 @@ public class GrpcClientWithLoadBalancer<B, A, F> implements IGrpcClient<B, A, F>
 	 * @param hostPorts
 	 * @param stubFactory
 	 */
-	public GrpcClientWithLoadBalancer(List<String> hostPorts, GrpcClientStubFactory<B, A, F> stubFactory) {
-		this(null, null, -1, true, stubFactory, DEFAULT_PAUSE_IN_SECONDS, hostPorts);
+	public GrpcClientWithLoadBalancer(List<String> hostPorts, IGrpcManagedChannelFactory managedChannelFactory,
+			IGrpcClientStubFactory<B, A, F> stubFactory) {
+		this(null, null, -1, true, managedChannelFactory, stubFactory, DEFAULT_PAUSE_IN_SECONDS, hostPorts);
 	}
 
-	public GrpcClientWithLoadBalancer(List<String> hostPorts, GrpcClientStubFactory<B, A, F> stubFactory, int pauseInSeconds) {
-		this(null, null, -1, true, stubFactory, pauseInSeconds, hostPorts);
-	}
-
-	public GrpcClientWithLoadBalancer(String serviceName, String consulHost, int consulPort, boolean ignoreConsul,
-			GrpcClientStubFactory<B, A, F> stubFactory, List<String> hostPorts) {
-		this(serviceName, consulHost, consulPort, ignoreConsul, stubFactory, DEFAULT_PAUSE_IN_SECONDS, hostPorts);
+	public GrpcClientWithLoadBalancer(List<String> hostPorts, IGrpcManagedChannelFactory managedChannelFactory,
+			IGrpcClientStubFactory<B, A, F> stubFactory, int pauseInSeconds) {
+		this(null, null, -1, true, managedChannelFactory, stubFactory, pauseInSeconds, hostPorts);
 	}
 
 	public GrpcClientWithLoadBalancer(String serviceName, String consulHost, int consulPort, boolean ignoreConsul,
-			GrpcClientStubFactory<B, A, F> stubFactory, int pauseInSeconds, List<String> hostPorts) {
+			IGrpcManagedChannelFactory managedChannelFactory, IGrpcClientStubFactory<B, A, F> stubFactory,
+			List<String> hostPorts) {
+		this(serviceName, consulHost, consulPort, ignoreConsul, managedChannelFactory, stubFactory,
+				DEFAULT_PAUSE_IN_SECONDS, hostPorts);
+	}
+
+	public GrpcClientWithLoadBalancer(String serviceName, String consulHost, int consulPort, boolean ignoreConsul,
+			IGrpcManagedChannelFactory managedChannelFactory, IGrpcClientStubFactory<B, A, F> stubFactory,
+			int pauseInSeconds, List<String> hostPorts) {
 		this.serviceName = serviceName;
 		this.consulHost = consulHost;
 		this.consulPort = consulPort;
 		this.ignoreConsul = ignoreConsul;
 		this.hostPorts = hostPorts;
 		this.pauseInSeconds = pauseInSeconds;
+		this.managedChannelFactory = managedChannelFactory;
 		this.stubFactory = stubFactory;
+
+		validateManagedChannelFactory(managedChannelFactory);
 		
 		loadServiceNodes();
 
 		// run connection check timer
 		this.connectionCheckTimer = new ConnectionCheckTimer<B, A, F>(this, this.pauseInSeconds);
 		this.connectionCheckTimer.runTimer();
+	}
+
+	/**
+	 * Is not allowed to use a IGrpcManagedChannel with service discovery capabilities because we are going to use 
+	 * directly a Service Discovery to get both host and port to then create a IGrpcManagedChannel.
+	 * Otherwise is like using a managed channel to discover services again which were already discovered.
+	 * 
+	 * @param managedChannelFactory
+	 */
+	private void validateManagedChannelFactory(IGrpcManagedChannelFactory managedChannelFactory) {
+		if (managedChannelFactory.isServiceDiscoveryCapable()) {
+			String message = this.getClass().getSimpleName() + " can not use an instance of " 
+					+ managedChannelFactory.getClass().getSimpleName();
+			throw new RuntimeException(message);
+		}
 	}
 
 	private void loadServiceNodes() {
@@ -108,7 +135,8 @@ public class GrpcClientWithLoadBalancer<B, A, F> implements IGrpcClient<B, A, F>
 					nodes = getServiceNodes(serviceName, consulHost, consulPort);
 
 					if (nodes == null || nodes.size() == 0) {
-						log.warn("There is no node info for serviceName: [{}]...", serviceName);
+						log.warn("There is no node info for serviceName: [{}]. Waiting {} seconds to retry...", 
+								serviceName, pauseInSeconds);
 						sleep(pauseInSeconds);
 					} else {
 						break;
@@ -121,8 +149,7 @@ public class GrpcClientWithLoadBalancer<B, A, F> implements IGrpcClient<B, A, F>
 
 					log.info("Found Service. name: [{}], host: [{}], port: [{}]", serviceName, host, port);
 
-					// TODO [Improvement] use a Factory to decide which managed channel to use
-					IGrpcManagedChannel managedChannel = new GrpcManagedChannel(GrpcConfiguration.from(host, port));
+					IGrpcManagedChannel managedChannel = managedChannelFactory.from(GrpcConfiguration.from(host, port));
 					GrpcClientStub<B, A, F> client = new GrpcClientStub<>(managedChannel, stubFactory);
 
 					robinList.add(new Robin<GrpcClientStub<B, A, F>>(client));
@@ -134,9 +161,8 @@ public class GrpcClientWithLoadBalancer<B, A, F> implements IGrpcClient<B, A, F>
 					Integer port = Integer.valueOf(tokens[1].trim());
 
 					log.info("Static Node. host: [{}], port: [{}]", host, port);
-					
-					// TODO [Improvement] use a Factory to decide which managed channel to use
-					IGrpcManagedChannel managedChannel = new GrpcManagedChannel(GrpcConfiguration.from(host, port));
+
+					IGrpcManagedChannel managedChannel = managedChannelFactory.from(GrpcConfiguration.from(host, port));
 					GrpcClientStub<B, A, F> client = new GrpcClientStub<>(managedChannel, stubFactory);
 
 					robinList.add(new Robin<GrpcClientStub<B, A, F>>(client));
@@ -144,7 +170,8 @@ public class GrpcClientWithLoadBalancer<B, A, F> implements IGrpcClient<B, A, F>
 			}
 
 			roundRobin = new RoundRobin<GrpcClientStub<B, A, F>>(robinList);
-		} finally {
+		}
+		finally {
 			lock.unlock();
 		}
 	}
@@ -159,7 +186,8 @@ public class GrpcClientWithLoadBalancer<B, A, F> implements IGrpcClient<B, A, F>
 		lock.lock();
 		try {
 			return this.roundRobin.next().getBlockingStub();
-		} finally {
+		}
+		finally {
 			lock.unlock();
 		}
 	}
@@ -169,7 +197,8 @@ public class GrpcClientWithLoadBalancer<B, A, F> implements IGrpcClient<B, A, F>
 		lock.lock();
 		try {
 			return this.roundRobin.next().getAsyncStub();
-		} finally {
+		}
+		finally {
 			lock.unlock();
 		}
 	}
@@ -179,7 +208,8 @@ public class GrpcClientWithLoadBalancer<B, A, F> implements IGrpcClient<B, A, F>
 		lock.lock();
 		try {
 			return this.roundRobin.next().getFutureStub();
-		} finally {
+		}
+		finally {
 			lock.unlock();
 		}
 	}

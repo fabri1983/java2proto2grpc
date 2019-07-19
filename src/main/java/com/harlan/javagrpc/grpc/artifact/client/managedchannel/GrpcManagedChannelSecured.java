@@ -43,6 +43,7 @@ public class GrpcManagedChannelSecured extends GrpcManagedChannel {
 	private SslContext buildSslContext(boolean mutualAuth) throws SSLException {
 		// No Mutual authentication: provide only the ca.pem
 		// Mutual authentication (client side authentication): provide all files
+		// TODO [Improvement] move certs path to GrpcConfiguration
 		InputStream trustCertCollectionFile = getInputStreamFromResource("certs/ca.pem");
 		
 		SslContextBuilder builder = GrpcSslContexts.forClient();
@@ -53,6 +54,7 @@ public class GrpcManagedChannelSecured extends GrpcManagedChannel {
 		
 		// authenticate client?
 		if (mutualAuth) {
+			// TODO [Improvement] move certs path to GrpcConfiguration
 			InputStream clientCertChainFile = getInputStreamFromResource("certs/client.pem");
 			InputStream clientPrivateKeyFile = getInputStreamFromResource("certs/client.key");
 			
