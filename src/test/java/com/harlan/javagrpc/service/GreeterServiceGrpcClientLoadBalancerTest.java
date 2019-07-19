@@ -3,7 +3,7 @@ package com.harlan.javagrpc.service;
 import com.harlan.javagrpc.business.GreeterBusinessImpl;
 import com.harlan.javagrpc.business.contract.GreeterBusiness;
 import com.harlan.javagrpc.grpc.artifact.client.GrpcClientWithLoadBalancer;
-import com.harlan.javagrpc.grpc.artifact.client.IGrpcClientStubFactory;
+import com.harlan.javagrpc.grpc.artifact.client.GrpcClientStubFactory;
 import com.harlan.javagrpc.service.grpc.client.GreeterServiceGrpcClientStubFactory;
 import com.harlan.javagrpc.service.grpc.server.GreeterServiceGrpcImpl;
 import com.harlan.javagrpc.testutil.IServiceDiscoveryProperties;
@@ -182,7 +182,7 @@ public class GreeterServiceGrpcClientLoadBalancerTest {
 	}
 
 	private <B, A, F> GrpcClientWithLoadBalancer<B, A, F> createClientLoadBalancerWithConsul(
-			IGrpcClientStubFactory<B, A, F> factory) {
+			GrpcClientStubFactory<B, A, F> factory) {
 		GrpcClientWithLoadBalancer<B, A, F> lb = 
 				new GrpcClientWithLoadBalancer<>(
 						serviceDiscoveryProps.getConsulServiceName(),
@@ -193,7 +193,7 @@ public class GreeterServiceGrpcClientLoadBalancerTest {
 	}
 
 	private <B, A, F> GrpcClientWithLoadBalancer<B, A, F> createClientLoadBalancerStaticGrpcNodes(
-			IGrpcClientStubFactory<B, A, F> factory) {
+			GrpcClientStubFactory<B, A, F> factory) {
 		GrpcClientWithLoadBalancer<B, A, F> clientLb = 
 				new GrpcClientWithLoadBalancer<>(staticGrpcHostPortList, factory);
 		return clientLb;

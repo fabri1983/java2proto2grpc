@@ -41,7 +41,7 @@ public class GrpcClientWithLoadBalancer<B, A, F> implements IGrpcClient<B, A, F>
 	private boolean ignoreConsul;
 	private List<String> hostPorts;
 	private int pauseInSeconds;
-	private IGrpcClientStubFactory<B, A, F> stubFactory;
+	private GrpcClientStubFactory<B, A, F> stubFactory;
 	
 	/**
 	 * using consul service discovery.
@@ -51,11 +51,11 @@ public class GrpcClientWithLoadBalancer<B, A, F> implements IGrpcClient<B, A, F>
 	 * @param consulPort
 	 * @param stubFactory
 	 */
-	public GrpcClientWithLoadBalancer(String serviceName, String consulHost, int consulPort, IGrpcClientStubFactory<B, A, F> stubFactory) {
+	public GrpcClientWithLoadBalancer(String serviceName, String consulHost, int consulPort, GrpcClientStubFactory<B, A, F> stubFactory) {
 		this(serviceName, consulHost, consulPort, false, stubFactory, DEFAULT_PAUSE_IN_SECONDS, null);
 	}
 
-	public GrpcClientWithLoadBalancer(String serviceName, String consulHost, int consulPort, IGrpcClientStubFactory<B, A, F> stubFactory,
+	public GrpcClientWithLoadBalancer(String serviceName, String consulHost, int consulPort, GrpcClientStubFactory<B, A, F> stubFactory,
 			int pauseInSeconds) {
 		this(serviceName, consulHost, consulPort, false, stubFactory, pauseInSeconds, null);
 	}
@@ -66,21 +66,21 @@ public class GrpcClientWithLoadBalancer<B, A, F> implements IGrpcClient<B, A, F>
 	 * @param hostPorts
 	 * @param stubFactory
 	 */
-	public GrpcClientWithLoadBalancer(List<String> hostPorts, IGrpcClientStubFactory<B, A, F> stubFactory) {
+	public GrpcClientWithLoadBalancer(List<String> hostPorts, GrpcClientStubFactory<B, A, F> stubFactory) {
 		this(null, null, -1, true, stubFactory, DEFAULT_PAUSE_IN_SECONDS, hostPorts);
 	}
 
-	public GrpcClientWithLoadBalancer(List<String> hostPorts, IGrpcClientStubFactory<B, A, F> stubFactory, int pauseInSeconds) {
+	public GrpcClientWithLoadBalancer(List<String> hostPorts, GrpcClientStubFactory<B, A, F> stubFactory, int pauseInSeconds) {
 		this(null, null, -1, true, stubFactory, pauseInSeconds, hostPorts);
 	}
 
 	public GrpcClientWithLoadBalancer(String serviceName, String consulHost, int consulPort, boolean ignoreConsul,
-			IGrpcClientStubFactory<B, A, F> stubFactory, List<String> hostPorts) {
+			GrpcClientStubFactory<B, A, F> stubFactory, List<String> hostPorts) {
 		this(serviceName, consulHost, consulPort, ignoreConsul, stubFactory, DEFAULT_PAUSE_IN_SECONDS, hostPorts);
 	}
 
 	public GrpcClientWithLoadBalancer(String serviceName, String consulHost, int consulPort, boolean ignoreConsul,
-			IGrpcClientStubFactory<B, A, F> stubFactory, int pauseInSeconds, List<String> hostPorts) {
+			GrpcClientStubFactory<B, A, F> stubFactory, int pauseInSeconds, List<String> hostPorts) {
 		this.serviceName = serviceName;
 		this.consulHost = consulHost;
 		this.consulPort = consulPort;
