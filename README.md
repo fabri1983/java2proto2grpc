@@ -11,7 +11,7 @@
 
 This project is a modification from original projects [java2proto](https://github.com/jhrgitgit/java2proto) and [java-proto-generator](https://github.com/lloydsparkes/java-proto-generator).  
 Credits belong to the creators of the mentioned projects.  
-I just renamed some packages, fixed some bugs, use better design patterns, add LoginService client and server examples and tests, 
+I just renamed some packages, fixed some bugs, made use of better design patterns, added LoginService client and server examples and tests, 
 extended and fixed api [protobuf-converter](https://github.com/BAData/protobuf-converter) with custom modifications to transform domain 
 model objects to protobuf messages and viceversa, added Service Discovery capability, and many more.
 
