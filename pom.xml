@@ -23,183 +23,109 @@
 		<google.protobuf.version>3.8.0</google.protobuf.version>
 		<consul.client.version>1.4.2</consul.client.version>
 		<resilience4j.version>0.16.0</resilience4j.version>
+		<!-- exposes metrics via http -->
+		<dropwizard.metrics.version>4.1.0</dropwizard.metrics.version>
+		<!-- unit testing -->
 		<junit.version>4.13-beta-3</junit.version>
 	</properties>
-	
-	<dependencyManagement>
-		<dependencies>
-			<!-- The Log4j 2 SLF4J Binding allows applications coded to the SLF4J API to use Log4j 2 as the implementation. -->
-			<dependency>
-				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-slf4j-impl</artifactId>
-				<version>${log4j2.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-core</artifactId>
-				<version>${log4j2.version}</version>
-			</dependency>
-			<!-- protobuf Java 9+ compatibility -->
-			<dependency>
-				<groupId>javax.annotation</groupId>
-				<artifactId>javax.annotation-api</artifactId>
-				<version>${javax.annotation.api.version}</version>
-			</dependency>
-			<!-- Protocol Buffers compiler to be used by plugin protobuf-maven-plugin -->
-			<dependency>
-			    <groupId>com.google.protobuf</groupId>
-			    <artifactId>protoc</artifactId>
-			    <version>${google.protobuf.version}</version>
-			    <type>pom</type>
-			</dependency>
-			<!-- Core Protocol Buffers library. Protocol Buffers are a way of encoding structured data in an efficient yet extensible format. -->
-			<dependency>
-				<groupId>com.google.protobuf</groupId>
-				<artifactId>protobuf-java</artifactId>
-				<version>${google.protobuf.version}</version>
-			</dependency>
-			<!-- gRPC compiler to be used by plugin protobuf-maven-plugin -->
-			<dependency>
-				<groupId>io.grpc</groupId>
-				<artifactId>protoc-gen-grpc-java</artifactId>
-				<version>${io.grpc.version}</version>
-				<type>pom</type>
-			</dependency>
-			<!-- gRPC Client and Server -->
-			<dependency>
-				<groupId>io.grpc</groupId>
-				<artifactId>grpc-protobuf</artifactId>
-				<version>${io.grpc.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.grpc</groupId>
-				<artifactId>grpc-stub</artifactId>
-				<version>${io.grpc.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.grpc</groupId>
-				<artifactId>grpc-netty-shaded</artifactId>
-				<version>${io.grpc.version}</version>
-			</dependency>
-			<!-- Required to resolve internal compilation references by some classes in the netty-shaded dependency -->
-			<dependency>
-				<groupId>io.grpc</groupId>
-				<artifactId>grpc-core</artifactId>
-				<version>${io.grpc.version}</version>
-			</dependency>
-			<!-- Consul Service Discovery Client -->
-			<dependency>
-				<groupId>com.ecwid.consul</groupId>
-				<artifactId>consul-api</artifactId>
-				<version>${consul.client.version}</version>
-			</dependency>
-			<!-- Resilience4j modules -->
-			<dependency>
-				<groupId>io.github.resilience4j</groupId>
-				<artifactId>resilience4j-circuitbreaker</artifactId>
-				<version>${resilience4j.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.github.resilience4j</groupId>
-				<artifactId>resilience4j-ratelimiter</artifactId>
-				<version>${resilience4j.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.github.resilience4j</groupId>
-				<artifactId>resilience4j-retry</artifactId>
-				<version>${resilience4j.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.github.resilience4j</groupId>
-				<artifactId>resilience4j-bulkhead</artifactId>
-				<version>${resilience4j.version}</version>
-			</dependency>
-			<!-- JUnit -->
-			<dependency>
-				<groupId>junit</groupId>
-				<artifactId>junit</artifactId>
-				<version>${junit.version}</version>
-				<scope>test</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 	
 	<dependencies>
 		<!-- The Log4j 2 SLF4J Binding allows applications coded to the SLF4J API to use Log4j 2 as the implementation. -->
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-slf4j-impl</artifactId>
+			<version>${log4j2.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
+			<version>${log4j2.version}</version>
 		</dependency>
 		<!-- protobuf Java 9+ compatibility -->
 		<dependency>
 			<groupId>javax.annotation</groupId>
 			<artifactId>javax.annotation-api</artifactId>
+			<version>${javax.annotation.api.version}</version>
 		</dependency>
 		<!-- Protocol Buffers compiler to be used by plugin protobuf-maven-plugin -->
 		<dependency>
 		    <groupId>com.google.protobuf</groupId>
 		    <artifactId>protoc</artifactId>
+		    <version>${google.protobuf.version}</version>
 		    <type>pom</type>
 		</dependency>
 		<!-- Core Protocol Buffers library. Protocol Buffers are a way of encoding structured data in an efficient yet extensible format. -->
 		<dependency>
 			<groupId>com.google.protobuf</groupId>
 			<artifactId>protobuf-java</artifactId>
+			<version>${google.protobuf.version}</version>
 		</dependency>
 		<!-- gRPC compiler to be used by plugin protobuf-maven-plugin -->
 		<dependency>
 			<groupId>io.grpc</groupId>
 			<artifactId>protoc-gen-grpc-java</artifactId>
+			<version>${io.grpc.version}</version>
 			<type>pom</type>
 		</dependency>
 		<!-- gRPC Client and Server -->
 		<dependency>
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-protobuf</artifactId>
+			<version>${io.grpc.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-stub</artifactId>
+			<version>${io.grpc.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-netty-shaded</artifactId>
+			<version>${io.grpc.version}</version>
 		</dependency>
 		<!-- Required to resolve internal compilation references by some classes in the netty-shaded dependency -->
 		<dependency>
 			<groupId>io.grpc</groupId>
 			<artifactId>grpc-core</artifactId>
+			<version>${io.grpc.version}</version>
 		</dependency>
-		<!-- Consul Service Discovery client api -->
+		<!-- Consul Service Discovery Client -->
 		<dependency>
 			<groupId>com.ecwid.consul</groupId>
 			<artifactId>consul-api</artifactId>
+			<version>${consul.client.version}</version>
 		</dependency>
 		<!-- Resilience4j modules -->
 		<dependency>
 			<groupId>io.github.resilience4j</groupId>
 			<artifactId>resilience4j-circuitbreaker</artifactId>
+			<version>${resilience4j.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.resilience4j</groupId>
 			<artifactId>resilience4j-ratelimiter</artifactId>
+			<version>${resilience4j.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.resilience4j</groupId>
 			<artifactId>resilience4j-retry</artifactId>
+			<version>${resilience4j.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.resilience4j</groupId>
 			<artifactId>resilience4j-bulkhead</artifactId>
+			<version>${resilience4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.github.resilience4j</groupId>
+			<artifactId>resilience4j-metrics</artifactId>
+			<version>${resilience4j.version}</version>
 		</dependency>
 		<!-- JUnit -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
