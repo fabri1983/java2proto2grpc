@@ -9,10 +9,11 @@
 [![Libraries.io for GitHub](https://badgen.net/badge/libraries.io/fabri1983/blue)](https://libraries.io/github/fabri1983/java2proto2grpc)
 
 
-This project is a modification from original projects [java2proto](https://github.com/jhrgitgit/java2proto) and [java-proto-generator](https://github.com/lloydsparkes/java-proto-generator).  
-Credits belong to the creators of the mentioned projects.  
-I just renamed some packages, fixed some bugs, made use of better design patterns, added LoginService client and server examples and tests, 
-extended and fixed api [protobuf-converter](https://github.com/BAData/protobuf-converter) with custom modifications to transform domain 
+This project is based on projects [java2proto](https://github.com/jhrgitgit/java2proto) 
+and [java-proto-generator](https://github.com/lloydsparkes/java-proto-generator) which are no longer maintained by their authors.  
+Credits go to the authors of the mentioned projects.  
+I renamed some packages, fixed some bugs, made use of better design patterns, added LoginService Client and Server examples and tests, 
+added TLS usage, extended and fixed api [protobuf-converter](https://github.com/BAData/protobuf-converter) with custom modifications to transform domain 
 model objects to protobuf messages and viceversa, added Service Discovery capability, and many more.
 
 
