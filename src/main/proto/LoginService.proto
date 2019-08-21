@@ -5,7 +5,7 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/duration.proto";
 
 option java_multiple_files = true;
-option java_package = "com.harlan.javagrpc.service.contract.protobuf";
+option java_package = "org.fabri1983.javagrpc.service.contract.protobuf";
 option java_outer_classname = "LoginServiceProto";
 
 package LoginService;

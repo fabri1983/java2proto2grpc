@@ -11,7 +11,6 @@
 
 This project is based on projects [java2proto](https://github.com/jhrgitgit/java2proto) 
 and [java-proto-generator](https://github.com/lloydsparkes/java-proto-generator) which are no longer maintained by their authors.  
-Credits go to the authors of the mentioned projects.  
 I renamed some packages, fixed some bugs, made use of better design patterns, added LoginService Client and Server examples and tests, 
 added TLS usage, extended and fixed api [protobuf-converter](https://github.com/BAData/protobuf-converter) with custom modifications to transform domain 
 model objects to protobuf messages and viceversa, added Service Discovery capability, and many more.
@@ -31,7 +30,7 @@ have a class hierarchy and you want to skip one or several of them.
 - Conversion api between protobuf objects and DTOs and/or Domain Model Objects, and viceversa:
 	- Fixed and extended version of api *protobuf-converter* from [BAData](https://github.com/BAData/protobuf-converter "protobuf-converter").
 	- *java.lang.Enum* is defined as *string* when generating proto file. 
-	So when using *@net.badata.protobuf.converter.annotation.ProtoField* you need to extend *net.badata.protobuf.converter.type.EnumStringConverter* 
+	So when using *@org.fabri1983.javagrpc.protobuf.converter.annotation.ProtoField* you need to extend *org.fabri1983.javagrpc.protobuf.converter.type.EnumStringConverter* 
 	and set it as *converter* attribute. See **Request** and **Response** example classes.
 - Provides two gRPC examples: *GreeterService* and *LoginService*.
 - Provides non secured and TLS-secured grpc server and client.
@@ -50,13 +49,13 @@ The processs skips generation of protobuf messages or inner fields if class is d
 - **JavaToProtoNewMain**: generates *.proto* files (**IDL syntax v3**) from a class/package at specific folder:  
 	```sh
 	mvn compile
-	mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.converter.JavaToProtoNewMain -Dexec.args="com.harlan.javagrpc.service.contract src/main/proto"
+	mvn exec:java -Dexec.mainClass=org.fabri1983.javagrpc.main.converter.JavaToProtoNewMain -Dexec.args="org.fabri1983.javagrpc.service.contract src/main/proto"
 	```
 - JavaToProtoMain: generates *.proto* files (**IDL syntax v3**) from a class/package at specific folder:  
 	**Currently work in progress. Messages are being nested and it ends up with lot of repeated messages.**
 	```sh
 	mvn compile
-	mvn exec:java -Dexec.mainClass=com.harlan.javagrpc.main.converter.JavaToProtoMain -Dexec.args="com.harlan.javagrpc.service.contract src/main/proto"
+	mvn exec:java -Dexec.mainClass=org.fabri1983.javagrpc.main.converter.JavaToProtoMain -Dexec.args="org.fabri1983.javagrpc.service.contract src/main/proto"
 	```
 
 **Then you build the project** (*mvn compile* or *Build command* in your IDE) which triggers plugin *org.xolstice.maven.plugins:protobuf-maven-plugin* 
@@ -74,12 +73,12 @@ git update-index --assume-unchanged src/main/proto/LoginService.proto
 ```
 
 The file *Greeter.proto* is used to generated grpc-java example classes as per https://github.com/grpc/grpc-java/tree/master/examples, 
-so you can make some testing running *com.harlan.javagrpc.main.greeter.GreeterClientMain* 
-and *com.harlan.javagrpc.main.greeter.GreeterServerMain*.
+so you can make some testing running *org.fabri1983.javagrpc.main.greeter.GreeterClientMain* 
+and *org.fabri1983.javagrpc.main.greeter.GreeterServerMain*.
 
-The file *LoginService.proto* is the one you can generate running *com.harlan.javagrpc.main.converter.JavaToProtoMainNew*, and it generates 
-protobuf classes and grpc stubs to make some testing running *com.harlan.javagrpc.main.login.LoginClientMain* 
-and *com.harlan.javagrpc.main.login.LoginServerMain*.
+The file *LoginService.proto* is the one you can generate running *org.fabri1983.javagrpc.main.converter.JavaToProtoMainNew*, and it generates 
+protobuf classes and grpc stubs to make some testing running *org.fabri1983.javagrpc.main.login.LoginClientMain* 
+and *org.fabri1983.javagrpc.main.login.LoginServerMain*.
 
 
 Run Tests with Consul
@@ -115,9 +114,9 @@ You need to setup the current consul ip address in order to test run **LoginServ
 
 TODO
 ---
-- Remove usage of call limiter in GrpcClientStub and instead use *resilience4j* api (WIP).
+- Remove usage of call limiter in GrpcClientStub and replace by *resilience4j* api (WIP).
 - Modularize JavaToProtoNew. Code is written in a very imperative way, and hard to mantain.
-- Add converters similar to *net.badata.protobuf.converter.type.XxxConverter* for fields with types: Duration. 
+- Add converters similar to *org.fabri1983.javagrpc.protobuf.converter.type.XxxConverter* for fields with types: Duration. 
 See [this](https://github.com/google/qrisp/blob/master/google/protobuf/java/util/src/main/java/com/google/protobuf/util/TimeUtil.java).
 - Replace custom protobuf-converter solution by [MapStruct](http://mapstruct.org/). It's faster and reflection free.
 - Add custom Java *Annotations* to classes/interfaces and/or fields in order to collect reserved field tags and names for the .proto IDL file.

@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package net.badata.protobuf.converter.proto;
+package org.fabri1983.javagrpc.protobuf.converter.proto;
 
-option java_package = "net.badata.protobuf.converter.proto";
+option java_package = "org.fabri1983.javagrpc.protobuf.converter.proto";
 option java_outer_classname = "MappingProto";
 
 
