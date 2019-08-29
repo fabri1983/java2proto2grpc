@@ -171,6 +171,12 @@ See this [link](https://docs.docker.com/samples/library/consul/#running-consul-f
 
 - Considerations on *Docker Tool Box*:  
 *Docker Tool Box* is exposed at IP 192.168.99.100.  
+You can change the ip address by accessing the console of the virtualbox instance and execute:
+```bash
+ifconfig
+	from the list of inbterfaces make sure the one you want to modify is eth0 or eth1
+sudo ifconfig eth1 192.168.99.100 netmask 255.255.255.0 up
+```
 If by any reason you are in a situation that your app needs to route request made to Docker's internal IP 172.17.x.x to the exposed IP 192.168.99.100 then:
 	- you will have to add an entry in the Windows routing table:
 	```sh
