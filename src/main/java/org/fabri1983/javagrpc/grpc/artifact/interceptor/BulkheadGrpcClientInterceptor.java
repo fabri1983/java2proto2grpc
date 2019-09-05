@@ -26,10 +26,8 @@ public class BulkheadGrpcClientInterceptor implements ClientInterceptor {
 		ClientCall<ReqT, RespT> delegate = next.newCall(method, callOptions);
 		
 		CheckedForwardingClientCall<ReqT, RespT> clientCall = new CheckedForwardingClientCall<ReqT, RespT>(delegate) {
-			
 			@Override
-			protected void checkedStart(ClientCall.Listener<RespT> responseListener, Metadata headers)
-					throws Exception {
+			protected void checkedStart(ClientCall.Listener<RespT> responseListener, Metadata headers) throws Exception {
 				bulkhead.acquirePermission();
 				InnerListener<RespT> newResponseListener = new InnerListener<>(responseListener);
 				delegate().start(newResponseListener, headers);

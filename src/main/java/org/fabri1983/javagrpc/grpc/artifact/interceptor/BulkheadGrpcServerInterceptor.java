@@ -22,46 +22,44 @@ public class BulkheadGrpcServerInterceptor implements ServerInterceptor {
 			ServerCallHandler<ReqT, RespT> next) {
 
 		if (bulkhead.tryAcquirePermission()) {
-			
 			Listener<ReqT> listener = next.startCall(call, headers);
-			
-			SimpleForwardingServerCallListener<ReqT> serverCallListener = new SimpleForwardingServerCallListener<ReqT>(
-					listener) {
-				
-				@Override
-				public void onCancel() {
-					bulkhead.onComplete();
-					super.onCancel();
-				}
-
-				@Override
-				public void onComplete() {
-					bulkhead.onComplete();
-					super.onComplete();
-				}
-			};
-			
+			SimpleForwardingServerCallListener<ReqT> serverCallListener = createServerCallListener(listener);
 			return serverCallListener;
 		} else {
-			
 			call.close(
-					Status.UNAVAILABLE
-							.withDescription("Bulkhead " + bulkhead.getName() + " is full."),
+					Status.UNAVAILABLE.withDescription("Bulkhead " + bulkhead.getName() + " is full."),
 					new Metadata());
-			
-			SimpleForwardingServerCallListener<ReqT> serverCallListener = new SimpleForwardingServerCallListener<ReqT>(
-					null) {
-				@Override
-				public void onCancel() {
-				}
-
-				@Override
-				public void onComplete() {
-				}
-			};
-			
-			return serverCallListener;
+			SimpleForwardingServerCallListener<ReqT> dummyServerCallListener = createDummyServerCallListener();
+			return dummyServerCallListener;
 		}
+	}
+
+	private <ReqT> SimpleForwardingServerCallListener<ReqT> createServerCallListener(Listener<ReqT> listener) {
+		return new SimpleForwardingServerCallListener<ReqT>(listener) {
+			@Override
+			public void onCancel() {
+				bulkhead.onComplete();
+				super.onCancel();
+			}
+
+			@Override
+			public void onComplete() {
+				bulkhead.onComplete();
+				super.onComplete();
+			}
+		};
+	}
+
+	private <ReqT> SimpleForwardingServerCallListener<ReqT> createDummyServerCallListener() {
+		return new SimpleForwardingServerCallListener<ReqT>(null) {
+			@Override
+			public void onCancel() {
+			}
+	
+			@Override
+			public void onComplete() {
+			}
+		};
 	}
 
 }

@@ -24,9 +24,7 @@ public class CircuitBreakerGrpcClientInterceptor implements ClientInterceptor {
 
 		CheckedForwardingClientCall<ReqT, RespT> clientCall = new CheckedForwardingClientCall<ReqT, RespT>(delegate) {
 			@Override
-			protected void checkedStart(ClientCall.Listener<RespT> responseListener, Metadata headers)
-					throws Exception {
-				
+			protected void checkedStart(ClientCall.Listener<RespT> responseListener, Metadata headers) throws Exception {
 				circuitBreaker.acquirePermission();
 				InnerListener<RespT> newResponseListener = new InnerListener<>(responseListener, System.nanoTime());
 				delegate().start(newResponseListener, headers);

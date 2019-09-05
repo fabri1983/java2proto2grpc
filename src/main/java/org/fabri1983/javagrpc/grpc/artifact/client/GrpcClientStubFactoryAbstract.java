@@ -1,6 +1,7 @@
 package org.fabri1983.javagrpc.grpc.artifact.client;
 
 import io.grpc.ClientInterceptor;
+import io.grpc.stub.AbstractStub;
 
 public abstract class GrpcClientStubFactoryAbstract<B, A, F> implements IGrpcClientStubFactory<B, A, F> {
 
@@ -13,11 +14,13 @@ public abstract class GrpcClientStubFactoryAbstract<B, A, F> implements IGrpcCli
 		this.interceptors = interceptors;
 	}
 	
-	protected <T> T withInterceptors(T stub, ClientInterceptorApplier<T> applier) {
-		if (applier == null || interceptors == null || interceptors.length == 0) {
+	protected <T extends AbstractStub<T>> T withInterceptors(T stub) {
+		// if no interceptors then return the stub as it is
+		if (interceptors == null || interceptors.length == 0) {
 			return stub;
 		}
-		return applier.apply(stub, interceptors);
+		// otherwise add the interceptors
+		return stub.withInterceptors(interceptors);
 	}
 	
 }

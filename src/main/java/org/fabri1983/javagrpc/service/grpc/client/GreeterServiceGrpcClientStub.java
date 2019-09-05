@@ -3,6 +3,7 @@ package org.fabri1983.javagrpc.service.grpc.client;
 import io.grpc.examples.helloworld.protobuf.GreeterGrpc.GreeterBlockingStub;
 import io.grpc.examples.helloworld.protobuf.GreeterGrpc.GreeterFutureStub;
 import io.grpc.examples.helloworld.protobuf.GreeterGrpc.GreeterStub;
+import io.grpc.ClientInterceptor;
 import io.grpc.examples.helloworld.protobuf.SearchRequest;
 import io.grpc.examples.helloworld.protobuf.SearchResponse;
 
@@ -18,6 +19,10 @@ public class GreeterServiceGrpcClientStub
 		super(managedChannel, new GreeterServiceGrpcClientStubFactory());
 	}
 
+	public GreeterServiceGrpcClientStub(IGrpcManagedChannel managedChannel, ClientInterceptor... interceptors) {
+		super(managedChannel, new GreeterServiceGrpcClientStubFactory(interceptors));
+	}
+	
 	@Override
 	public String sayHello(String message) {
 		SearchResponse searchResponse = just( () -> {

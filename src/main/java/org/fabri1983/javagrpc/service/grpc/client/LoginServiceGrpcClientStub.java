@@ -2,6 +2,8 @@ package org.fabri1983.javagrpc.service.grpc.client;
 
 import com.google.protobuf.Empty;
 
+import io.grpc.ClientInterceptor;
+
 import org.fabri1983.javagrpc.grpc.artifact.client.GrpcClientStub;
 import org.fabri1983.javagrpc.grpc.artifact.client.managedchannel.IGrpcManagedChannel;
 import org.fabri1983.javagrpc.model.Request;
@@ -20,11 +22,15 @@ import org.fabri1983.javagrpc.service.contract.protobuf.Request2Proto;
 import org.fabri1983.javagrpc.service.contract.protobuf.RequestProto;
 
 public class LoginServiceGrpcClientStub 
-	extends GrpcClientStub<LoginServiceBlockingStub, LoginServiceStub, LoginServiceFutureStub> 
-	implements LoginService {
+		extends GrpcClientStub<LoginServiceBlockingStub, LoginServiceStub, LoginServiceFutureStub> 
+		implements LoginService {
 
 	public LoginServiceGrpcClientStub(IGrpcManagedChannel managedChannel) {
 		super(managedChannel, new LoginServiceGrpcClientStubFactory());
+	}
+	
+	public LoginServiceGrpcClientStub(IGrpcManagedChannel managedChannel, ClientInterceptor... interceptors) {
+		super(managedChannel, new LoginServiceGrpcClientStubFactory(interceptors));
 	}
 	
 	@Override
