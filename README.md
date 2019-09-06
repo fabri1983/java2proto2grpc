@@ -34,7 +34,8 @@ have a class hierarchy and you want to skip one or several of them.
 	and set it as *converter* attribute. See `Request` and `Response` example classes.
 - Provides two gRPC examples: *GreeterService* and *LoginService*.
 - Provides non secured and TLS-secured grpc server and client.
-- Use futurable grpc calls by `ListenableFuture` and with *call limiter*.
+- Provides blocking, asynchronous, and futurable grpc calls.
+- Provides **Resilience4j's Bulkhead** client interceptor to limit number of concurrent calls.
 - Use of java compiler `-parameter` option to expose parameters name in signature definition, so we can get the real parameter name and 
 so improve the `.proto` file readablity.
 - Provides a `GrpcManagedChannelServiceDiscovery` with a **Consul Service Discovery** client and **Load Balancer** capability, 
@@ -114,7 +115,7 @@ You need to setup the current consul ip address in order to test run `LoginServi
 
 TODO
 ---
-- Remove usage of call limiter in GrpcClientStub and replace by `resilience4j` api (WIP).
+- Add test resulting with a failure BulheadFullException to ensure expected behaviour.
 - Modularize JavaToProtoNew. Code is written in a very imperative way, and hard to mantain.
 - Add converters similar to `org.fabri1983.javagrpc.protobuf.converter.type.XxxConverter` for fields with types: Duration. 
 See [this](https://github.com/google/qrisp/blob/master/google/protobuf/java/util/src/main/java/com/google/protobuf/util/TimeUtil.java).

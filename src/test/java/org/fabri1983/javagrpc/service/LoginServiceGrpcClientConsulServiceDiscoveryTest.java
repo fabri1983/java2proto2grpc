@@ -78,7 +78,7 @@ public class LoginServiceGrpcClientConsulServiceDiscoveryTest {
 		}
 		
 		// register login service
-		registerLoginServiceGrpc();
+		registerLoginServiceServerGrpc();
 		
 		// number of concurrent client stubs calls
 		int repeatNumStubs = 1000;
@@ -91,21 +91,21 @@ public class LoginServiceGrpcClientConsulServiceDiscoveryTest {
 		int usersCount = users.length;
 		
         // wraps as Callable tasks
-     	List<Callable<Void>> tasks = loginServices.stream()
-     			.map( loginService -> new Callable<Void>() {
+     	List<Callable<Boolean>> tasks = loginServices.stream()
+     			.map( loginService -> new Callable<Boolean>() {
      				@Override
-     	            public Void call() {
+     	            public Boolean call() {
      					int randomIndex = (int) (Math.random() * usersCount);
      					User user = users[randomIndex];
      					callAndAssert(loginService, user);
-     	                return null;
+     	                return Boolean.TRUE;
      	            }
      			})
      			.collect( Collectors.toList() );
      	
 		// call grpc stubs in a parallel fashion
 		ExecutorService executorService = Executors.newFixedThreadPool(4);
-        List<Future<Void>> futures = executorService.invokeAll(tasks, 5, TimeUnit.SECONDS);
+        List<Future<Boolean>> futures = executorService.invokeAll(tasks, 5, TimeUnit.SECONDS);
         
         // block until all tasks are done
         long finishedCount = futures.stream()
@@ -117,15 +117,16 @@ public class LoginServiceGrpcClientConsulServiceDiscoveryTest {
 						throw new RuntimeException(ex);
 					}
 				})
+	        	.filter( r -> Boolean.TRUE.equals(r))
 	        	.count();
         
         Assert.assertEquals(repeatNumStubs, finishedCount);
 	}
 
-	private void registerLoginServiceGrpc() {
+	private void registerLoginServiceServerGrpc() {
 		LoginBusiness loginBusiness = new LoginBusinessImpl();
-		LoginServiceGrpcServer loginServiceGrpc = new LoginServiceGrpcServer(loginBusiness);
-		serverStarterRule.registerService(loginServiceGrpc);
+		LoginServiceGrpcServer loginServiceServerGrpc = new LoginServiceGrpcServer(loginBusiness);
+		serverStarterRule.registerService(loginServiceServerGrpc);
 	}
 	
 	private List<LoginService> repeatLoginServiceClientStub(int repeatNum) {

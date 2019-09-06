@@ -1,5 +1,10 @@
 package org.fabri1983.javagrpc.service;
 
+import io.github.resilience4j.bulkhead.Bulkhead;
+import io.github.resilience4j.bulkhead.BulkheadConfig;
+import io.grpc.ClientInterceptor;
+
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -14,6 +19,7 @@ import org.fabri1983.javagrpc.business.GreeterBusinessImpl;
 import org.fabri1983.javagrpc.business.contract.GreeterBusiness;
 import org.fabri1983.javagrpc.grpc.artifact.GrpcConfiguration;
 import org.fabri1983.javagrpc.grpc.artifact.client.managedchannel.IGrpcManagedChannelFactory.GrpcManagedChannelNonSecuredFactory;
+import org.fabri1983.javagrpc.grpc.artifact.interceptor.BulkheadGrpcClientInterceptor;
 import org.fabri1983.javagrpc.model.Corpus;
 import org.fabri1983.javagrpc.service.contract.GreeterService;
 import org.fabri1983.javagrpc.service.grpc.client.GreeterServiceGrpcClientStub;
@@ -51,7 +57,7 @@ public class GreeterServiceGrpcTest {
 	@Test
 	public void testNonSecured() {
 		
-		registerGreeterServiceGrpc();
+		registerGreeterServiceServerGrpc();
 		
 		GreeterService greeterService = createGreeterServiceClientStub();
 		
@@ -65,14 +71,9 @@ public class GreeterServiceGrpcTest {
 	}
 
 	@Test
-	public void testNonSecuredMultiClientCallsWithClientBulkheadLimiter() {
-		// TODO
-	}
-	
-	@Test
 	public void testNonSecuredMultiClientCalls() throws InterruptedException {
 		
-		registerGreeterServiceGrpc();
+		registerGreeterServiceServerGrpc();
 		
 		// number of concurrent client stubs calls
 		int repeatNumStubs = 1000;
@@ -83,25 +84,25 @@ public class GreeterServiceGrpcTest {
 		// create some testing data
 		String[] messages = createMessages();
 		
-        // wraps as Callable tasks
-     	List<Callable<Void>> tasks = greeterServices.stream()
-     			.map( greeterService -> new Callable<Void>() {
-     				@Override
-     	            public Void call() {
-     					int randomIndex = (int) (Math.random() * messages.length);
-     					String message = messages[randomIndex];
-     					callAndAssert(greeterService, message);
-     	                return null;
-     	            }
-     			})
-     			.collect( Collectors.toList() );
-     	
+	    // wraps as Callable tasks
+	 	List<Callable<Boolean>> tasks = greeterServices.stream()
+	 			.map( greeterService -> new Callable<Boolean>() {
+	 				@Override
+	 	            public Boolean call() {
+	 					int randomIndex = (int) (Math.random() * messages.length);
+	 					String message = messages[randomIndex];
+	 					callAndAssert(greeterService, message);
+	 	                return Boolean.TRUE;
+	 	            }
+	 			})
+	 			.collect( Collectors.toList() );
+	 	
 		// call grpc stubs in a parallel fashion
 		ExecutorService executorService = Executors.newFixedThreadPool(4);
-        List<Future<Void>> futures = executorService.invokeAll(tasks, 5, TimeUnit.SECONDS);
-        
-        // block until all tasks are done
-        long finishedCount = futures.stream()
+	    List<Future<Boolean>> futures = executorService.invokeAll(tasks, 5, TimeUnit.SECONDS);
+	    
+	    // block until all tasks are done
+	    long finishedCount = futures.stream()
 	        	.map( f -> {
 					try {
 						return f.get();
@@ -109,24 +110,93 @@ public class GreeterServiceGrpcTest {
 						throw new RuntimeException(ex);
 					}
 				})
+	        	.filter( r -> Boolean.TRUE.equals(r))
 	        	.count();
-        
-        Assert.assertEquals(repeatNumStubs, finishedCount);
+	    
+	    Assert.assertEquals(repeatNumStubs, finishedCount);
+	}
+
+	@Test
+	public void testNonSecuredMultiClientCallsWithClientBulkheadLimiter() throws InterruptedException {
+
+		registerGreeterServiceServerGrpc();
+		
+		// create Bulkhead to limit number of client calls
+		BulkheadConfig config = BulkheadConfig.custom()
+		    .maxConcurrentCalls(100)
+		    .maxWaitDuration(Duration.ofMillis(1000))
+		    .build();
+
+		Bulkhead bulkhead = Bulkhead.of("backendName", config);
+		
+		// wrap the Bulkhead into a interceptor
+		ClientInterceptor bulkheadInterceptor = new BulkheadGrpcClientInterceptor(bulkhead);
+		
+		// number of concurrent client stubs calls
+		int repeatNumStubs = 1000;
+		
+		// create login service stub
+		List<GreeterService> greeterServices = repeatGreeterServiceClientStub(repeatNumStubs, bulkheadInterceptor);
+		
+		// create some testing data
+		String[] messages = createMessages();
+		
+	    // wraps as Callable tasks
+	 	List<Callable<Boolean>> tasks = greeterServices.stream()
+	 			.map( greeterService -> new Callable<Boolean>() {
+	 				@Override
+	 	            public Boolean call() {
+	 					int randomIndex = (int) (Math.random() * messages.length);
+	 					String message = messages[randomIndex];
+	 					callAndAssert(greeterService, message);
+	 	                return Boolean.TRUE;
+	 	            }
+	 			})
+	 			.collect( Collectors.toList() );
+	 	
+		// call grpc stubs in a parallel fashion
+		ExecutorService executorService = Executors.newFixedThreadPool(4);
+	    List<Future<Boolean>> futures = executorService.invokeAll(tasks, 5, TimeUnit.SECONDS);
+	    
+	    // block until all tasks are done
+	    long finishedCount = futures.stream()
+	        	.map( f -> {
+					try {
+						return f.get();
+					} catch (InterruptedException | ExecutionException ex) {
+						throw new RuntimeException(ex);
+					}
+				})
+	        	.filter( r -> Boolean.TRUE.equals(r))
+	        	.count();
+	    
+	    // TODO assert no BulkheadFullException exception was thrown
+	    Assert.assertEquals(repeatNumStubs, finishedCount);
 	}
 	
-	private void registerGreeterServiceGrpc() {
+	private void registerGreeterServiceServerGrpc() {
 		GreeterBusiness greeterBusiness = new GreeterBusinessImpl();
-		GreeterServiceGrpcServer greeterServiceGrpc = new GreeterServiceGrpcServer(greeterBusiness);
-		serverStarterRule.registerService(greeterServiceGrpc);
+		GreeterServiceGrpcServer greeterServiceServerGrpc = new GreeterServiceGrpcServer(greeterBusiness);
+		serverStarterRule.registerService(greeterServiceServerGrpc);
 	}
 	
 	private GreeterService createGreeterServiceClientStub() {
 		GreeterService greeterService = new GreeterServiceGrpcClientStub(managedChannelRule.getManagedChannel());
 		return greeterService;
 	}
-
+	
+	private GreeterService createGreeterServiceClientStub(ClientInterceptor... interceptors) {
+		GreeterService greeterService = new GreeterServiceGrpcClientStub(managedChannelRule.getManagedChannel(), interceptors);
+		return greeterService;
+	}
+	
 	private List<GreeterService> repeatGreeterServiceClientStub(int repeatNum) {
-		GreeterService greeterServiceStub = createGreeterServiceClientStub();
+		return repeatGreeterServiceClientStub(repeatNum, (ClientInterceptor[]) null);
+	}
+
+	private List<GreeterService> repeatGreeterServiceClientStub(int repeatNum, ClientInterceptor... interceptors) {
+		GreeterService greeterServiceStub = interceptors == null ? 
+				createGreeterServiceClientStub() : createGreeterServiceClientStub(interceptors);
 		List<GreeterService> list = new ArrayList<>(repeatNum);
 		for (int i = 0; i < repeatNum; ++i) {
 			list.add(greeterServiceStub);

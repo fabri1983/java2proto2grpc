@@ -44,7 +44,7 @@ public class LoginServiceSecuredGrpcTest {
 	@Test
 	public void testSecured() {
 		
-		registerLoginServiceGrpc();
+		registerLoginServiceServerGrpc();
 		
 		LoginService loginService = createLoginServiceClientStub();
 		
@@ -57,10 +57,10 @@ public class LoginServiceSecuredGrpcTest {
 		}
 	}
 
-	private void registerLoginServiceGrpc() {
+	private void registerLoginServiceServerGrpc() {
 		LoginBusiness loginBusiness = new LoginBusinessImpl();
-		LoginServiceGrpcServer loginServiceGrpc = new LoginServiceGrpcServer(loginBusiness);
-		serverStarterRule.getServerStarter().register(loginServiceGrpc);
+		LoginServiceGrpcServer loginServiceServerGrpc = new LoginServiceGrpcServer(loginBusiness);
+		serverStarterRule.getServerStarter().register(loginServiceServerGrpc);
 	}
 
 	private LoginService createLoginServiceClientStub() {

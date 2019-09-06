@@ -91,20 +91,20 @@ public class GreeterServiceGrpcClientLoadBalancerTest {
 				repeatClient(repeatNumStubs, clientLbs);
 
 		// wraps as Callable tasks
-     	List<Callable<Void>> tasks = clientLoadBalancers.stream()
-     			.map( clientLb -> new Callable<Void>() {
+     	List<Callable<Boolean>> tasks = clientLoadBalancers.stream()
+     			.map( clientLb -> new Callable<Boolean>() {
      				@Override
-     	            public Void call() {
+     	            public Boolean call() {
      					String messageResult = callGreeterService(clientLb, message);
      					Assert.assertEquals(message, messageResult);
-     	                return null;
+     	                return Boolean.TRUE;
      	            }
      			})
      			.collect( Collectors.toList() );
 
 		// call grpc stubs in a parallel fashion
 		ExecutorService executorService = Executors.newFixedThreadPool(4);
-		List<Future<Void>> futures = executorService.invokeAll(tasks, 5, TimeUnit.SECONDS);
+		List<Future<Boolean>> futures = executorService.invokeAll(tasks, 5, TimeUnit.SECONDS);
 
 		// block until all tasks are done
         long finishedCount = futures.stream()
@@ -116,6 +116,7 @@ public class GreeterServiceGrpcClientLoadBalancerTest {
 						throw new RuntimeException(ex);
 					}
 				})
+	        	.filter( r -> Boolean.TRUE.equals(r))
 	        	.count();
 
 		Assert.assertEquals(repeatNumStubs, finishedCount);
@@ -147,20 +148,20 @@ public class GreeterServiceGrpcClientLoadBalancerTest {
 				repeatClient(repeatNumStubs, clientLbs);
 
 		// wraps as Callable tasks
-		List<Callable<Void>> tasks = clientLoadBalancers.stream()
-     			.map( clientLb -> new Callable<Void>() {
+		List<Callable<Boolean>> tasks = clientLoadBalancers.stream()
+     			.map( clientLb -> new Callable<Boolean>() {
      				@Override
-     	            public Void call() {
+     	            public Boolean call() {
      					String messageResult = callGreeterService(clientLb, message);
      					Assert.assertEquals(message, messageResult);
-     	                return null;
+     	                return Boolean.TRUE;
      	            }
      			})
      			.collect( Collectors.toList() );
      	
 		// call grpc stubs in a parallel fashion
 		ExecutorService executorService = Executors.newFixedThreadPool(4);
-		List<Future<Void>> futures = executorService.invokeAll(tasks, 5, TimeUnit.SECONDS);
+		List<Future<Boolean>> futures = executorService.invokeAll(tasks, 5, TimeUnit.SECONDS);
 
         // block until all tasks are done
         long finishedCount = futures.stream()
@@ -172,6 +173,7 @@ public class GreeterServiceGrpcClientLoadBalancerTest {
 						throw new RuntimeException(ex);
 					}
 				})
+            	.filter( r -> Boolean.TRUE.equals(r))
             	.count();
 
 		Assert.assertEquals(repeatNumStubs, finishedCount);

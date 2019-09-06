@@ -5,6 +5,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 
+import io.github.resilience4j.bulkhead.BulkheadFullException;
 import io.grpc.ManagedChannel;
 
 import java.util.concurrent.Semaphore;
@@ -76,8 +77,8 @@ public class GrpcClientStub<B, A, F> implements IGrpcClient<B, A, F> {
 			return process.get();
 		}
 		catch (Exception ex) {
-			log.error(ex.getMessage());
-			throw new RuntimeException(ex);
+			log.error("just(): {}. {}", ex.getClass().getSimpleName(), ex.getMessage());
+			return rethrow(ex);
 		}
 	}
 
@@ -88,19 +89,20 @@ public class GrpcClientStub<B, A, F> implements IGrpcClient<B, A, F> {
 			return future.get();
 		}
 		catch (Exception ex) {
-			log.error(ex.getMessage());
-			throw new RuntimeException(ex);
+			log.error("justFuture(): {}. {}", ex.getClass().getSimpleName(), ex.getMessage());
+			return rethrow(ex);
 		}
 	}
 	
 	protected <T> T justWithLimiter(Supplier<T> process) {
+		// NOTE: there is no reason to use this method if using Resilience4j's Bulkhead
 		try {
 			callLimiter.acquire();
 			return process.get();
 		}
 		catch (Exception ex) {
-			log.error(ex.getMessage());
-			throw new RuntimeException(ex);
+			log.error("justWithLimiter(): {}. {}", ex.getClass().getSimpleName(), ex.getMessage());
+			return rethrow(ex);
 		}
 		finally {
 			callLimiter.release();
@@ -108,16 +110,19 @@ public class GrpcClientStub<B, A, F> implements IGrpcClient<B, A, F> {
 	}
 	
 	protected <T> T justFutureWithLimiter(Supplier<ListenableFuture<T>> process) {
+		// NOTE: there is no reason to use this method if using Resilience4j's Bulkhead
 		try {
 			callLimiter.acquire();
 			ListenableFuture<T> future = process.get();
-			future.addListener(() -> callLimiter.release(), MoreExecutors.directExecutor());
 			Futures.addCallback(future, callback(), MoreExecutors.directExecutor());
 			return future.get();
 		}
 		catch (Exception ex) {
-			log.error(ex.getMessage());
-			throw new RuntimeException(ex);
+			log.error("justFutureWithLimiter(): {}. {}", ex.getClass().getSimpleName(), ex.getMessage());
+			return rethrow(ex);
+		}
+		finally {
+			callLimiter.release();
 		}
 	}
 
@@ -126,12 +131,19 @@ public class GrpcClientStub<B, A, F> implements IGrpcClient<B, A, F> {
 			@Override
 			public void onSuccess(T result) {
 			}
-
+	
 			@Override
 			public void onFailure(Throwable t) {
-				log.error(t.getLocalizedMessage());
+				log.error("callback(): {}. {}", t.getClass().getSimpleName(), t.getMessage());
 			}
 		};
+	}
+
+	private <T> T rethrow(Exception ex) {
+		if (ex instanceof BulkheadFullException) {
+			throw (BulkheadFullException) ex;
+		}
+		throw new RuntimeException(ex);
 	}
 	
 }
