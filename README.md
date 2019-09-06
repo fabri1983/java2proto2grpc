@@ -116,6 +116,7 @@ You need to setup the current consul ip address in order to test run `LoginServi
 TODO
 ---
 - Add test resulting with a failure BulheadFullException to ensure expected behaviour.
+- Expose Resilience4j's metrics as an http endpoint.
 - Modularize JavaToProtoNew. Code is written in a very imperative way, and hard to mantain.
 - Add converters similar to `org.fabri1983.javagrpc.protobuf.converter.type.XxxConverter` for fields with types: Duration. 
 See [this](https://github.com/google/qrisp/blob/master/google/protobuf/java/util/src/main/java/com/google/protobuf/util/TimeUtil.java).
