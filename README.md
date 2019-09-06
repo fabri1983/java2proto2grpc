@@ -58,7 +58,7 @@ The processs skips generation of protobuf messages or inner fields if class is d
 	mvn exec:java -Dexec.mainClass=org.fabri1983.javagrpc.main.converter.JavaToProtoMain -Dexec.args="org.fabri1983.javagrpc.service.contract src/main/proto"
 	```
 
-**Then you build the project** (`mvn compile` or *Build command* in your IDE) which triggers plugin `org.xolstice.maven.plugins:protobuf-maven-plugin` 
+Then you build the project (`mvn compile` or *Build command* in your IDE) which triggers plugin `org.xolstice.maven.plugins:protobuf-maven-plugin` 
 in order to generate the protobuf java classes and gRPC stubs for client and server out of your `.proto` files.    
 Generated code is located at `target/generated-sources/protobuf/` and `target/generated-test-sources/protobuf/`.
 
@@ -72,7 +72,7 @@ git update-index --assume-unchanged src/main/proto/Greeter.proto
 git update-index --assume-unchanged src/main/proto/LoginService.proto
 ```
 
-The file `Greeter.proto` is used to generated grpc-java example classes as per [examples](https://github.com/grpc/grpc-java/tree/master/examples), 
+The file `Greeter.proto` is used to generated grpc-java example classes as per [grpc-java examples](https://github.com/grpc/grpc-java/tree/master/examples), 
 so you can make some testing running `org.fabri1983.javagrpc.main.greeter.GreeterClientMain` 
 and `org.fabri1983.javagrpc.main.greeter.GreeterServerMain`.
 
@@ -149,7 +149,7 @@ I don't want to untrack them, I just don't want them to appear as modified and I
 
 - Running Consul in Docker:
 See this [link](https://docs.docker.com/samples/library/consul/#running-consul-for-development)
-	- download docker *Consul image* if not already:
+	- download docker *Consul* image if not already:
 		```sh
 		docker image pull consul
 		```
@@ -170,16 +170,9 @@ See this [link](https://docs.docker.com/samples/library/consul/#running-consul-f
 	- 172.17.0.1 is the Docker bridge IP address. We are remapping Consul Container’s port 8600 to host machine’s Docker bridge port 53 so that Containers on that host can use Consul for DNS.
 	- *-bootstrap* means consul runs in a standalone mode.
 
-- Considerations on *Docker Tool Box*:  
-*Docker Tool Box* is exposed at IP 192.168.99.100.  
-You can change the ip address by accessing the console of the virtualbox instance and execute:
-```bash
-ifconfig
-	from the list of inbterfaces make sure the one you want to modify is eth0 or eth1
-sudo ifconfig eth1 192.168.99.100 netmask 255.255.255.0 up
-```
-If by any reason you are in a situation that your app needs to route request made to Docker's internal IP 172.17.x.x to the exposed IP 192.168.99.100 then:
-	- you will have to add an entry in the Windows routing table:
+- Considerations on *Windows Docker Tool Box*:  
+If by any reason you are in a situation in which your app needs to route requests made to Docker's internal IP 172.17.x.x to the exposed IP 192.168.99.100 then:
+	- add an entry in the Windows routing table:
 	```sh
 	Open a privileged console
 	route add 172.17.0.0 mask 255.255.0.0 192.168.99.100 -p
