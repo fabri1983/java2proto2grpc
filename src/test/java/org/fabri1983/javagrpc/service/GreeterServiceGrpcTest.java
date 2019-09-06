@@ -17,7 +17,7 @@ import org.fabri1983.javagrpc.grpc.artifact.client.managedchannel.IGrpcManagedCh
 import org.fabri1983.javagrpc.model.Corpus;
 import org.fabri1983.javagrpc.service.contract.GreeterService;
 import org.fabri1983.javagrpc.service.grpc.client.GreeterServiceGrpcClientStub;
-import org.fabri1983.javagrpc.service.grpc.server.GreeterServiceGrpcImpl;
+import org.fabri1983.javagrpc.service.grpc.server.GreeterServiceGrpcServer;
 import org.fabri1983.javagrpc.testutil.rules.GrpcManagedChannelRule;
 import org.fabri1983.javagrpc.testutil.rules.GrpcServerStarterRule;
 import org.fabri1983.javagrpc.testutil.rules.JunitPrintTestName;
@@ -116,7 +116,7 @@ public class GreeterServiceGrpcTest {
 	
 	private void registerGreeterServiceGrpc() {
 		GreeterBusiness greeterBusiness = new GreeterBusinessImpl();
-		GreeterServiceGrpcImpl greeterServiceGrpc = new GreeterServiceGrpcImpl(greeterBusiness);
+		GreeterServiceGrpcServer greeterServiceGrpc = new GreeterServiceGrpcServer(greeterBusiness);
 		serverStarterRule.registerService(greeterServiceGrpc);
 	}
 	

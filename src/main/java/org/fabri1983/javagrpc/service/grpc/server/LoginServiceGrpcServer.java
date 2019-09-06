@@ -2,6 +2,8 @@ package org.fabri1983.javagrpc.service.grpc.server;
 
 import com.google.protobuf.Empty;
 
+import io.grpc.ServerInterceptor;
+import io.grpc.ServerInterceptors;
 import io.grpc.stub.StreamObserver;
 
 import org.fabri1983.javagrpc.business.contract.LoginBusiness;
@@ -18,15 +20,21 @@ import org.fabri1983.javagrpc.service.contract.protobuf.Request2Proto;
 import org.fabri1983.javagrpc.service.contract.protobuf.RequestProto;
 import org.fabri1983.javagrpc.service.contract.protobuf.ResponseProto;
 
-public class LoginServiceGrpcImpl extends LoginServiceImplBase implements GrpcServiceMarker {
+public class LoginServiceGrpcServer extends LoginServiceImplBase implements GrpcServiceMarker {
 
 	private LoginBusiness loginBusiness;
 	
-	public LoginServiceGrpcImpl(LoginBusiness loginBusiness) {
+	public LoginServiceGrpcServer(LoginBusiness loginBusiness) {
 		super();
 		this.loginBusiness = loginBusiness;
 	}
 
+	public LoginServiceGrpcServer(LoginBusiness loginBusiness, ServerInterceptor... interceptors) {
+		super();
+		this.loginBusiness = loginBusiness;
+		ServerInterceptors.intercept(this.bindService(), interceptors);
+	}
+	
 	@Override
 	public void loginVoid(Empty request, StreamObserver<Empty> responseObserver) {
 		grcpTryCatch( responseObserver, () -> {

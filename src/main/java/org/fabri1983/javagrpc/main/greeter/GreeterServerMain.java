@@ -6,7 +6,7 @@ import org.fabri1983.javagrpc.business.GreeterBusinessImpl;
 import org.fabri1983.javagrpc.business.contract.GreeterBusiness;
 import org.fabri1983.javagrpc.grpc.artifact.server.GrpcServerStarter;
 import org.fabri1983.javagrpc.grpc.artifact.server.IGrpcServerStarter;
-import org.fabri1983.javagrpc.service.grpc.server.GreeterServiceGrpcImpl;
+import org.fabri1983.javagrpc.service.grpc.server.GreeterServiceGrpcServer;
 
 public class GreeterServerMain {
 
@@ -17,7 +17,7 @@ public class GreeterServerMain {
 		
 		// register greeter service
 		GreeterBusiness greeterBusiness = new GreeterBusinessImpl();
-		GreeterServiceGrpcImpl greeterService = new GreeterServiceGrpcImpl(greeterBusiness);
+		GreeterServiceGrpcServer greeterService = new GreeterServiceGrpcServer(greeterBusiness);
 		server.registerBeforeStart(greeterService);
 		
 		server.start();

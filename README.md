@@ -20,65 +20,65 @@ Features:
 ---
 - Depends on **Maven** (uses plugins to generate grpc stubs).
 - **Java 8+**. 
-	- note the use of dependency *javax.annotation:javax.annotation-api* which solves the issue on generated grpc stubs due to Java internal 
-	relocation of *@javax.annotation.Generated* on newer java versions.
-- Java 6, 7: requires some changes since the code uses *java.time* package and minor usages of *java.util.stream*.
-- Generates **.proto** files (**IDL syntax v3**) out of Java classes/interfaces existing in the classpath and decorated by *@GrpcEnabled*.
-- Skips generation of protobuf message or inner fields by decorating a class with *@ProtobufSkipFields*. This is particularly usefull when you 
+	- note the use of dependency `javax.annotation:javax.annotation-api` which solves the issue on generated grpc stubs due to Java internal 
+	relocation of `@javax.annotation.Generated` on newer java versions.
+- Java 6, 7: requires some changes since the code uses *java.time* package and minor usages of `java.util.stream`. Also some dependencies may break.
+- Generates **.proto** files (**IDL syntax v3**) out of Java classes/interfaces existing in the classpath and decorated by `@GrpcEnabled`.
+- Skips generation of protobuf message or inner fields by decorating a class with `@ProtobufSkipFields`. This is particularly usefull when you 
 have a class hierarchy and you want to skip one or several of them.
-- Generates **gRPC stubs** out of *.proto files*.
+- Generates **gRPC stubs** out of `.proto` files.
 - Conversion api between protobuf objects and DTOs and/or Domain Model Objects, and viceversa:
 	- Fixed and extended version of api *protobuf-converter* from [BAData](https://github.com/BAData/protobuf-converter "protobuf-converter").
-	- *java.lang.Enum* is defined as *string* when generating proto file. 
-	So when using *@org.fabri1983.javagrpc.protobuf.converter.annotation.ProtoField* you need to extend *org.fabri1983.javagrpc.protobuf.converter.type.EnumStringConverter* 
-	and set it as *converter* attribute. See **Request** and **Response** example classes.
+	- `java.lang.Enum` is defined as `String` when generating proto file. 
+	So when using `@org.fabri1983.javagrpc.protobuf.converter.annotation.ProtoField` you need to extend `org.fabri1983.javagrpc.protobuf.converter.type.EnumStringConverter` 
+	and set it as *converter* attribute. See `Request` and `Response` example classes.
 - Provides two gRPC examples: *GreeterService* and *LoginService*.
 - Provides non secured and TLS-secured grpc server and client.
-- Use futurable grpc calls by *ListenableFuture* and with *call limiter*.
-- Use of java compiler *-parameter* option to expose parameters name in signature definition, so we can get the real parameter name and 
-so improve the *.proto* file readablity.
-- Provides a **ManagedChannelServiceDiscovery** with a **Consul Service Discovery** client and **Load Balancer** capability, 
+- Use futurable grpc calls by `ListenableFuture` and with *call limiter*.
+- Use of java compiler `-parameter` option to expose parameters name in signature definition, so we can get the real parameter name and 
+so improve the `.proto` file readablity.
+- Provides a `GrpcManagedChannelServiceDiscovery` with a **Consul Service Discovery** client and **Load Balancer** capability, 
 from [grpc-java-load-balancer-using-consul](https://github.com/mykidong/grpc-java-load-balancer-using-consul). See tests.
 
 
 Usage:
 ---
-First you need to generate **.proto** files out of your java **classes/interfaces** located at your classpath 
-and which are decorated with annotation *@GrpcEnabled*.  
-The processs skips generation of protobuf messages or inner fields if class is decorated with with *@ProtobufSkipFields*.
-- **JavaToProtoNewMain**: generates *.proto* files (**IDL syntax v3**) from a class/package at specific folder:  
+First you need to generate `.proto` files out of your java `classes/interfaces` located at your classpath 
+and which are decorated with annotation `@GrpcEnabled`.  
+The processs skips generation of protobuf messages or inner fields if class is decorated with with `@ProtobufSkipFields`.
+- `JavaToProtoNewMain`: generates `.proto` files (**IDL syntax v3**) from a class/package at specific folder:  
 	```sh
 	mvn compile
 	mvn exec:java -Dexec.mainClass=org.fabri1983.javagrpc.main.converter.JavaToProtoNewMain -Dexec.args="org.fabri1983.javagrpc.service.contract src/main/proto"
 	```
-- JavaToProtoMain: generates *.proto* files (**IDL syntax v3**) from a class/package at specific folder:  
+- JavaToProtoMain: generates `.proto` files (**IDL syntax v3**) from a class/package at specific folder:  
 	**Currently work in progress. Messages are being nested and it ends up with lot of repeated messages.**
 	```sh
 	mvn compile
 	mvn exec:java -Dexec.mainClass=org.fabri1983.javagrpc.main.converter.JavaToProtoMain -Dexec.args="org.fabri1983.javagrpc.service.contract src/main/proto"
 	```
 
-**Then you build the project** (*mvn compile* or *Build command* in your IDE) which triggers plugin *org.xolstice.maven.plugins:protobuf-maven-plugin* 
-in order to generate the protobuf java classes and gRPC stubs for client and server out of your *.proto* files.    
-Generated code is located at *target/generated-sources/protobuf/* and *target/generated-test-sources/protobuf/*.
+**Then you build the project** (`mvn compile` or *Build command* in your IDE) which triggers plugin `org.xolstice.maven.plugins:protobuf-maven-plugin` 
+in order to generate the protobuf java classes and gRPC stubs for client and server out of your `.proto` files.    
+Generated code is located at `target/generated-sources/protobuf/` and `target/generated-test-sources/protobuf/`.
 
 
 GreeterService and LoginService examples:
 ---
-Folder **src/main/proto** contains two commited files named *Greeter.proto* and *LoginService.proto*. If you plan to make modifications 
+Folder `src/main/proto` contains two commited files named `Greeter.proto` and `LoginService.proto`. If you plan to make modifications 
 on them you can use next commands in order to ignore track any change:
 ```sh
 git update-index --assume-unchanged src/main/proto/Greeter.proto
 git update-index --assume-unchanged src/main/proto/LoginService.proto
 ```
 
-The file *Greeter.proto* is used to generated grpc-java example classes as per https://github.com/grpc/grpc-java/tree/master/examples, 
-so you can make some testing running *org.fabri1983.javagrpc.main.greeter.GreeterClientMain* 
-and *org.fabri1983.javagrpc.main.greeter.GreeterServerMain*.
+The file `Greeter.proto` is used to generated grpc-java example classes as per [examples](https://github.com/grpc/grpc-java/tree/master/examples), 
+so you can make some testing running `org.fabri1983.javagrpc.main.greeter.GreeterClientMain` 
+and `org.fabri1983.javagrpc.main.greeter.GreeterServerMain`.
 
-The file *LoginService.proto* is the one you can generate running *org.fabri1983.javagrpc.main.converter.JavaToProtoMainNew*, and it generates 
-protobuf classes and grpc stubs to make some testing running *org.fabri1983.javagrpc.main.login.LoginClientMain* 
-and *org.fabri1983.javagrpc.main.login.LoginServerMain*.
+The file `LoginService.proto` is the one you can generate running `org.fabri1983.javagrpc.main.converter.JavaToProtoMainNew`, and it generates 
+protobuf classes and grpc stubs to make some testing running `org.fabri1983.javagrpc.main.login.LoginClientMain` 
+and `org.fabri1983.javagrpc.main.login.LoginServerMain`.
 
 
 Run Tests with Consul
@@ -86,17 +86,17 @@ Run Tests with Consul
 **Consul** is a tool for *service discovery* with load balancing and health check capabilities.  
 Consul is distributed, highly available, and extremely scalable. Visit https://github.com/hashicorp/consul.  
   
-JUnit **LoginServiceGrpcClientConsulServiceDiscoveryTest** runs a **LoginService gRPC** test with multiple stub calls using a 
-**ManagedChannel** which connects to a *Consul* server (local or external, see below). Not a real scenario, just testing if it works.  
-JUnit **GreeterServiceGrpcClientLoadBalancerTest** runs a **Greeter gRPC** test with multiple stub calls using a custom gRPC Load Balancer 
+JUnit `LoginServiceGrpcClientConsulServiceDiscoveryTest` runs a **LoginService gRPC** test with multiple stub calls using a 
+`ManagedChannel` which connects to a *Consul* server (local or external, see below). Not a real scenario, just testing if it works.  
+JUnit `GreeterServiceGrpcClientLoadBalancerTest` runs a **Greeter gRPC** test with multiple stub calls using a custom gRPC Load Balancer 
 on client side using *static gRPC nodes* and also *Consul service discovery*. Not a real scenario, just testing if it works.  
 
 Consul can be obtained as a stand alone app or as a **docker image**:  
 - stand alone app: https://www.consul.io/downloads.html  
 - docker image: *docker image pull consul*
-	- See *Useful Tips* section for instruciton on docker Consul execution.
+	- See *Useful Tips* section for instructions on container execution.
 
-You need to setup the current consul ip address in order to test run **LoginServiceGrpcClientConsulServiceDiscoveryTest** correctly:
+You need to setup the current consul ip address in order to test run `LoginServiceGrpcClientConsulServiceDiscoveryTest` correctly:
 - If you are using docker in *Windows* with **Docker Tool Box** then get your docker machine ip with:
 	```sh
 	docker-machine ip default
@@ -114,22 +114,23 @@ You need to setup the current consul ip address in order to test run **LoginServ
 
 TODO
 ---
-- Remove usage of call limiter in GrpcClientStub and replace by *resilience4j* api (WIP).
+- Remove usage of call limiter in GrpcClientStub and replace by `resilience4j` api (WIP).
 - Modularize JavaToProtoNew. Code is written in a very imperative way, and hard to mantain.
-- Add converters similar to *org.fabri1983.javagrpc.protobuf.converter.type.XxxConverter* for fields with types: Duration. 
+- Add converters similar to `org.fabri1983.javagrpc.protobuf.converter.type.XxxConverter` for fields with types: Duration. 
 See [this](https://github.com/google/qrisp/blob/master/google/protobuf/java/util/src/main/java/com/google/protobuf/util/TimeUtil.java).
 - Replace custom protobuf-converter solution by [MapStruct](http://mapstruct.org/). It's faster and reflection free.
 - Add custom Java *Annotations* to classes/interfaces and/or fields in order to collect reserved field tags and names for the .proto IDL file.
-- Support *@java.lang.Deprecated* on classes/interfaces. It translates to *option deprecated = true;* after message declaration on the .proto IDL file.
-- Support *@java.lang.Deprecated* on java fields. It translates to *[deprecated = true];* after field declaration on the .proto file.
+- Support `@java.lang.Deprecated` on classes/interfaces. It translates to *option deprecated = true;* after message declaration on the .proto IDL file.
+- Support `@java.lang.Deprecated` on java fields. It translates to *[deprecated = true];* after field declaration on the .proto file.
 
 
 License
 ---
-Licenses corresponds to projects:
+Licenses correspond to next projects (currently discontinued) as I partially took and modify/improve third party source code:
 - https://github.com/jhrgitgit/java2proto
 - https://github.com/lloydsparkes/java-proto-generator
 - https://github.com/BAData/protobuf-converter#license
+- https://github.com/mykidong/grpc-java-load-balancer-using-consul
 
 
 Useful tips

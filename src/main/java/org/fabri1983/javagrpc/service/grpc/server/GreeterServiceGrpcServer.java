@@ -1,5 +1,7 @@
 package org.fabri1983.javagrpc.service.grpc.server;
 
+import io.grpc.ServerInterceptor;
+import io.grpc.ServerInterceptors;
 import io.grpc.examples.helloworld.protobuf.GreeterGrpc.GreeterImplBase;
 import io.grpc.examples.helloworld.protobuf.SearchRequest;
 import io.grpc.examples.helloworld.protobuf.SearchResponse;
@@ -9,15 +11,21 @@ import io.grpc.stub.StreamObserver;
 import org.fabri1983.javagrpc.business.contract.GreeterBusiness;
 import org.fabri1983.javagrpc.grpc.artifact.server.GrpcServiceMarker;
  
-public class GreeterServiceGrpcImpl extends GreeterImplBase implements GrpcServiceMarker {
+public class GreeterServiceGrpcServer extends GreeterImplBase implements GrpcServiceMarker {
 	
 	private GreeterBusiness greeterBusiness;
 	
-	public GreeterServiceGrpcImpl(GreeterBusiness greeterBusiness) {
+	public GreeterServiceGrpcServer(GreeterBusiness greeterBusiness) {
 		super();
 		this.greeterBusiness = greeterBusiness;
 	}
-
+	
+	public GreeterServiceGrpcServer(GreeterBusiness greeterBusiness, ServerInterceptor... interceptors) {
+		super();
+		this.greeterBusiness = greeterBusiness;
+		ServerInterceptors.intercept(this.bindService(), interceptors);
+	}
+	
 	@Override
 	public void sayHello(SearchRequest request, StreamObserver<SearchResponse> responseObserver) {
 		grcpTryCatch( responseObserver, () -> {

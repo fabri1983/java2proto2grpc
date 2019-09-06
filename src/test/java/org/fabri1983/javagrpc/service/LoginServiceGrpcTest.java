@@ -20,7 +20,7 @@ import org.fabri1983.javagrpc.model.Request2;
 import org.fabri1983.javagrpc.model.Response;
 import org.fabri1983.javagrpc.service.contract.LoginService;
 import org.fabri1983.javagrpc.service.grpc.client.LoginServiceGrpcClientStub;
-import org.fabri1983.javagrpc.service.grpc.server.LoginServiceGrpcImpl;
+import org.fabri1983.javagrpc.service.grpc.server.LoginServiceGrpcServer;
 import org.fabri1983.javagrpc.testutil.rules.GrpcManagedChannelRule;
 import org.fabri1983.javagrpc.testutil.rules.GrpcServerStarterRule;
 import org.fabri1983.javagrpc.testutil.rules.JunitPrintTestName;
@@ -114,7 +114,7 @@ public class LoginServiceGrpcTest {
 	
 	private void registerLoginServiceGrpc() {
 		LoginBusiness loginBusiness = new LoginBusinessImpl();
-		LoginServiceGrpcImpl loginServiceGrpc = new LoginServiceGrpcImpl(loginBusiness);
+		LoginServiceGrpcServer loginServiceGrpc = new LoginServiceGrpcServer(loginBusiness);
 		serverStarterRule.registerService(loginServiceGrpc);
 	}
 	

@@ -6,7 +6,7 @@ import org.fabri1983.javagrpc.business.LoginBusinessImpl;
 import org.fabri1983.javagrpc.business.contract.LoginBusiness;
 import org.fabri1983.javagrpc.grpc.artifact.server.GrpcServerStarterSecured;
 import org.fabri1983.javagrpc.grpc.artifact.server.IGrpcServerStarter;
-import org.fabri1983.javagrpc.service.grpc.server.LoginServiceGrpcImpl;
+import org.fabri1983.javagrpc.service.grpc.server.LoginServiceGrpcServer;
 
 public class LoginServerMain {
 	
@@ -17,7 +17,7 @@ public class LoginServerMain {
 		
 		// register login service
 		LoginBusiness loginBusiness = new LoginBusinessImpl();
-		LoginServiceGrpcImpl loginServiceGrpc = new LoginServiceGrpcImpl(loginBusiness);
+		LoginServiceGrpcServer loginServiceGrpc = new LoginServiceGrpcServer(loginBusiness);
 		serverStarter.registerBeforeStart(loginServiceGrpc);
 		
 		serverStarter.start();

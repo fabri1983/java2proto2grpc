@@ -25,7 +25,7 @@ import org.fabri1983.javagrpc.grpc.artifact.client.IGrpcClientStubFactory;
 import org.fabri1983.javagrpc.grpc.artifact.client.managedchannel.IGrpcManagedChannelFactory;
 import org.fabri1983.javagrpc.grpc.artifact.client.managedchannel.IGrpcManagedChannelFactory.GrpcManagedChannelNonSecuredFactory;
 import org.fabri1983.javagrpc.service.grpc.client.GreeterServiceGrpcClientStubFactory;
-import org.fabri1983.javagrpc.service.grpc.server.GreeterServiceGrpcImpl;
+import org.fabri1983.javagrpc.service.grpc.server.GreeterServiceGrpcServer;
 import org.fabri1983.javagrpc.testutil.IServiceDiscoveryProperties;
 import org.fabri1983.javagrpc.testutil.ServiceDiscoveryPropertiesFromFile;
 import org.fabri1983.javagrpc.testutil.rules.ConsulServiceRegisterRule;
@@ -182,7 +182,7 @@ public class GreeterServiceGrpcClientLoadBalancerTest {
 
 	private void registerGreeterServiceGrpc() {
 		GreeterBusiness greeterBusiness = new GreeterBusinessImpl();
-		GreeterServiceGrpcImpl greeterServiceGrpc = new GreeterServiceGrpcImpl(greeterBusiness);
+		GreeterServiceGrpcServer greeterServiceGrpc = new GreeterServiceGrpcServer(greeterBusiness);
 		serverStarterRule.registerService(greeterServiceGrpc);
 	}
 

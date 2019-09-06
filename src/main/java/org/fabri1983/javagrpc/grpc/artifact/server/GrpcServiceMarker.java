@@ -4,7 +4,7 @@ import io.grpc.stub.StreamObserver;
 
 /**
  * Used to let Spring collects beans implementing this interface to register them in a gRPC Server instance.
- * So this interface must be implemented by classes that extends from XxxImplBase. 
+ * Those beans must extend from XxxImplBase which is the grpc generated class for server implementation. 
  */
 public interface GrpcServiceMarker {
 
