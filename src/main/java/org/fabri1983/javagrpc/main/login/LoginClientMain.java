@@ -8,7 +8,7 @@ import org.fabri1983.javagrpc.model.Request;
 import org.fabri1983.javagrpc.model.Request2;
 import org.fabri1983.javagrpc.model.Response;
 import org.fabri1983.javagrpc.service.contract.LoginService;
-import org.fabri1983.javagrpc.service.grpc.client.LoginServiceGrpcClientStub;
+import org.fabri1983.javagrpc.service.grpc.client.LoginServiceGrpcClientStubFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +24,9 @@ public class LoginClientMain {
 		IGrpcManagedChannel managedChannel = new GrpcManagedChannelSecured(GrpcConfiguration.from(host, port));
 		
 		// create login service client stub
-		LoginService loginService = new LoginServiceGrpcClientStub(managedChannel);
+		LoginService loginService = LoginServiceGrpcClientStubFactory.newFactory()
+				.withManagedChannel(managedChannel)
+				.build();
 		
 		// create some testing data
 		User[] users = new User[] { 

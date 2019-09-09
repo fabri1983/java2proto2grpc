@@ -22,7 +22,7 @@ import org.fabri1983.javagrpc.grpc.artifact.client.managedchannel.IGrpcManagedCh
 import org.fabri1983.javagrpc.grpc.artifact.interceptor.BulkheadGrpcClientInterceptor;
 import org.fabri1983.javagrpc.model.Corpus;
 import org.fabri1983.javagrpc.service.contract.GreeterService;
-import org.fabri1983.javagrpc.service.grpc.client.GreeterServiceGrpcClientStub;
+import org.fabri1983.javagrpc.service.grpc.client.GreeterServiceGrpcClientStubFactory;
 import org.fabri1983.javagrpc.service.grpc.server.GreeterServiceGrpcServer;
 import org.fabri1983.javagrpc.testutil.rules.GrpcManagedChannelRule;
 import org.fabri1983.javagrpc.testutil.rules.GrpcServerStarterRule;
@@ -126,11 +126,10 @@ public class GreeterServiceGrpcTest {
 		    .maxConcurrentCalls(100)
 		    .maxWaitDuration(Duration.ofMillis(1000))
 		    .build();
-
-		Bulkhead bulkhead = Bulkhead.of("backendName", config);
+		Bulkhead bulkheadGreeterService = Bulkhead.of(GreeterService.class.getSimpleName(), config);
 		
 		// wrap the Bulkhead into a interceptor
-		ClientInterceptor bulkheadInterceptor = new BulkheadGrpcClientInterceptor(bulkhead);
+		ClientInterceptor bulkheadInterceptor = new BulkheadGrpcClientInterceptor(bulkheadGreeterService);
 		
 		// number of concurrent client stubs calls
 		int repeatNumStubs = 1000;
@@ -181,12 +180,17 @@ public class GreeterServiceGrpcTest {
 	}
 	
 	private GreeterService createGreeterServiceClientStub() {
-		GreeterService greeterService = new GreeterServiceGrpcClientStub(managedChannelRule.getManagedChannel());
+		GreeterService greeterService = GreeterServiceGrpcClientStubFactory.newFactory()
+				.withManagedChannel(managedChannelRule.getManagedChannel())
+				.build();
 		return greeterService;
 	}
 	
 	private GreeterService createGreeterServiceClientStub(ClientInterceptor... interceptors) {
-		GreeterService greeterService = new GreeterServiceGrpcClientStub(managedChannelRule.getManagedChannel(), interceptors);
+		GreeterService greeterService = GreeterServiceGrpcClientStubFactory.newFactory()
+				.withManagedChannel(managedChannelRule.getManagedChannel())
+				.withInterceptors(interceptors)
+				.build();
 		return greeterService;
 	}
 	

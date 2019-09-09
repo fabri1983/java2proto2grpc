@@ -17,6 +17,10 @@ public class BulkheadGrpcServerInterceptor implements ServerInterceptor {
 		this.bulkhead = bulkhead;
 	}
 
+	public Bulkhead getBulkhead() {
+		return bulkhead;
+	}
+	
 	@Override
 	public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, Metadata headers,
 			ServerCallHandler<ReqT, RespT> next) {

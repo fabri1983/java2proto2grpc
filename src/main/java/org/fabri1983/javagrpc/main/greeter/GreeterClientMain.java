@@ -4,7 +4,7 @@ import org.fabri1983.javagrpc.grpc.artifact.GrpcConfiguration;
 import org.fabri1983.javagrpc.grpc.artifact.client.managedchannel.GrpcManagedChannel;
 import org.fabri1983.javagrpc.grpc.artifact.client.managedchannel.IGrpcManagedChannel;
 import org.fabri1983.javagrpc.service.contract.GreeterService;
-import org.fabri1983.javagrpc.service.grpc.client.GreeterServiceGrpcClientStub;
+import org.fabri1983.javagrpc.service.grpc.client.GreeterServiceGrpcClientStubFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +20,9 @@ public class GreeterClientMain {
 		IGrpcManagedChannel managedChannel = new GrpcManagedChannel(GrpcConfiguration.from(host, port));
 		
 		// create greeter service client stub
-		GreeterService greeterService = new GreeterServiceGrpcClientStub(managedChannel);
+		GreeterService greeterService = GreeterServiceGrpcClientStubFactory.newFactory()
+				.withManagedChannel(managedChannel)
+				.build();
 		
 		// call grpc stub
 		for (int i = 0; i < 5; i++) {

@@ -24,7 +24,7 @@
 		<google.protobuf.version>3.8.0</google.protobuf.version>
 		<consul.client.version>1.4.2</consul.client.version>
 		<resilience4j.version>0.17.0</resilience4j.version>
-		<!-- exposes metrics via http -->
+		<!-- metrics collector -->
 		<dropwizard.metrics.version>4.1.0</dropwizard.metrics.version>
 		
 		<!-- unit testing -->
@@ -122,6 +122,12 @@
 			<groupId>io.github.resilience4j</groupId>
 			<artifactId>resilience4j-metrics</artifactId>
 			<version>${resilience4j.version}</version>
+		</dependency>
+		<!-- Dropwizard's Metrics core -->
+		<dependency>
+			<groupId>io.dropwizard.metrics</groupId>
+			<artifactId>metrics-core</artifactId>
+			<version>${dropwizard.metrics.version}</version>
 		</dependency>
 		<!-- JUnit -->
 		<dependency>

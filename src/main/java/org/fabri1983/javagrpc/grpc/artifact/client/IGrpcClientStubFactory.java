@@ -4,10 +4,10 @@ import io.grpc.ManagedChannel;
 
 public interface IGrpcClientStubFactory<B, A, F> {
 
-	public abstract B newBlockingStub(ManagedChannel channel);
+	B newBlockingStub(ManagedChannel channel);
 
-	public abstract A newAsyncStub(ManagedChannel channel);
+	A newAsyncStub(ManagedChannel channel);
 	
-	public abstract F newFutureStub(ManagedChannel channel);
+	F newFutureStub(ManagedChannel channel);
 
 }

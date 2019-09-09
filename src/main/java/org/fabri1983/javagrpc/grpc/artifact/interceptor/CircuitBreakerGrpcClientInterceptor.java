@@ -16,6 +16,14 @@ public class CircuitBreakerGrpcClientInterceptor implements ClientInterceptor {
 
 	private CircuitBreaker circuitBreaker;
 
+	public CircuitBreakerGrpcClientInterceptor(CircuitBreaker circuitBreaker) {
+		this.circuitBreaker = circuitBreaker;
+	}
+
+	public CircuitBreaker getCircuitBreaker() {
+		return circuitBreaker;
+	}
+
 	@Override
 	public <ReqT, RespT> ClientCall<ReqT, RespT> interceptCall(MethodDescriptor<ReqT, RespT> method,
 			CallOptions callOptions, Channel next) {

@@ -19,7 +19,7 @@ import org.fabri1983.javagrpc.model.Request;
 import org.fabri1983.javagrpc.model.Request2;
 import org.fabri1983.javagrpc.model.Response;
 import org.fabri1983.javagrpc.service.contract.LoginService;
-import org.fabri1983.javagrpc.service.grpc.client.LoginServiceGrpcClientStub;
+import org.fabri1983.javagrpc.service.grpc.client.LoginServiceGrpcClientStubFactory;
 import org.fabri1983.javagrpc.service.grpc.server.LoginServiceGrpcServer;
 import org.fabri1983.javagrpc.testutil.rules.GrpcManagedChannelRule;
 import org.fabri1983.javagrpc.testutil.rules.GrpcServerStarterRule;
@@ -120,7 +120,9 @@ public class LoginServiceGrpcTest {
 	}
 	
 	private LoginService createLoginServiceClientStub() {
-		LoginService loginService = new LoginServiceGrpcClientStub(managedChannelRule.getManagedChannel());
+		LoginService loginService = LoginServiceGrpcClientStubFactory.newFactory()
+				.withManagedChannel(managedChannelRule.getManagedChannel())
+				.build();
 		return loginService;
 	}
 

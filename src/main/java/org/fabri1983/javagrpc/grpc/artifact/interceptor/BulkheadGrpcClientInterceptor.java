@@ -19,6 +19,10 @@ public class BulkheadGrpcClientInterceptor implements ClientInterceptor {
 		this.bulkhead = bulkhead;
 	}
 
+	public Bulkhead getBulkhead() {
+		return bulkhead;
+	}
+
 	@Override
 	public <ReqT, RespT> ClientCall<ReqT, RespT> interceptCall(MethodDescriptor<ReqT, RespT> method,
 			CallOptions callOptions, Channel next) {
