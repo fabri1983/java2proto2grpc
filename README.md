@@ -24,9 +24,11 @@ Features:
 	relocation of `@javax.annotation.Generated` on newer java versions.
 - Java 6, 7: requires some changes since the code uses *java.time* package and minor usages of `java.util.stream`. Also some dependencies may break.
 - Generates **.proto** files (**IDL syntax v3**) out of Java classes/interfaces existing in the classpath and decorated by `@GrpcEnabled`.
+- Use of java compiler `-parameter` option to expose parameters name in signature definition, so we can get the real parameter name and 
+so improve the `.proto` file readablity.
+- Generates **gRPC stubs** out of `.proto` files.
 - Skips generation of protobuf message or inner fields by decorating a class with `@ProtobufSkipFields`. This is particularly usefull when you 
 have a class hierarchy and you want to skip one or several of them.
-- Generates **gRPC stubs** out of `.proto` files.
 - Conversion api between protobuf objects and DTOs and/or Domain Model Objects, and viceversa:
 	- Fixed and extended version of api *protobuf-converter* from [BAData](https://github.com/BAData/protobuf-converter "protobuf-converter").
 	- `java.lang.Enum` is defined as `String` when generating proto file. 
@@ -36,8 +38,6 @@ have a class hierarchy and you want to skip one or several of them.
 - Provides non secured and TLS-secured grpc server and client.
 - Provides blocking, asynchronous, and futurable grpc calls.
 - Provides **Resilience4j's Bulkhead** client interceptor to limit number of concurrent calls.
-- Use of java compiler `-parameter` option to expose parameters name in signature definition, so we can get the real parameter name and 
-so improve the `.proto` file readablity.
 - Provides a `GrpcManagedChannelServiceDiscovery` with a **Consul Service Discovery** client and **Load Balancer** capability, 
 from [grpc-java-load-balancer-using-consul](https://github.com/mykidong/grpc-java-load-balancer-using-consul). See tests.
 
@@ -46,7 +46,7 @@ Usage:
 ---
 First you need to generate `.proto` files out of your java `classes/interfaces` located at your classpath 
 and which are decorated with annotation `@GrpcEnabled`.  
-The processs skips generation of protobuf messages or inner fields if class is decorated with with `@ProtobufSkipFields`.
+You can skip generation of protobuf messages or inner fields decorating a class with `@ProtobufSkipFields`.
 - `JavaToProtoNewMain`: generates `.proto` files (**IDL syntax v3**) from a class/package at specific folder:  
 	```sh
 	mvn compile
@@ -88,16 +88,17 @@ Run Tests with Consul
 Consul is distributed, highly available, and extremely scalable. Visit https://github.com/hashicorp/consul.  
   
 JUnit `LoginServiceGrpcClientConsulServiceDiscoveryTest` runs a **LoginService gRPC** test with multiple stub calls using a 
-`ManagedChannel` which connects to a *Consul* server (local or external, see below). Not a real scenario, just testing if it works.  
+`ManagedChannel` which connects to a *Consul* server (local or external, see below).  
 JUnit `GreeterServiceGrpcClientLoadBalancerTest` runs a **Greeter gRPC** test with multiple stub calls using a custom gRPC Load Balancer 
-on client side using *static gRPC nodes* and also *Consul service discovery*. Not a real scenario, just testing if it works.  
+on client side using *static gRPC nodes* and also *Consul service discovery*.  
 
-Consul can be obtained as a stand alone app or as a **docker image**:  
+Consul can be obtained as a **stand alone app** or as a **docker image**:  
 - stand alone app: https://www.consul.io/downloads.html  
-- docker image: *docker image pull consul*
-	- See *Useful Tips* section for instructions on container execution.
+- docker image: 
+	- `docker image pull consul`
+	- See *Useful Tips* section from this README file for instructions on container execution.
 
-You need to setup the current consul ip address in order to test run `LoginServiceGrpcClientConsulServiceDiscoveryTest` correctly:
+You need to setup the current consul ip address in order to let the test `LoginServiceGrpcClientConsulServiceDiscoveryTest` run correctly:
 - If you are using docker in *Windows* with **Docker Tool Box** then get your docker machine ip with:
 	```sh
 	docker-machine ip default
@@ -149,13 +150,13 @@ I don't want to untrack them, I just don't want them to appear as modified and I
 	git update-index --no-assume-unchanged [<file> ...]
 	```
 
-- Running Consul in Docker:
+- Running Consul in Docker:  
 See this [link](https://docs.docker.com/samples/library/consul/#running-consul-for-development)
-	- download docker *Consul* image if not already:
+	- download docker *Consul* image if not already:  
 		```sh
 		docker image pull consul
 		```
-	- run *Consul* on *Windows* with *Docker Tool Box*:
+	- run *Consul* on *Windows* with *Docker Tool Box*:  
 		```sh
 		Development mode:
 		docker container run -d -p 8500:8500 -p 172.17.0.1:53:8600/udp -p 8400:8400 -p 8300:8300 --name=consul-dev -e CONSUL_BIND_INTERFACE=eth0 consul
@@ -163,7 +164,7 @@ See this [link](https://docs.docker.com/samples/library/consul/#running-consul-f
 		Agent in Client mode:
 		docker container run -d -p 8500:8500 -p 172.17.0.1:53:8600/udp -p 8400:8400 -p 8300:8300 --name=consul-agent consul agent -server -bootstrap -ui -node=docker-1 -client=0.0.0.0 -data-dir=/tmp/node
 		```
-	- Within Consul:
+	- Within Consul:  
 		- port 8300 is used by Consul servers to handle incoming requests from other agents (TCP only).
 		- port 8400 is used for Client requests.
 		- port 8500 is used for HTTP Api.
@@ -174,10 +175,12 @@ See this [link](https://docs.docker.com/samples/library/consul/#running-consul-f
 
 - Considerations on *Windows Docker Tool Box*:  
 If by any reason you are in a situation in which your app needs to route requests made to Docker's internal IP 172.17.x.x to the exposed IP 192.168.99.100 then:
-	- add an entry in the Windows routing table:
+	- add an entry in the Windows routing table:  
 	```sh
 	Open a privileged console
 	route add 172.17.0.0 mask 255.255.0.0 192.168.99.100 -p
 	Then you can remove that entry with:
 	route delete 172.17.0.0
 	```
+- Change *Windows Docker Tool Box* machine ip:  
+See gist https://gist.github.com/fabri1983/ff900cba76d5daf38ce4506665046c7a. 
