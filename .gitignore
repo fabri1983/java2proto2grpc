@@ -46,6 +46,8 @@ hs_err_pid*
 .settings/
 .project
 .factorypath
+*.eclipse-pmd
+*.stackdump
 
 #########
 # Others
