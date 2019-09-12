@@ -18,7 +18,7 @@ model objects to protobuf messages and viceversa, added Service Discovery capabi
 
 Features:
 ---
-- Depends on **Maven** (uses plugins to generate grpc stubs).
+- Depends on **Maven** (uses plugins to generate grpc stubs). If you don't have Maven installed then use provided `mvnw`.
 - **Java 8+**. 
 	- note the use of dependency `javax.annotation:javax.annotation-api` which solves the issue on generated grpc stubs due to Java internal 
 	relocation of `@javax.annotation.Generated` on newer java versions.
