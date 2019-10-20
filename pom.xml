@@ -29,7 +29,45 @@
 		
 		<!-- unit testing -->
 		<junit.version>4.13-beta-3</junit.version>
+		
+		<dependency.check.maven.version>5.2.2</dependency.check.maven.version>
 	</properties>
+	
+	<profiles>
+		<!-- OWASP security checker for project dependencies -->
+		<profile>
+			<id>securitycheck</id>
+			<dependencies>
+				<!-- OWASP dependency checker -->
+				<dependency>
+					<groupId>org.owasp</groupId>
+					<artifactId>dependency-check-maven</artifactId>
+					<version>${dependency.check.maven.version}</version>
+				</dependency>
+			</dependencies>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.owasp</groupId>
+						<artifactId>dependency-check-maven</artifactId>
+						<version>${dependency.check.maven.version}</version>
+						<configuration>
+							<suppressionFiles>
+								<!--suppressionFile>suppressed.xml</suppressionFile-->
+							</suppressionFiles>
+						</configuration>
+						<executions>
+							<execution>
+								<goals>
+									<goal>check</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 	
 	<dependencies>
 		<!-- The Log4j 2 SLF4J Binding allows applications coded to the SLF4J API to use Log4j 2 as the implementation. -->

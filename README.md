@@ -114,6 +114,14 @@ You need to setup the current consul ip address in order to let the test `LoginS
 	In this case put 127.0.0.1 (if local) or external IP (if in another server) in the file **src/test/resources/service-discovery-test.properties**.
 
 
+OWASP Dependency Checker
+---
+Run next command to check if any dependency has a security risk according the Maven plugin *dependency-checker* from **OWASP**:  
+```sh
+mvn verify -P securitycheck
+```
+
+
 TODO
 ---
 - Add test resulting with a failure BulheadFullException to ensure expected behaviour.
