@@ -2,6 +2,8 @@ package org.fabri1983.javagrpc.protobuf.converter.utils;
 
 import com.google.protobuf.MessageLite;
 
+import java.lang.reflect.InvocationTargetException;
+
 import org.fabri1983.javagrpc.protobuf.converter.annotation.ProtoClass;
 import org.fabri1983.javagrpc.protobuf.converter.annotation.ProtoClasses;
 import org.fabri1983.javagrpc.protobuf.converter.annotation.ProtoField;
@@ -56,12 +58,16 @@ public class AnnotationUtils {
 	 */
 	public static Mapper createMapper(final ProtoClass annotation) throws MappingException {
 		try {
-			return annotation.mapper().newInstance();
+			// java 6,7: use annotation.mapper().newInstance()
+			return annotation.mapper().getDeclaredConstructor().newInstance();
 		} catch (InstantiationException e) {
 			throw new MappingException("Default constructor not found.");
 		} catch (IllegalAccessException e) {
 			throw new MappingException("Make default constructor public for "
 					+ annotation.mapper().getSimpleName(), e);
+		} catch (IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+				| SecurityException e) {
+			throw new MappingException(e.getMessage() + " for " + annotation.mapper().getSimpleName(), e);
 		}
 	}
 
@@ -78,12 +84,16 @@ public class AnnotationUtils {
 	 */
 	public static FieldResolverFactory createFieldFactory(final ProtoClass annotation) throws MappingException {
 		try {
-			return annotation.fieldFactory().newInstance();
+			// java 6,7: use annotation.fieldFactory().newInstance()
+			return annotation.fieldFactory().getDeclaredConstructor().newInstance();
 		} catch (InstantiationException e) {
 			throw new MappingException("Default constructor not found.");
 		} catch (IllegalAccessException e) {
 			throw new MappingException("Make default constructor public for "
 					+ annotation.fieldFactory().getSimpleName(), e);
+		} catch (IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+				| SecurityException e) {
+			throw new MappingException(e.getMessage() + " for " + annotation.fieldFactory().getSimpleName(), e);
 		}
 	}
 
@@ -98,12 +108,16 @@ public class AnnotationUtils {
 	 */
 	public static TypeConverter<?, ?> createTypeConverter(final ProtoField annotation) throws WriteException {
 		try {
-			return annotation.converter().newInstance();
+			// java 6,7: use annotation.converter().newInstance()
+			return annotation.converter().getDeclaredConstructor().newInstance();
 		} catch (InstantiationException e) {
 			throw new WriteException("Default constructor not found.");
 		} catch (IllegalAccessException e) {
 			throw new WriteException("Make default constructor public for "
 					+ annotation.converter().getSimpleName(), e);
+		} catch (IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+				| SecurityException e) {
+			throw new WriteException(e.getMessage() + " for " + annotation.converter().getSimpleName(), e);
 		}
 	}
 
@@ -120,12 +134,16 @@ public class AnnotationUtils {
 	 */
 	public static NullValueInspector createNullValueInspector(final ProtoField annotation) throws WriteException {
 		try {
-			return annotation.nullValue().newInstance();
+			// java 6,7: use annotation.nullValue().newInstance()
+			return annotation.nullValue().getDeclaredConstructor().newInstance();
 		} catch (InstantiationException e) {
 			throw new WriteException("Default constructor not found.");
 		} catch (IllegalAccessException e) {
 			throw new WriteException("Make default constructor public for "
 					+ annotation.nullValue().getSimpleName(), e);
+		} catch (IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+				| SecurityException e) {
+			throw new WriteException(e.getMessage() + " for " + annotation.nullValue().getSimpleName(), e);
 		}
 	}
 
@@ -141,12 +159,16 @@ public class AnnotationUtils {
 	 */
 	public static DefaultValue createDefaultValue(final ProtoField annotation) throws WriteException {
 		try {
-			return annotation.defaultValue().newInstance();
+			// java 6,7: use annotation.defaultValue().newInstance()
+			return annotation.defaultValue().getDeclaredConstructor().newInstance();
 		} catch (InstantiationException e) {
 			throw new WriteException("Default constructor not found.");
 		} catch (IllegalAccessException e) {
 			throw new WriteException("Make default constructor public for "
 					+ annotation.defaultValue().getSimpleName(), e);
+		} catch (IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+				| SecurityException e) {
+			throw new WriteException(e.getMessage() + " for " + annotation.defaultValue().getSimpleName(), e);
 		}
 	}
 }

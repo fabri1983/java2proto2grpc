@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
-import "google/protobuf/duration.proto";
+//import "google/protobuf/duration.proto";
 
 package org.fabri1983.javagrpc.protobuf.converter.proto;
 

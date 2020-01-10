@@ -97,7 +97,6 @@ public final class Converter {
 	public <T, E extends MessageLite> List<T> toDomain(final Class<T> domainClass, final Collection<E>
 			protobufCollection) {
 		return toDomain(List.class, domainClass, protobufCollection);
-
 	}
 
 	@SuppressWarnings("unchecked")
@@ -146,11 +145,15 @@ public final class Converter {
 
 	private <T> T createDomain(final Class<T> domainClass) {
 		try {
-			return domainClass.newInstance();
+			// java 6,7: use domainClass.newInstance()
+			return domainClass.getDeclaredConstructor().newInstance();
 		} catch (InstantiationException e) {
 			throw new ConverterException("Default constructor not found for " + domainClass.getSimpleName(), e);
 		} catch (IllegalAccessException e) {
 			throw new ConverterException("Make default constructor of " + domainClass.getSimpleName() + " public", e);
+		} catch (IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+				| SecurityException e) {
+			throw new ConverterException(e.getMessage() + " for " + domainClass.getSimpleName(), e);
 		}
 	}
 

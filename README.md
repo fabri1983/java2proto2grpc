@@ -16,7 +16,7 @@ added TLS usage, extended and fixed api [protobuf-converter](https://github.com/
 model objects to protobuf messages and viceversa, added Service Discovery capability, and many more.
 
 
-Features:
+Features and Info:
 ---
 - Depends on **Maven** (uses plugins to generate grpc stubs). If you don't have Maven installed then use provided `mvnw`.
 - **Java 8+**. 
