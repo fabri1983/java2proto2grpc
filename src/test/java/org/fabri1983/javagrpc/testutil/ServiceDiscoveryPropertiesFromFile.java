@@ -4,6 +4,8 @@ import java.util.Properties;
 
 public class ServiceDiscoveryPropertiesFromFile implements IServiceDiscoveryProperties {
 
+	private static final String SERVICE_DISCOVERY_PROPERTIES_FILENAME = "service-discovery-test.properties";
+	
 	private String consulServiceName;
 	private String consulServiceIdPrefix;
 	private String consulHost;
@@ -15,7 +17,7 @@ public class ServiceDiscoveryPropertiesFromFile implements IServiceDiscoveryProp
 	
 	public ServiceDiscoveryPropertiesFromFile() {
 		
-		Properties props = PropertiesFromClassLoader.getProperties("service-discovery-test.properties");
+		Properties props = PropertiesFromClassLoader.getProperties(SERVICE_DISCOVERY_PROPERTIES_FILENAME);
 		
 		this.consulServiceName = "grpc-service-test";
 		this.consulServiceIdPrefix = "id-test_";
