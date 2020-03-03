@@ -12,9 +12,6 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<maven.compiler.source>8</maven.compiler.source>
-		<maven.compiler.target>11</maven.compiler.target>
-		<maven.compiler.release>11</maven.compiler.release>
 		
 		<log4j2.version>2.11.2</log4j2.version>
 		<javax.annotation.api.version>1.3.2</javax.annotation.api.version> <!-- protobuf Java 9+ compatibility -->
@@ -35,6 +32,24 @@
 	</properties>
 	
 	<profiles>
+		<profile>
+			<id>java8</id>
+			<properties>
+				<maven.compiler.source>8</maven.compiler.source>
+				<maven.compiler.target>8</maven.compiler.target>
+			</properties>
+		</profile>
+		<profile>
+			<id>java11</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<maven.compiler.source>8</maven.compiler.source>
+				<maven.compiler.target>11</maven.compiler.target>
+				<maven.compiler.release>11</maven.compiler.release>
+			</properties>
+		</profile>
 		<!-- OWASP security checker for project dependencies -->
 		<profile>
 			<id>securitycheck</id>
