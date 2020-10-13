@@ -26,7 +26,7 @@
 		<dropwizard.metrics.version>4.1.0</dropwizard.metrics.version>
 		
 		<!-- unit testing -->
-		<junit.version>4.13-beta-3</junit.version>
+		<junit.version>4.13.1</junit.version>
 		
 		<dependency.check.maven.version>5.2.2</dependency.check.maven.version>
 	</properties>
