@@ -1,6 +1,6 @@
 # java 2 proto 2 grpc
 
-[![Build Status](https://travis-ci.org/fabri1983/java2proto2grpc.svg?branch=master)](https://travis-ci.org/fabri1983/java2proto2grpc?branch=master)
+[![Build Status](https://app.travis-ci.com/fabri1983/java2proto2grpc.svg?branch=master)](https://app.travis-ci.com/fabri1983/java2proto2grpc?branch=master)
 &nbsp;&nbsp;&nbsp;&nbsp;
 [![Coverage Status](https://coveralls.io/repos/github/fabri1983/java2proto2grpc/badge.svg)](https://coveralls.io/github/fabri1983/java2proto2grpc?branch=master)
 &nbsp;&nbsp;&nbsp;&nbsp;
@@ -9,8 +9,8 @@
 [![Libraries.io for GitHub](https://badgen.net/badge/libraries.io/fabri1983/blue)](https://libraries.io/github/fabri1983/java2proto2grpc)
 
 
-This project is based on projects [java2proto](https://github.com/jhrgitgit/java2proto) 
-and [java-proto-generator](https://github.com/lloydsparkes/java-proto-generator) which are no longer maintained by their authors.  
+This project is based on two projects: [java2proto](https://github.com/jhrgitgit/java2proto) 
+and [java-proto-generator](https://github.com/lloydsparkes/java-proto-generator), which are no longer maintained by their authors.  
 I renamed some packages, fixed some bugs, made use of better design patterns, added LoginService Client and Server examples and tests, 
 added TLS usage, extended and fixed api [protobuf-converter](https://github.com/BAData/protobuf-converter) with custom modifications to transform domain 
 model objects to protobuf messages and viceversa, added Service Discovery capability, and many more.
@@ -146,49 +146,100 @@ Licenses correspond to next projects (currently discontinued) as I partially too
 
 Useful tips
 ---
-
 - I have some tracked files which potentially can be modified.  
 I don't want to untrack them, I just don't want them to appear as modified and I don't want them to be staged when I git add.  
-	Solution:
-	```sh
-	git update-index --assume-unchanged <file>
-	```
-	To undo and start tracking again:
-	```sh
-	git update-index --no-assume-unchanged [<file> ...]
-	```
+Solution:
+  ```sh
+  git update-index --assume-unchanged <file>
+  ```
+  To undo and start tracking again:
+  ```sh
+  git update-index --no-assume-unchanged [<file> ...]
+  ```
 
 - Running Consul in Docker:  
 See this [link](https://docs.docker.com/samples/library/consul/#running-consul-for-development)
-	- download docker *Consul* image if not already:  
-		```sh
-		docker image pull consul
-		```
-	- run *Consul* on *Windows* with *Docker Tool Box*:  
-		```sh
-		Development mode:
-		docker container run -d -p 8500:8500 -p 172.17.0.1:53:8600/udp -p 8400:8400 -p 8300:8300 --name=consul-dev -e CONSUL_BIND_INTERFACE=eth0 consul
-		or
-		Agent in Client mode:
-		docker container run -d -p 8500:8500 -p 172.17.0.1:53:8600/udp -p 8400:8400 -p 8300:8300 --name=consul-agent consul agent -server -bootstrap -ui -node=docker-1 -client=0.0.0.0 -data-dir=/tmp/node
-		```
-	- Within Consul:  
-		- port 8300 is used by Consul servers to handle incoming requests from other agents (TCP only).
-		- port 8400 is used for Client requests.
-		- port 8500 is used for HTTP Api.
-		- port 8600 is used for answer DNS queries. By using *-p* option, we are exposing these ports to the host machine.
-	- *-client=0.0.0.0* binds to all interfaces (docker network and host network).
-	- 172.17.0.1 is the Docker bridge IP address. We are remapping Consul Container’s port 8600 to host machine’s Docker bridge port 53 so that Containers on that host can use Consul for DNS.
-	- *-bootstrap* means consul runs in a standalone mode.
+  - download docker *Consul* image if not already:  
+    ```sh
+    docker image pull consul
+    ```
+  - run *Consul* on *Windows* with *Docker Tool Box*:  
+    ```sh
+    Development mode:
+    docker container run -d -p 8500:8500 -p 172.17.0.1:53:8600/udp -p 8400:8400 -p 8300:8300 --name=consul-dev -e CONSUL_BIND_INTERFACE=eth0 consul
+    or
+    Agent in Client mode:
+    docker container run -d -p 8500:8500 -p 172.17.0.1:53:8600/udp -p 8400:8400 -p 8300:8300 --name=consul-agent consul agent -server -bootstrap -ui -node=docker-1 -client=0.0.0.0 -data-dir=/tmp/node
+    ```
+  - Within Consul:  
+    - port 8300 is used by Consul servers to handle incoming requests from other agents (TCP only).
+    - port 8400 is used for Client requests.
+    - port 8500 is used for HTTP Api.
+    - port 8600 is used for answer DNS queries. By using *-p* option, we are exposing these ports to the host machine.
+  - *-client=0.0.0.0* binds to all interfaces (docker network and host network).
+  - 172.17.0.1 is the Docker bridge IP address. We are remapping Consul Container’s port 8600 to host machine’s Docker bridge port 53 so that Containers on that host can use Consul for DNS.
+  - *-bootstrap* means consul runs in a standalone mode.
 
 - Considerations on *Windows Docker Tool Box*:  
 If by any reason you are in a situation in which your app needs to route requests made to Docker's internal IP 172.17.x.x to the exposed IP 192.168.99.100 then:
-	- add an entry in the Windows routing table:  
-	```sh
-	Open a privileged console
-	route add 172.17.0.0 mask 255.255.0.0 192.168.99.100 -p
-	Then you can remove that entry with:
-	route delete 172.17.0.0
-	```
+  - add an entry in the Windows routing table:  
+  ```sh
+  Open a privileged console
+  route add 172.17.0.0 mask 255.255.0.0 192.168.99.100 -p
+  Then you can remove that entry with:
+  route delete 172.17.0.0
+  ```
+
 - Change *Windows Docker Tool Box* machine ip:  
 See gist https://gist.github.com/fabri1983/ff900cba76d5daf38ce4506665046c7a. 
+
+- Change *Windows Docker Tool Box* to **Experimental** mode:
+  - Open VirtualBox and open the terminal GUI for the default image.
+  - Edit/Create `daemon.json` file:
+  ```sh
+  sudo vi /etc/docker/dameon.json
+  {
+   "experimental": true
+  }
+  ```
+  - Edit/Create `config.json` file:
+  ```sh
+  vi ~/.docker/config.json
+  {
+   "experimental": "enabled"
+  }
+  ```
+  - Deatach from the terminal GUI.
+  - Go back to the cmd window:
+  ```sh
+  docker-machine stop default
+  docker-machine start default
+  docker info
+```
+
+- Install buildx plugin into *Windows Docker Tool Box*:
+  - Windows:
+    - Download last version (currently 0.4.2) here: https://github.com/docker/buildx/releases/
+    - Rename it to `buildx`
+    - Move it into `C:\Program Files\Docker Toolbox\`
+    - Open a cmd window and type: `buildx version`
+  - VirtualBox:
+    - Open VirtualBox and open the terminal GUI for the default image.
+    - Type:
+    ```sh
+    export DOCKER_BUILDKIT=1
+    docker build --platform=local -o . git://github.com/docker/buildx
+    mkdir -p ~/.docker/cli-plugins
+    mv buildx ~/.docker/cli-plugins/docker-buildx
+    ```
+    or
+    ```sh
+    wget https://github.com/docker/buildx/releases/download/v0.4.2/buildx-v0.4.2.linux-amd64
+    chmod a+x buildx-v0.4.2.linux-amd64
+    mkdir -p ~/.docker/cli-plugins
+    mv buildx-v0.4.2.linux-amd64 ~/.docker/cli-plugins/docker-buildx
+    ```
+    - You can only use docker buildx under the terminal GUI, not available on Windows:
+    ```sh
+    docker buildx version
+    ```

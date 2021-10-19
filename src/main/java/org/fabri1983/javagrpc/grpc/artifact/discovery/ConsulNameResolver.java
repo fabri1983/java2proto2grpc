@@ -230,13 +230,11 @@ public class ConsulNameResolver extends NameResolver {
 
 		@Nullable
 		@Override
-		public NameResolver newNameResolver(URI uri, Attributes attributes) {
+		public NameResolver newNameResolver(URI uri, NameResolver.Args args) {
 			if (withHealthCheck) {
-				return ConsulNameResolver.withHealthCheck(uri, serviceName, pauseInSeconds, this.ignoreConsul,
-						this.hostPorts);
+				return ConsulNameResolver.withHealthCheck(uri, serviceName, pauseInSeconds, this.ignoreConsul, this.hostPorts);
 			}
-			return ConsulNameResolver.noHealthCheck(uri, serviceName, pauseInSeconds, this.ignoreConsul,
-					this.hostPorts);
+			return ConsulNameResolver.noHealthCheck(uri, serviceName, pauseInSeconds, this.ignoreConsul, this.hostPorts);
 		}
 
 		@Override

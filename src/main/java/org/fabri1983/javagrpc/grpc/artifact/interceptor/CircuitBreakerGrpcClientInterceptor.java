@@ -12,6 +12,8 @@ import io.grpc.MethodDescriptor;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 
+import java.util.concurrent.TimeUnit;
+
 public class CircuitBreakerGrpcClientInterceptor implements ClientInterceptor {
 
 	private CircuitBreaker circuitBreaker;
@@ -55,9 +57,9 @@ public class CircuitBreakerGrpcClientInterceptor implements ClientInterceptor {
 		public void onClose(Status status, Metadata trailers) {
 			long elapsed = System.nanoTime() - startedAt;
 			if (status.isOk()) {
-				circuitBreaker.onSuccess(elapsed);
+				circuitBreaker.onSuccess(elapsed, TimeUnit.NANOSECONDS);
 			} else {
-				circuitBreaker.onError(elapsed, new StatusRuntimeException(status, trailers));
+				circuitBreaker.onError(elapsed, TimeUnit.NANOSECONDS, new StatusRuntimeException(status, trailers));
 			}
 			super.onClose(status, trailers);
 		}
