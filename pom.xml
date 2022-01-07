@@ -18,7 +18,7 @@
 		<os.maven.version>1.7.0</os.maven.version>
 		<protobuf.maven.version>0.6.1</protobuf.maven.version>
 		<io.grpc.version>1.43.0</io.grpc.version>
-		<google.protobuf.version>3.19.1</google.protobuf.version>
+		<google.protobuf.version>3.19.2</google.protobuf.version>
 		<consul.client.version>1.4.5</consul.client.version>
 		<resilience4j.version>1.7.1</resilience4j.version>
 		<!-- metrics collector -->
